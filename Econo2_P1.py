@@ -5,16 +5,16 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 from pandas.plotting import register_matplotlib_converters
 import datetime as dt 
+import pdb
 
 usd = pd.read_excel("RS_USD.xlsx")
-
 # Renaming columns
 
 usd = pd.DataFrame(usd)
 usd = usd.rename(columns = {"Data": "date", "R$/US$": "t","Variação (em %)": "%"})
 
 # Time shift loop 
-
+print(usd)
 print("Choose n (time lag): ")
 n = 5 #input()
 
@@ -24,11 +24,12 @@ usd_shift
 usd_shift = usd
 
 n=5
+
 for i in range(4, n+4):
-    usd_shift[i+1] = pd.concat([usd_shift[i], usd.shift(i+1)], axis = 1)
+    usd["lag_"+str(i)] = usd.t.shift(i)
 
 
-
+print(usd)
 
 
 
