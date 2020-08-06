@@ -6,30 +6,6 @@ output: html_document
 ---
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
@@ -42,6 +18,74 @@ library(corrplot)
 library(ggthemes)
 library(gridExtra)
 library(gtsummary)
+library(readxl)
+library(ggthemes)
+
+
+```
+
+Loading the database and creating dummy variables:
+
+```{r database}
+
+df <- read_excel("RS_USD.xlsx")
+
+
+names(df)[names(df) == "R$/US$"] <- "p"
+
+names(df)[names(df) == "Variação (em %)"] <- "delta"
+
+names(df)[names(df) == "Data"] <- "date"
+
+sign <- as.numeric(df$delta > 0)
+
+count <- c(1:2153)
+
+df <- data.frame(count, df, sign)
+
+
+
+```
+
+
+Before constructing our models, we need to check (intuitively) if the series at hand is *stationary* and *ergodic*. For this, we're going to plot the time series, its autocovariances and partial autocovariances.
+
+``` {r plots}
+
+p_plot <- ggplot(data = df, aes(x = date, y = p)) + geom_line() + ggtitle("USD/BRL, Price") + theme_few()
+p_plot 
+
+delta_plot <- ggplot(data = df, aes(x = date, y = delta)) + geom_line() + ggtitle("USD/BRL, %") + theme_few()
+delta_plot 
+
+dummy_plot <- ggplot(data = df, aes(x = count, y = sign)) + geom_line() + ggtitle("USD/BRL, +/-") + xlim(1,200) + theme_few()
+dummy_plot
+
+fac_st <- forecast::Acf(df$delta, type = "covariance", lag.max = 100, plot = T)
+fac_lt <- forecast::Acf(df$delta, type = "covariance", lag.max = 5000, plot = T)
+
+facp <- forecast::Pacf(df$delta, lag.max = 5000, plot = T)
+
+
+?Acf
+
+```
+
+Let's now create our first ARMA models (equivalent to ARIMA with 2nd argument = 0). We'll begin with the first hypothesis: \mathbb{P}(+) = \mathbb{P}(-). Modelling this with an AR(1), we have:
+
+$$Sign_t+1 = c + ar_1*Sign_t + \varepsilon, \hspace{2em} \varepsilon \sim wn(0, \sigma^2)$$
+In R, we'll use the package $forecast$ to construct this model:
+
+```{r AR(1)}
+
+AR1 <- Arima(df$sign, order = c(1, 0, 0))
+summary(AR1)
+
+plot(AR1)
+
+tsdisplay(AR1$residuals)
+?Arima
+
 
 ```
 
