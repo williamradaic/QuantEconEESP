@@ -1,10 +1,11 @@
 ---
 title: "Econometrics II - Problem 1"
 author: "William Radaic Peron"
-date: "6 de agosto de 2020"
-output: html_document
+date: "August 6th, 2020"
+output:
+  pdf_document: default
+  html_document: default
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -20,8 +21,7 @@ library(gridExtra)
 library(gtsummary)
 library(readxl)
 library(ggthemes)
-
-
+library(mdscore)
 ```
 
 Loading the database and creating dummy variables:
@@ -43,68 +43,169 @@ count <- c(1:2153)
 
 df <- data.frame(count, df, sign)
 
-
-
 ```
 
 
-Before constructing our models, we need to check (intuitively) if the series at hand is *stationary* and *ergodic*. For this, we're going to plot the time series, its autocovariances and partial autocovariances.
+Before constructing our models, we need to check (intuitively) if the series at hand is *stationary* and *ergodic*. For this, we're going to plot the time series, its autocorrelations and partial autocorrelations.
 
 ``` {r plots}
 
-p_plot <- ggplot(data = df, aes(x = date, y = p)) + geom_line() + ggtitle("USD/BRL, Price") + theme_few()
-p_plot 
+pplot <- ggplot(data = df, aes(x = date, y = p)) + geom_line() + ggtitle("USD/BRL, Price") + theme_few()
+pplot 
 
-delta_plot <- ggplot(data = df, aes(x = date, y = delta)) + geom_line() + ggtitle("USD/BRL, %") + theme_few()
-delta_plot 
+deltaplot <- ggplot(data = df, aes(x = date, y = delta)) + geom_line() + ggtitle("USD/BRL, %") + theme_few()
+deltaplot 
 
-dummy_plot <- ggplot(data = df, aes(x = count, y = sign)) + geom_line() + ggtitle("USD/BRL, +/-") + xlim(1,200) + theme_few()
-dummy_plot
+dummyplot <- ggplot(data = df, aes(x = count, y = sign)) + geom_line() + ggtitle("USD/BRL, +/-") + xlim(1,200) + theme_few()
+dummyplot
 
-fac_st <- forecast::Acf(df$delta, type = "covariance", lag.max = 100, plot = T)
-fac_lt <- forecast::Acf(df$delta, type = "covariance", lag.max = 5000, plot = T)
+# For delta
 
-facp <- forecast::Pacf(df$delta, lag.max = 5000, plot = T)
+acf_delta <- Acf(df$delta, lag.max = 5000)
+acf_test_values <- acf_delta$acf/sd(acf_delta$acf)
 
+head(data.frame(acf_test_values))
 
-?Acf
+facst <- ggAcf(df$delta, type = "correlation", lag.max = 100, plot = T) + theme_few()
+faclt <- ggAcf(df$delta, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+facpst <- ggPacf(df$delta, type = "correlation", lag.max = 100, plot = T) + theme_few()
+facplt <- ggPacf(df$delta, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+facst
+faclt
+
+facpst
+facplt
+
 
 ```
 
-Let's now create our first ARMA models (equivalent to ARIMA with 2nd argument = 0). We'll begin with the first hypothesis: \mathbb{P}(+) = \mathbb{P}(-). Modelling this with an AR(1), we have:
+Let's now create our first ARMA models (equivalent to ARIMA with 2nd argument = 0). We'll begin with the first hypothesis: $\mathbb{P}(+) = \mathbb{P}(-).$ Modelling this with an AR(1), we have:
 
-$$Sign_t+1 = c + ar_1*Sign_t + \varepsilon, \hspace{2em} \varepsilon \sim wn(0, \sigma^2)$$
-In R, we'll use the package $forecast$ to construct this model:
+$$Sign_{t+1} = \alpha + \beta Sign_t + \varepsilon, \hspace{2em} \varepsilon \sim wn(0, \sigma^2)$$
+In R, we'll use the package *forecast* to construct this model:
 
 ```{r AR(1)}
 
-AR1 <- Arima(df$sign, order = c(1, 0, 0))
-summary(AR1)
+AR1sign <- Arima(df$sign, order = c(1, 0, 0))
+summary(AR1sign)
 
-plot(AR1)
+plot(AR1sign)
 
-tsdisplay(AR1$residuals)
-?Arima
+tsdisplay(AR1sign$residuals)
 
 
 ```
 
-## R Markdown
+With the results of the summary, we can now apply a hypothesis test for our first question.\footnote{Testing $\beta$ is equivalent to testing $\gamma$.}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+$$ H_0: \beta = 0$$
+$$H_1: \beta \neq 0$$
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+$\dfrac{\hat{ar_1} - ar_1}{s.e.(ar_1)}$:
 
-```{r cars}
-summary(cars)
+``` {r ht 1}
+
+AR1sign$coef[1]/sqrt(AR1sign$var.coef[1,1])
+
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+The second hypothesis in the problem refers to the delta of the variation: 
+$$\mathbb{E}(\Delta | + ) \neq \mathbb{E}(\Delta | - ).$$
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+$$\Delta_{t+1} = \alpha + \beta Sign_t + \varepsilon, \hspace{2em} \varepsilon \sim wn(0, \sigma^2).$$
+``` {r lm signt}
+
+lmsignt <- lm(delta ~ lag(df$sign, k = 1), data = df)
+summary(lmsignt)
+
+ggplot(df, aes(x = lag(df$sign, k = 1), y = delta)) + geom_smooth(method = "lm")
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+$$\Delta_{t+1} = \alpha + \beta_1 \Delta_t + \beta_2Sign_t + \varepsilon, \hspace{2em} \varepsilon \sim wn(0, \sigma^2)$$
+
+``` {r delta 1}
+
+AR1delta <- Arima(df$delta, order = c(1, 0, 0), xreg = lag(df$sign, k = 1))
+summary(AR1delta)
+
+AR1delta$coef[1]/sqrt(AR1delta$var.coef[1,1])
+
+plot(AR1delta)
+
+tsdisplay(AR1delta$residuals)
+
+
+
+
+```
+
+
+
+The last hypothesis in the problem refers to the variance: 
+$$\mathbb{E}(\Delta_{t+1}^2 | \Delta_t).$$
+
+$$\Delta^2_{t+1} = \alpha + \beta \Delta^2_t + \varepsilon, \hspace{2em} \varepsilon \sim wn(0, \sigma^2)$$
+
+``` {r var1}
+
+AR1var <- Arima((df$delta)^2, order = c(1, 0, 0))
+summary(AR1var)
+
+AR1var$coef[1]/sqrt(AR1var$var.coef[1,1])
+
+plot(AR1var)
+
+tsdisplay(AR1var$residuals)
+
+
+
+
+```
+
+Now, let's run *auto.arima*. 
+
+``` {r auto arima}
+
+aadelta <- auto.arima(df$delta, stepwise = F)
+summary(aadelta)
+plot(aadelta)
+tsdisplay(aadelta$residuals)
+
+aasign <- auto.arima(df$sign, stepwise = F)
+summary(aasign)
+plot(aasign)
+tsdisplay(aasign$residuals)
+
+aavar <- auto.arima((df$delta)^2, stepwise = F)
+summary(aavar)
+plot(aavar)
+tsdisplay(aasign$residuals)
+
+aardelta <- auto.arima(df$delta, max.q = 0, stepwise = F)
+summary(aardelta)
+plot(aardelta)
+tsdisplay(aardelta$residuals)
+
+aarsign <- auto.arima(df$sign, max.q = 0, stepwise = F)
+summary(aarsign)
+plot(aarsign)
+tsdisplay(aarsign$residuals)
+
+aarvar <- auto.arima((df$delta)^2, max.q = 0, stepwise = F)
+summary(aarvar)
+plot(aarvar)
+tsdisplay(aarvar$residuals)
+
+
+```
+
+Test.
+
+
+
