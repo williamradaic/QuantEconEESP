@@ -1,0 +1,146 @@
+---
+title: "Econometrics II - Problem 3"
+author: "William Radaic Peron"
+date: \today
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+```
+
+
+```{r database, include = FALSE}
+
+# Loading the dataframe:
+
+library(readr)
+df <- read_delim("C:/Users/William/Downloads/base de dados - problema 3.txt", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+
+# df <- ts(df)
+
+
+
+
+```
+
+In this problem, we'll be tackling the issue of *identification* of an ARMA model. Namely, we will employ the *Box-Jenkins* model selection strategy, based upon the concept of *parsimony*. 
+
+The principle of *parsimony* is inspired on the trade-off between *fit*, i.e., $R^2$, and *degrees of freedom*. ``Box and Jenkins argue that parsimonious models produce better forecasts than overparametrized models''. (p. 76) 
+
+The Box-Jenkins strategy is divided in three main stages: \begin{itemize}
+\item Identification;
+\item Estimation;
+\item Diagnostic checking.
+\end{itemize}
+
+These estimations depend upon two essential conditions (discussed in earlier problems and lectures): *stationarity* and *invertibility*. Stationarity, as we have discussed earlier, is necessary to effectively *employ econometric methods* and to infer characteristics of a population through a given sample. Enders also points out that t-statistics and Q-statistics are based upon the assumption that the data are stationary (p. 77). This implies a condition on the *AR* process of an ARMA model (roots of characteristic polynomial outside of unity circle).
+
+Furthermore, the model shall be *invertible* -- i.e., if it can be represented by a finite or convergent AR model. This implies a condition on the *MA* process -- i.e., if it can be written as an AR($\infty$).
+
+We're going to check these conditions intuitively by plotting the ACFs and PACFs of the time series:
+
+``` {r plots}
+
+pplot <- ggplot(data = df, aes(x = t, y = value)) + geom_line() + ggtitle("Time series plot") + theme_few()
+pplot 
+
+acf_ts <- Acf(df$value, lag.max = 5000)
+acf_test_values <- acf_ts$acf/sd(acf_ts$acf)
+
+head(data.frame(acf_test_values))
+
+facst <- ggAcf(df$value, type = "correlation", lag.max = 20, plot = T) + theme_few()
+faclt <- ggAcf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+facpst <- ggPacf(df$value, type = "correlation", lag.max = 100, plot = T) + theme_few()
+facplt <- ggPacf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+facst
+faclt
+
+facpst
+facplt
+
+```
+
+
+Aside from usual methods, we'll employ the following criteria: \begin{itemize}
+\item Akaike Information Criterion (AIC). 
+$$ AIC = T * ln(SSR) + 2n $$
+\item  Schwartz Bayesian Criterion (SBC).
+$$ SBC = T * ln(SSR) + n * ln(T) $$
+\end{itemize}
+
+$n$ denotes the number of parameters estimated (an useful metric given the importance of the degrees of freedom). $T$ denotes the number of *usable* observations. Note that, when comparing different models, it is important to *fix* $T$ to ensure that the $AIC$ and $SBC$ values are comparable and are capturing only variations in the actual model and not the effect of changing T.
+
+The objective with these criteria is to *minimize* their values. ``As the fit of the model improves, the AIC and SBC will approach -$\infty$.'' (p. 70) $AIC$ and $SBC$ have different advantages and drawbacks: while the former is biased toward overparametrization and more powerful in small samples, $SBC$ is consistent and has superior large sample properties. If both metrics point to the same model, we should be fairly confident that it is, indeed, the correct specification.
+
+It is also important to apply hypothesis tests to the estimates of the population parameters $\mu, \sigma^2$ and $\rho_s$ -- $\bar{y}, \hat{sigma}^2, r_s$, respectively. Worthy of note here is $r_s$, which presents the following distributions under the null that $y_t$ is stationary with $\varepsilon_t \sim \mathcal{N}$:
+$$ Var(r_s) = T^{-1} \hspace{2em} for \, s = 1$$
+$$ Var(r_s) = T^{-1}(1 + 2\sum_{j=1}^{s-1} r_j^2) \hspace{2em} for \, s > 1$$
+
+The Q-statistic is also introduced by Enders in this chapter. It is used to test whether a group of autocorrelations is significantly different from zero. 
+$$Q = T\sum_{k=1}^s r_k^2$$
+Under the null of $r_k = 0 \forall k$, Q is asymptotically $\chi^2$ with s degrees of freedom. ``Certainly, a white-noise process (in which all autocorrelations should be zero) would have a Q value of zero''. (p. 68)
+
+An alternative form for $Q$ is presented by Ljung and Box (1978):
+$$ Q = T(T+2) \sum_{k=1}^s \dfrac{r_k^2}{(T-k)} $$
+
+Furthermore, it is also important to check whether the residuals of the model are actually *white noise*. This can be done via the Q-statistic, which *should not result in the rejection of the null*. If that is not the case, the model specified is not the best one available, as there's still a relevant underlying variable ($y$ or $\varepsilon$).
+
+Let's now perform the *estimation stage*. This shall be done via the function *auto.arima* from the package *forecast*.
+
+``` {r estimation autoarima}
+
+df <- ts(df)
+
+aa_model <- auto.arima(df$value, num.cores = 24, max.d = 0, max.D = 0, stepwise = F)
+
+summary(aa_model)
+
+print("t-values: ")
+
+aa_t <- matrix(NA, nrow = 4)
+
+for (i in c(1:4)) { 
+
+aa_t[i] <- aa_model$coef[i]/sqrt(aa_model$var.coef[i,i])
+
+}
+
+aa_t
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
