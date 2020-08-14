@@ -58,6 +58,8 @@ We're going to check these conditions intuitively by plotting the ACFs and PACFs
 
 ``` {r plots}
 
+df <- data.frame(df)
+
 pplot <- ggplot(data = df, aes(x = t, y = value)) + geom_line() + ggtitle("Time series plot") + theme_few()
 pplot 
 
@@ -109,7 +111,6 @@ Let's now perform the *estimation stage*. This shall be done via the function *a
 
 ``` {r estimation autoarima}
 
-df <- ts(df)
 
 aa_model <- auto.arima(df$value, num.cores = 24, max.d = 0, max.D = 0, stepwise = F)
 
@@ -125,18 +126,170 @@ aa_t[i] <- aa_model$coef[i]/sqrt(aa_model$var.coef[i,i])
 
 }
 
+aa_t <- data.frame(aa_t)
+
 aa_t
+
+aa_q <- Box.test(aa_model$residuals, lag = aa_model$arma[1] + aa_model$arma[2])
+aa_q
 
 ```
 
+The results of *auto.arima* imply that the best model is an ARMA(2,1): 
+$$ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+
+Furthermore, the Q-statistic *(Box.test)* seems to indicate that $\varepsilon_t$ is truly white noise.
+
+Let's now run some different models and compare them against the results of *auto.arima*. We'll begin with some overspecified model. First, an ARMA(2,2):
+$$ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
 
 
+``` {r alternative model arma(2,2)}
+
+arma22 <- Arima(df$value, order = c(2, 0, 2))
+
+summary(arma22)
+
+arma22_t <- matrix(NA, nrow = 5)
+
+for (i in c(1:5)) { 
+
+arma22_t[i] <- arma22$coef[i]/sqrt(arma22$var.coef[i,i])
+
+}
+
+arma22_t <- data.frame(arma22_t)
+
+arma22_t
+
+arma22_q <- Box.test(arma22$residuals, lag = arma22$arma[1] + arma22$arma[2])
+arma22_q
+
+```
+
+The t-value of $ma2$ is not able to reject the null hypothesis. Furthermore, the Q-statistic *(Box.test)* seems to indicate that $\varepsilon_t$ is truly white noise.
+
+Now, an ARMA(3,1):
+$$ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \Phi_3 y_{t-3} + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
 
 
+``` {r alternative model arma(3,1)}
+
+arma31 <- Arima(df$value, order = c(3, 0, 1))
+
+summary(arma31)
+
+arma31_t <- matrix(NA, nrow = 5)
+
+for (i in c(1:5)) { 
+
+arma31_t[i] <- arma31$coef[i]/sqrt(arma31$var.coef[i,i])
+
+}
+
+arma31_t <- data.frame(arma31_t)
+
+arma31_t
+
+arma31_q <- Box.test(arma31$residuals, lag = arma31$arma[1] + arma31$arma[2])
+arma31_q
+
+```
+
+The t-value of $ar3$ is not able to reject the null hypothesis. Furthermore, the Q-statistic *(Box.test)* seems to indicate that $\varepsilon_t$ is truly white noise.
+
+Now, let's try some *underspecified models*. Beginning with an ARMA(2,0):
+$$ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+
+``` {r arma(2,0)}
+
+arma20 <- Arima(df$value, order = c(2, 0, 0))
+
+summary(arma20)
+
+arma20_t <- matrix(NA, nrow = 3)
+
+for (i in c(1:3)) { 
+
+arma20_t[i] <- arma20$coef[i]/sqrt(arma20$var.coef[i,i])
+
+}
+
+arma20_t <- data.frame(arma20_t)
+
+arma20_t
+
+arma20_q <- Box.test(arma20$residuals, lag = arma20$arma[1] + arma20$arma[2])
+arma20_q
 
 
+```
+
+The Q-statistic indicates that there is an ommited variable -- namely, $\varepsilon_{t-1}$ that we have just excluded from the model. 
+
+Now, an ARMA(1,1): 
+$$ y_t = c + \Phi_1 y_{t-1} +  + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+
+``` {r arma(1,1)}
+
+arma11 <- Arima(df$value, order = c(1, 0, 1))
+
+summary(arma11)
+
+arma11_t <- matrix(NA, nrow = 3)
+
+for (i in c(1:3)) { 
+
+arma11_t[i] <- arma11$coef[i]/sqrt(arma11$var.coef[i,i])
+
+}
+
+arma11_t <- data.frame(arma11_t)
+
+arma11_t
+
+arma11_q <- Box.test(arma11$residuals, lag = arma11$arma[1] + arma11$arma[2])
+arma11_q
 
 
+```
+
+Again, the Q-statistic indicates that there is an ommited variable -- namely, $y_{t-1}$ that we have just excluded from the model.  
+
+Finally, let's compare the $AIC$ and $BIC$ values for all these models.
+
+``` {r criteria}
+
+criteria <- matrix(NA, nrow = 5, ncol = 3)
+
+aa_criteria <- data.frame("ARMA(2,1)*", aa_model$aic, aa_model$bic)
+
+names(aa_criteria) <- c("Model", "AIC", "BIC")
+
+arma22_criteria <- data.frame("ARMA(2,2)", arma22$aic, arma22$bic)
+
+names(arma22_criteria) <- c("Model", "AIC", "BIC")
+
+arma31_criteria <- data.frame("ARMA(3,1)", arma31$aic, arma31$bic)
+
+names(arma31_criteria) <- c("Model", "AIC", "BIC")
+
+arma20_criteria <- data.frame("ARMA(2,0)", arma20$aic, arma20$bic)
+
+names(arma20_criteria) <- c("Model", "AIC", "BIC")
+
+arma11_criteria <- data.frame("ARMA(1,1)", arma11$aic, arma11$bic)
+
+names(arma11_criteria) <- c("Model", "AIC", "BIC")
+
+
+criteria <- rbind.data.frame(aa_criteria, arma22_criteria, arma31_criteria, arma20_criteria, arma11_criteria)
+
+criteria
+
+```
+
+As we can clearly see, the model chosen by *auto.arima* is the optimal choice according both to AIC and BIC.
 
 
 
