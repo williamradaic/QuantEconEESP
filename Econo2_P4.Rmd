@@ -3,7 +3,8 @@ title: "Econometrics II - Problem 4"
 author: "William Radaic Peron"
 date: \today
 output:
-  pdf_document: default
+  pdf_document: 
+    keep_tex: yes
   html_document: default
 ---
 
@@ -240,8 +241,25 @@ optimal_index <- which.min(mse)
 
 cv_model <- fit[[optimal_index]]
 
+summary(cv_model)
+
+
+
   
 ```
+
+The cross-validation method constructed above yielded an ARMA(1,1):
+$$ y_t = c + \phi_1 y_{t-1} +  + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+``` {r forecast cv plot}
+
+cv_fc <- forecast(cv_model, h = h)
+
+autoplot(cv_fc)
+
+```
+
+\section{Bootstrapping}
+
 
 Now, let's proceed to *bootstrapping*. It envolves the following steps: \begin{enumerate}
 \item \begin{itemize}
@@ -269,7 +287,7 @@ $$(\hat{Y}^*_{T+1}, ..., \hat{Y}^*_{T+h})$$
 \item Repeat steps 2 and 3 for $S$ times. Create a matrix with the results.
 
 \item This yields a S x h matrix where each row is equal to the aforementioned vector.
-
+\end{itemize}
 \end{enumerate}
 
 We'll use, again, the optimal model from *auto.arima*, MA(3):
@@ -282,6 +300,8 @@ S <- 1000
 
 m <- 100
 
+
+
 optimal_p <- aa_model$arma[1]
 
 optimal_q <- aa_model$arma[2]
@@ -292,9 +312,14 @@ y_star <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+m + max(aa_mo
 
 arima_star <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+ m + max(aa_model$arma[1], aa_model$arma[2]))))
 
+
 for (i in 1:S) {
   
   e_sample[i] <- sample(aa_model$residuals, replace = T, size = (length(df$value)+m))
+ 
+} 
+
+for (i in 1:S) {
   
 for (j in ((aa_model$arma[1] + aa_model$arma[2] + 1):(length(df$value)+m))) { 
   
@@ -320,51 +345,82 @@ y_m <- y_star[,-(1:100)]
 
 y_m <- y_m[,-(101:103)]
 
-fc_list <- vector("list", S)
-
 y_mt <- t(y_m)
 
-for (i in 1:S) {
-  
-  fc_list[[i]] <- forecast(ts(y_matrix[1,]), model = aa_model, h = h)
+y_matrix <- as.matrix(y_m)
 
-}
+```
 
-View(fc_list)
+``` {r forecast bootstrapping}
 
-fc_mean <- data.frame(matrix(NA, nrow = S, ncol = 1))
+fc_list <- vector("list", S)
 
 for (i in 1:S) {
   
-  fc_mean[i] <- fc_list[[i]]$mean
+  fc_list[[i]] <- forecast(ts(y_matrix[i,]), model = aa_model, h = 5)
+
+}
+
+fc_list[[1]]
+
+fc_mean <- data.frame(matrix(NA, nrow = S, ncol = 5))
+
+for (i in 1:S) {
+  
+  fc_mean[i,] <- fc_list[[i]]$mean
   
 }
 
-View(fc_mean)
+```
 
-    
+``` {r mean ic}
+
+head(fc_mean)
+
+hist_x1 <- ggplot(data = fc_mean, aes(x = X1)) + geom_histogram(bins = 40) + theme_few() 
+hist_x1
+
+qq_x1 <- qqnorm(fc_mean$X1); qqline(fc_mean$X1)
+
+hist_x2 <- ggplot(data = fc_mean, aes(x = X2)) + geom_histogram(bins = 40) + theme_few() 
+hist_x2
+
+qq_x2 <- qqnorm(fc_mean$X2); qqline(fc_mean$X2)
+
+hist_x3 <- ggplot(data = fc_mean, aes(x = X3)) + geom_histogram(bins = 40) + theme_few() 
+hist_x3
+
+qq_x3 <- qqnorm(fc_mean$X3); qqline(fc_mean$X3)
+
+hist_x4 <- ggplot(data = fc_mean, aes(x = X4)) + geom_histogram(bins = 40) + theme_few() 
+hist_x4
+
+qq_x4 <- qqnorm(fc_mean$X4); qqline(fc_mean$X4)
+
+hist_x5 <- ggplot(data = fc_mean, aes(x = X5)) + geom_histogram(bins = 100) + theme_few() 
+hist_x5
+
+qq_x5 <- qqnorm(fc_mean$X5); qqline(fc_mean$X5)
+
+
 ```
 
 
+The results show that, from $h \geq 4$, the predicted value is the mean of the series.
 
+Now, some forecasting plots:
 
-
-
-
-
-
-
-
-
-
-
-``` {r forecast arima}
+``` {r forecast arima plots}
 
 fc <- forecast(df$value, model = aa_model, h = h)
 
 autoplot(fc) + theme_few()
 
-summary(fc)
+autoplot(fc_list[[1]]) + theme_few()
+
+autoplot(fc_list[[66]]) + theme_few()
+
+autoplot(fc_list[[796]]) + theme_few()
 
 
 ```
