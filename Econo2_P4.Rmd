@@ -193,25 +193,29 @@ max_p <- 5
 
 max_q <- 5
 
-e <- matrix(NA, nrow = 100, ncol = 200)
+e <- matrix(NA, nrow = 100, ncol = (max_p + 1) * (max_q + 1))
 
-pred <- vector("list", 50)
+pred <- vector("list", (max_p + 1) * (max_q + 1))
 
-fit <- vector("list", 50)
+fit <- vector("list", (max_p + 1) * (max_q + 1))
 
 # Updating the model
-for (u in 1:max_q) {
+for (u in 0:max_q) {
 
-for (j in (5*u):(5*(u + max_p))) { 
+for (j in 0:max_p) { 
 
 
   for (i in k:(T-h)) {
   
-  fit[[(j+u)]] <- Arima(df$value[1:i], order = c((j/5),0,u))
+ fit[[(((max_p+1)*j)+u + 1)]] <- Arima(df$value[1:i], order = c(j,0,u))
   
-  pred[[(j+u)]] <- predict(fit[[(j+u)]], n.ahead = h)
+#  fit <- append(fit, Arima(df$value[1:i], order = c(j,0,u)))
   
-  e[i,(j+u)] <- df$value[(i+h)] - pred[[(j+u)]]$pred[h]
+# pred <- append(pred, predict(fit[[(j+u)]], n.ahead = h))
+  
+ pred[[(((max_p+1)*j)+u + 1)]] <- predict(fit[[(((max_p+1)*j)+u + 1)]], n.ahead = h)
+  
+ e[i,(((max_p+1)*j)+u + 1)] <- df$value[(i+h)] - pred[[(((max_p+1)*j)+u + 1)]]$pred[h]
 
   }
   
@@ -219,12 +223,19 @@ for (j in (5*u):(5*(u + max_p))) {
   
 }
   
-}
+mse <- matrix(NA, nrow = ((max_p + 1) * (max_q + 1)), ncol = 1)
 
-  fit[2] <- Arima(df$value[1:80], order = c(2,0,3))
 
-  pred[7] <- predict(Arima(df$value[1:i], order = c(5,0,3)), n.ahead = h)
-  
+
+
+mse <- colMeans(e^2, na.rm = T)
+
+mse
+
+optimal_index <- which.min(mse)
+
+fit[[optimal_index]]
+
   
 ```
 
