@@ -69,10 +69,6 @@ faclt <- ggAcf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme
 facpst <- ggPacf(df$value, type = "correlation", lag.max = 100, plot = T) + theme_few()
 facplt <- ggPacf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
 
-fac_e <- ggAcf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
-
-facp_e <- ggPacf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
-
 facst
 faclt
 
@@ -116,6 +112,14 @@ names(aa_criteria) <- c("Model", "AIC", "BIC")
 
 aa_criteria
 
+fac_e <- ggAcf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+facp_e <- ggPacf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+fac_e
+facp_e
+mean(aa_model$residuals)
+
 ```
 
 The results of *auto.arima* imply that the best model is an ARMA(0,3) -- i.e., a MA(3): 
@@ -142,7 +146,7 @@ T <- length(df$value)
 k <- floor((1-frac)*T)
 
 # Estimating MA(3) with k = 80
-fit <- Arima(df$value[1:k], order = c(0,0,3), stepwise = F, max.cores = 24)
+fit <- Arima(df$value[1:k], order = c(0,0,3))
 
 # Generating predictions from the model
 pred <- predict(fit, n.ahead = h)
@@ -234,10 +238,120 @@ mse
 
 optimal_index <- which.min(mse)
 
-fit[[optimal_index]]
+cv_model <- fit[[optimal_index]]
 
   
 ```
+
+Now, let's proceed to *bootstrapping*. It envolves the following steps: \begin{enumerate}
+\item \begin{itemize}
+\item Estimate ARMA(p,q)
+$$ Y_t = c + \sum_{j=1}^p \phi_j Y_{t-j} + \sum_{j=1}^q \theta_j \varepsilon_{t-j} + \varepsilon_t$$
+
+\item Calculate the residuals of the regression:
+$$ \hat{\varepsilon}_t := Y_t - (\hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j})$$
+
+\item If the residuals do not have mean 0, create the centered residuals:
+$$ \tilde{\varepsilon}_t = \hat{\varepsilon}_t - \frac{1}{t} \sum_{t=1}^T \hat{\varepsilon}_t$$
+\end{itemize}
+
+\item \begin{itemize}
+\item Select at random, with restocking, a sample with $T + m$ elements, $m >> 0$:
+$$\{\varepsilon^*_1, ..., \varepsilon^*_{T+m}\}$$
+\item Create a series $\{Y^*_t\}_{t=1}^{T+m}$:
+$$ Y_t^* = Y_t, 1 \leq t \leq max(p,q) $$
+$$ Y_t^* = \hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j}^* + \varepsilon_t^*, max(p,q) < t \leq T + m $$
+\end{itemize}
+\item \begin{itemize}
+\item Using the simulated sample $\{Y^*_t\}_{t=1}^{T+m}$, create a forecast for $h >0$ periods using the estimated coefficients *obtained with the real sample*.
+\item This yields a vector of dimension $h$ containing the forecasts in the form:
+$$(\hat{Y}^*_{T+1}, ..., \hat{Y}^*_{T+h})$$ 
+\item Repeat steps 2 and 3 for $S$ times. Create a matrix with the results.
+
+\item This yields a S x h matrix where each row is equal to the aforementioned vector.
+
+\end{enumerate}
+
+We'll use, again, the optimal model from *auto.arima*, MA(3):
+
+$$ y_t = c +  + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2}+ \theta_3 \varepsilon_{t-3} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+
+``` {r bootstrapping artesanal}
+
+S <- 1000
+
+m <- 100
+
+optimal_p <- aa_model$arma[1]
+
+optimal_q <- aa_model$arma[2]
+
+e_sample <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+m)))
+
+y_star <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+m + max(aa_model$arma[1], aa_model$arma[2]))))
+
+arima_star <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+ m + max(aa_model$arma[1], aa_model$arma[2]))))
+
+for (i in 1:S) {
+  
+  e_sample[i] <- sample(aa_model$residuals, replace = T, size = (length(df$value)+m))
+  
+for (j in ((aa_model$arma[1] + aa_model$arma[2] + 1):(length(df$value)+m))) { 
+  
+  arima_star[i,j] <- (aa_model$coef[4] + (aa_model$coef[1] * e_sample[i,j-1]) + (aa_model$coef[2] * e_sample[i,j-2]) + (aa_model$coef[3] * e_sample[i,j-3]) + e_sample[i,j])
+
+}
+
+}
+
+
+y_fixed <- data.frame(matrix(NA, nrow = S, ncol = (aa_model$arma[1] + aa_model$arma[2])))   
+  
+for (i in 1:S) {
+  y_fixed[i,1] <- data.frame(df$value[1])
+  y_fixed[i,2] <- data.frame(df$value[2])
+  y_fixed[i,3] <- data.frame(df$value[3])
+}
+
+
+y_star <- data.frame(y_fixed, arima_star[,-(1:3)])
+
+y_m <- y_star[,-(1:100)]
+
+y_m <- y_m[,-(101:103)]
+
+fc_list <- vector("list", S)
+
+y_mt <- t(y_m)
+
+for (i in 1:S) {
+  
+  fc_list[[i]] <- forecast(ts(y_matrix[1,]), model = aa_model, h = h)
+
+}
+
+View(fc_list)
+
+fc_mean <- data.frame(matrix(NA, nrow = S, ncol = 1))
+
+for (i in 1:S) {
+  
+  fc_mean[i] <- fc_list[[i]]$mean
+  
+}
+
+View(fc_mean)
+
+    
+```
+
+
+
+
+
+
+
+
 
 
 
