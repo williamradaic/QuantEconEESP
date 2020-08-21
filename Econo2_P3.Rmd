@@ -74,6 +74,10 @@ faclt <- ggAcf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme
 facpst <- ggPacf(df$value, type = "correlation", lag.max = 100, plot = T) + theme_few()
 facplt <- ggPacf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
 
+fac_e <- ggAcf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+facp_e <- ggPacf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
 facst
 faclt
 

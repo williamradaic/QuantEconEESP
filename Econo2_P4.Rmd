@@ -1,0 +1,245 @@
+---
+title: "Econometrics II - Problem 4"
+author: "William Radaic Peron"
+date: \today
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+library(readxl)
+library(fpp)
+```
+
+
+```{r database, include = FALSE}
+
+# Loading the dataframe:
+
+
+df <- read_excel("Base de dados Problema 4.xlsx")
+
+names(df)[1] <- "t"
+names(df)[2] <- "value"
+
+
+# df <- ts(df)
+
+
+
+```
+
+In this problem, we'll be tackling the issue of *forecasting* of an ARMA model. The problem is split in two parts: (i) *cross-validation*; and (ii) *bootstrapping*.
+
+\section{Identification and estimation}
+
+First, let's identify the best model for our time series.
+
+
+``` {r plots}
+
+df <- data.frame(df)
+
+pplot <- ggplot(data = df, aes(x = t, y = value)) + geom_line() + ggtitle("Time series plot") + theme_few()
+pplot 
+
+acf_ts <- Acf(df$value, lag.max = 5000)
+acf_test_values <- acf_ts$acf/sd(acf_ts$acf)
+
+head(data.frame(acf_test_values))
+
+facst <- ggAcf(df$value, type = "correlation", lag.max = 20, plot = T) + theme_few()
+faclt <- ggAcf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+facpst <- ggPacf(df$value, type = "correlation", lag.max = 100, plot = T) + theme_few()
+facplt <- ggPacf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+fac_e <- ggAcf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+facp_e <- ggPacf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+facst
+faclt
+
+facpst
+facplt
+
+```
+
+
+We'll now use the function *auto.arima* from the package *forecast* to identify and estimate the model.
+
+``` {r estimation autoarima}
+
+
+aa_model <- auto.arima(df$value, num.cores = 24, max.d = 0, stepwise = F)
+
+summary(aa_model)
+
+print("t-values: ")
+
+aa_t <- matrix(NA, nrow = aa_model$arma[1] + aa_model$arma[2])
+
+for (i in c(1:4)) { 
+
+aa_t[i] <- aa_model$coef[i]/sqrt(aa_model$var.coef[i,i])
+
+}
+
+aa_t <- data.frame(aa_t)
+
+aa_t
+
+aa_q <- Box.test(aa_model$residuals, lag = aa_model$arma[1] + aa_model$arma[2])
+aa_q
+
+criteria <- matrix(NA, nrow = 1, ncol = 3)
+
+aa_criteria <- data.frame("MA(3)*", aa_model$aic, aa_model$bic)
+
+names(aa_criteria) <- c("Model", "AIC", "BIC")
+
+aa_criteria
+
+```
+
+The results of *auto.arima* imply that the best model is an ARMA(0,3) -- i.e., a MA(3): 
+$$ y_t = c +  + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2}+ \theta_3 \varepsilon_{t-3} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+
+Furthermore, the Q-statistic *(Box.test)* seems to indicate that $\varepsilon_t$ is truly white noise.
+
+\section{Cross-validation}
+
+Let's now cross-validate or model. This will now be done manually; afterwards, an automatized version from *fpp* shall be presented.
+
+Let $h := 5$; $frac = 0.2$. $T$ is the size of our sample; $k$ is the *training* database. The remainder shall be used for testing purposes. 
+
+As we have discovered previously, *auto.arima* yields a **MA(3)** model. It will now be used.
+
+``` {r cross validation manual}
+
+h <- 5
+
+frac <- 0.2
+
+T <- length(df$value)
+
+k <- floor((1-frac)*T)
+
+# Estimating MA(3) with k = 80
+fit <- Arima(df$value[1:k], order = c(0,0,3), stepwise = F, max.cores = 24)
+
+# Generating predictions from the model
+pred <- predict(fit, n.ahead = h)
+
+# Calculating errors between the predicted values of the model and the actual values of the testing database
+
+e <- df$value[(k+h)] - pred$pred[h]
+
+e
+```
+
+Let's now update our training database iteratively with a for loop.
+
+``` {r cross validation manual 2}
+
+e <- matrix(NA, nrow = 100)
+
+# Updating the model
+
+for (i in k:(T-h)) {
+
+  fit <- Arima(df$value[1:i], order = c(0,0,3))
+  
+  pred <- predict(fit, n.ahead = h)
+  
+  e[i,1] <- df$value[(i+h)] - pred$pred[h]
+
+}
+
+
+
+```
+
+With the matrix *e* in hands, we can now calculate MSE:
+
+``` {r mse cross validation}
+
+mse <- mean(e^2, na.rm = T)
+
+
+```
+
+This procedure can now be used to compare other models against the model from *auto.arima*.
+
+``` {r cross validation manual comparison}
+
+max_p <- 5
+
+max_q <- 5
+
+e <- matrix(NA, nrow = 100, ncol = 200)
+
+pred <- vector("list", 50)
+
+fit <- vector("list", 50)
+
+# Updating the model
+for (u in 1:max_q) {
+
+for (j in (5*u):(5*(u + max_p))) { 
+
+
+  for (i in k:(T-h)) {
+  
+  fit[[(j+u)]] <- Arima(df$value[1:i], order = c((j/5),0,u))
+  
+  pred[[(j+u)]] <- predict(fit[[(j+u)]], n.ahead = h)
+  
+  e[i,(j+u)] <- df$value[(i+h)] - pred[[(j+u)]]$pred[h]
+
+  }
+  
+}
+  
+}
+  
+}
+
+  fit[2] <- Arima(df$value[1:80], order = c(2,0,3))
+
+  pred[7] <- predict(Arima(df$value[1:i], order = c(5,0,3)), n.ahead = h)
+  
+  
+```
+
+
+
+
+
+
+``` {r forecast arima}
+
+fc <- forecast(df$value, model = aa_model, h = h)
+
+autoplot(fc) + theme_few()
+
+summary(fc)
+
+
+```
