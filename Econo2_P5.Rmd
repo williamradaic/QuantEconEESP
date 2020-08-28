@@ -1,0 +1,561 @@
+---
+title: "Econometrics II - Problem 4"
+author: "William Radaic Peron, Vinícius Marcial"
+date: \today
+output:
+  pdf_document: 
+    keep_tex: yes
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+library(readxl)
+library(fpp)
+library(sidrar)
+library(mFilter)
+library(detrendr)
+
+```
+
+
+```{r database, include = FALSE}
+
+# Loading the dataframe:
+
+
+pib <- get_sidra(6612, variable = 9318, category = 90707, period = "all")
+
+pib_limpo <- pib[(pib$`Setores e subsetores (Código)` == 90707),]
+
+pib <- pib_limpo
+
+pib_limpo2 <- pib[,c(5,13)]
+
+pib <- pib_limpo2
+
+names(pib)[1] <- "t"
+names(pib)[2] <- "v"
+
+pib$t <- as.numeric(pib$t)
+
+names(pib)
+
+head(pib)
+
+tail(pib)
+
+# df <- ts(df)
+
+
+```
+
+In this problem, we'll be forecasting GDP in the short term and creating some models of GDP growth in the long run. This presents some challenges, namely those related to *ergodicity* and *stationarity*. 
+
+``` {r plots}
+
+pplot <- ggplot(data = pib, aes(x = t, y = v)) + geom_line() + ggtitle("Time series plot") + theme_few()
+pplot 
+
+
+```
+
+
+``` {r plots fac facp}
+
+acf_ts <- Acf(df$value, lag.max = 5000)
+acf_test_values <- acf_ts$acf/sd(acf_ts$acf)
+
+head(data.frame(acf_test_values))
+
+facst <- ggAcf(df$value, type = "correlation", lag.max = 20, plot = T) + theme_few()
+faclt <- ggAcf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+facpst <- ggPacf(df$value, type = "correlation", lag.max = 100, plot = T) + theme_few()
+facplt <- ggPacf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
+
+facst
+faclt
+
+facpst
+facplt
+
+```
+
+As we have downloaded the *pure* quarterly data, it presents *seasonality* and an upwards tendency. This implies that the *time series will not be stationary*. Therefore, we need to employ methods that circumvent this issue and assure us that we can continue modelling the series as an ARMA(p,q).
+
+\section{Decomposing the time series}
+
+We will now assume that we can decompose the time series in three distinct elements in an additive model: 
+$$ X_t = f_t+ s_t + Y_t $$,
+where $f_t$ denotes the tendency of the ts, $s_t$ denotes seasonality, $Y_t$ is stochastic. We also assume that $f_t, s_t$ are *deterministic*.
+
+\subsection{Trend}
+
+First, we'll construct a *parametric* model of the trend. Let's assume that $f_t$ can be modelled by a linear form:
+$$ f_t = \gamma_0 + \gamma *t $$
+
+``` {r parametric linear}
+
+linear_trend <- lm(v ~ t, data = pib )
+
+summary(linear_trend)
+
+ggplot(data = pib, aes(x = t, y = v)) + stat_smooth(method = "lm", se = F) + geom_line() + geom_point() + theme_few() + ggtitle("Linear trend, GDP")
+
+```
+
+Another way to find $f_t$ is via a *non-parametric* process. For this, we'll use an HP filter and a moving average.
+
+``` {r hp filter}
+
+pib_ts <- ts(pib$v)
+
+hp_trend <- hpfilter(pib_ts, freq = 1600, type = "lambda")
+
+plot(hp_trend)
+
+
+```
+
+Now, a moving average.
+
+``` {r moving average}
+
+pib_ma <- ma(pib$v, order = 4)
+
+autoplot(pib_ma, color = "blue") + geom_line(data = pib, aes(x = 1:length(pib$t), y = v), color = "red") + theme_few()
+
+```
+
+\subsection{Seasonality}
+
+We can now create a function for $s_t$. This will be done with dummies:
+$$ D_i = 1, i = t $$
+$$ D_i = 0 \, otherwise$$ 
+
+``` {r dummies season}
+
+tri <- c(NA)
+
+tri1 <- c(1,2,3,4)
+
+i = 1
+
+while (i < 25) { 
+
+  tri <- append(tri, tri1)
+  
+  i = i + 1
+  
+  }
+
+tri <- tri[-1]
+tri <- c(tri, 1)
+
+tri
+
+pib <- data.frame(pib, tri)
+
+names(pib)[1] <- "t"
+names(pib)[2] <- "v"
+names(pib)[3] <- "tri"
+
+dummies <- data.frame(matrix(NA, nrow = length(pib$t), ncol = 4))
+
+for (j in 1:4) {
+  
+  dummies[j] <- as.numeric(pib$tri == j)
+  
+}
+
+pib <- data.frame(pib, dummies)
+
+names(pib) <- c("t", "v", "tri", "X1", "X2", "X3", "X4")
+
+head(pib)
+
+dummy_lm <- lm(v ~ X2 + X3 + X4, data = pib)
+  
+summary(dummy_lm)
+
+```
+
+\subsection{$Y_t$}
+
+``` {r stochastic yt}
+
+
+
+
+
+
+```
+
+
+
+
+First, let's identify the best model for our time series.
+
+
+
+
+
+We'll now use the function *auto.arima* from the package *forecast* to identify and estimate the model.
+
+``` {r estimation autoarima}
+
+
+aa_model <- auto.arima(df$value, num.cores = 24, max.d = 0, stepwise = F)
+
+summary(aa_model)
+
+print("t-values: ")
+
+aa_t <- matrix(NA, nrow = aa_model$arma[1] + aa_model$arma[2])
+
+for (i in c(1:4)) { 
+
+aa_t[i] <- aa_model$coef[i]/sqrt(aa_model$var.coef[i,i])
+
+}
+
+aa_t <- data.frame(aa_t)
+
+aa_t
+
+aa_q <- Box.test(aa_model$residuals, lag = aa_model$arma[1] + aa_model$arma[2])
+aa_q
+
+criteria <- matrix(NA, nrow = 1, ncol = 3)
+
+aa_criteria <- data.frame("MA(3)*", aa_model$aic, aa_model$bic)
+
+names(aa_criteria) <- c("Model", "AIC", "BIC")
+
+aa_criteria
+
+fac_e <- ggAcf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+facp_e <- ggPacf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+fac_e
+facp_e
+mean(aa_model$residuals)
+
+```
+
+The results of *auto.arima* imply that the best model is an ARMA(0,3) -- i.e., a MA(3): 
+$$ y_t = c +  + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2}+ \theta_3 \varepsilon_{t-3} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+
+Furthermore, the Q-statistic *(Box.test)* seems to indicate that $\varepsilon_t$ is truly white noise.
+
+\section{Cross-validation}
+
+Let's now cross-validate or model. This will now be done manually; afterwards, an automatized version from *fpp* shall be presented.
+
+Let $h := 5$; $frac = 0.2$. $T$ is the size of our sample; $k$ is the *training* database. The remainder shall be used for testing purposes. 
+
+As we have discovered previously, *auto.arima* yields a **MA(3)** model. It will now be used.
+
+``` {r cross validation manual}
+
+h <- 5
+
+frac <- 0.2
+
+T <- length(df$value)
+
+k <- floor((1-frac)*T)
+
+# Estimating MA(3) with k = 80
+fit <- Arima(df$value[1:k], order = c(0,0,3))
+
+# Generating predictions from the model
+pred <- predict(fit, n.ahead = h)
+
+# Calculating errors between the predicted values of the model and the actual values of the testing database
+
+e <- df$value[(k+h)] - pred$pred[h]
+
+e
+```
+
+Let's now update our training database iteratively with a for loop.
+
+``` {r cross validation manual 2}
+
+e <- matrix(NA, nrow = 100)
+
+# Updating the model
+
+for (i in k:(T-h)) {
+
+  fit <- Arima(df$value[1:i], order = c(0,0,3))
+  
+  pred <- predict(fit, n.ahead = h)
+  
+  e[i,1] <- df$value[(i+h)] - pred$pred[h]
+
+}
+
+
+
+```
+
+With the matrix *e* in hands, we can now calculate MSE:
+
+``` {r mse cross validation}
+
+mse <- mean(e^2, na.rm = T)
+
+
+```
+
+This procedure can now be used to compare other models against the model from *auto.arima*.
+
+``` {r cross validation manual comparison}
+
+max_p <- 5
+
+max_q <- 5
+
+e <- matrix(NA, nrow = 100, ncol = (max_p + 1) * (max_q + 1))
+
+pred <- vector("list", (max_p + 1) * (max_q + 1))
+
+fit <- vector("list", (max_p + 1) * (max_q + 1))
+
+# Updating the model
+for (u in 0:max_q) {
+
+for (j in 0:max_p) { 
+
+
+  for (i in k:(T-h)) {
+  
+ fit[[(((max_p+1)*j)+u + 1)]] <- Arima(df$value[1:i], order = c(j,0,u))
+  
+#  fit <- append(fit, Arima(df$value[1:i], order = c(j,0,u)))
+  
+# pred <- append(pred, predict(fit[[(j+u)]], n.ahead = h))
+  
+ pred[[(((max_p+1)*j)+u + 1)]] <- predict(fit[[(((max_p+1)*j)+u + 1)]], n.ahead = h)
+  
+ e[i,(((max_p+1)*j)+u + 1)] <- df$value[(i+h)] - pred[[(((max_p+1)*j)+u + 1)]]$pred[h]
+
+  }
+  
+}
+  
+}
+  
+mse <- matrix(NA, nrow = ((max_p + 1) * (max_q + 1)), ncol = 1)
+
+
+
+
+mse <- colMeans(e^2, na.rm = T)
+
+mse
+
+optimal_index <- which.min(mse)
+
+cv_model <- fit[[optimal_index]]
+
+summary(cv_model)
+
+
+
+  
+```
+
+The cross-validation method constructed above yielded an ARMA(1,1):
+$$ y_t = c + \phi_1 y_{t-1} +  + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+``` {r forecast cv plot}
+
+cv_fc <- forecast(cv_model, h = h)
+
+autoplot(cv_fc)
+
+```
+
+\section{Bootstrapping}
+
+
+Now, let's proceed to *bootstrapping*. It envolves the following steps: \begin{enumerate}
+\item \begin{itemize}
+\item Estimate ARMA(p,q)
+$$ Y_t = c + \sum_{j=1}^p \phi_j Y_{t-j} + \sum_{j=1}^q \theta_j \varepsilon_{t-j} + \varepsilon_t$$
+
+\item Calculate the residuals of the regression:
+$$ \hat{\varepsilon}_t := Y_t - (\hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j})$$
+
+\item If the residuals do not have mean 0, create the centered residuals:
+$$ \tilde{\varepsilon}_t = \hat{\varepsilon}_t - \frac{1}{t} \sum_{t=1}^T \hat{\varepsilon}_t$$
+\end{itemize}
+
+\item \begin{itemize}
+\item Select at random, with restocking, a sample with $T + m$ elements, $m >> 0$:
+$$\{\varepsilon^*_1, ..., \varepsilon^*_{T+m}\}$$
+\item Create a series $\{Y^*_t\}_{t=1}^{T+m}$:
+$$ Y_t^* = Y_t, 1 \leq t \leq max(p,q) $$
+$$ Y_t^* = \hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j}^* + \varepsilon_t^*, max(p,q) < t \leq T + m $$
+\end{itemize}
+\item \begin{itemize}
+\item Using the simulated sample $\{Y^*_t\}_{t=1}^{T+m}$, create a forecast for $h >0$ periods using the estimated coefficients *obtained with the real sample*.
+\item This yields a vector of dimension $h$ containing the forecasts in the form:
+$$(\hat{Y}^*_{T+1}, ..., \hat{Y}^*_{T+h})$$ 
+\item Repeat steps 2 and 3 for $S$ times. Create a matrix with the results.
+
+\item This yields a S x h matrix where each row is equal to the aforementioned vector.
+\end{itemize}
+\end{enumerate}
+
+We'll use, again, the optimal model from *auto.arima*, MA(3):
+
+$$ y_t = c +  + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2}+ \theta_3 \varepsilon_{t-3} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)$$
+
+``` {r bootstrapping artesanal}
+
+S <- 1000
+
+m <- 100
+
+
+
+optimal_p <- aa_model$arma[1]
+
+optimal_q <- aa_model$arma[2]
+
+e_sample <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+m)))
+
+y_star <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+m + max(aa_model$arma[1], aa_model$arma[2]))))
+
+arima_star <- data.frame(matrix(NA, nrow = S, ncol = (length(df$value)+ m + max(aa_model$arma[1], aa_model$arma[2]))))
+
+
+for (i in 1:S) {
+  
+  e_sample[i] <- sample(aa_model$residuals, replace = T, size = (length(df$value)+m))
+ 
+} 
+
+for (i in 1:S) {
+  
+for (j in ((aa_model$arma[1] + aa_model$arma[2] + 1):(length(df$value)+m))) { 
+  
+  arima_star[i,j] <- (aa_model$coef[4] + (aa_model$coef[1] * e_sample[i,j-1]) + (aa_model$coef[2] * e_sample[i,j-2]) + (aa_model$coef[3] * e_sample[i,j-3]) + e_sample[i,j])
+
+}
+
+}
+
+
+y_fixed <- data.frame(matrix(NA, nrow = S, ncol = (aa_model$arma[1] + aa_model$arma[2])))   
+  
+for (i in 1:S) {
+  y_fixed[i,1] <- data.frame(df$value[1])
+  y_fixed[i,2] <- data.frame(df$value[2])
+  y_fixed[i,3] <- data.frame(df$value[3])
+}
+
+
+y_star <- data.frame(y_fixed, arima_star[,-(1:3)])
+
+y_m <- y_star[,-(1:100)]
+
+y_m <- y_m[,-(101:103)]
+
+y_mt <- t(y_m)
+
+y_matrix <- as.matrix(y_m)
+
+```
+
+``` {r forecast bootstrapping}
+
+fc_list <- vector("list", S)
+
+for (i in 1:S) {
+  
+  fc_list[[i]] <- forecast(ts(y_matrix[i,]), model = aa_model, h = 5)
+
+}
+
+fc_list[[1]]
+
+fc_mean <- data.frame(matrix(NA, nrow = S, ncol = 5))
+
+for (i in 1:S) {
+  
+  fc_mean[i,] <- fc_list[[i]]$mean
+  
+}
+
+```
+
+``` {r mean ic}
+
+head(fc_mean)
+
+hist_x1 <- ggplot(data = fc_mean, aes(x = X1)) + geom_histogram(bins = 40) + theme_few() 
+hist_x1
+
+qq_x1 <- qqnorm(fc_mean$X1); qqline(fc_mean$X1)
+
+hist_x2 <- ggplot(data = fc_mean, aes(x = X2)) + geom_histogram(bins = 40) + theme_few() 
+hist_x2
+
+qq_x2 <- qqnorm(fc_mean$X2); qqline(fc_mean$X2)
+
+hist_x3 <- ggplot(data = fc_mean, aes(x = X3)) + geom_histogram(bins = 40) + theme_few() 
+hist_x3
+
+qq_x3 <- qqnorm(fc_mean$X3); qqline(fc_mean$X3)
+
+hist_x4 <- ggplot(data = fc_mean, aes(x = X4)) + geom_histogram(bins = 40) + theme_few() 
+hist_x4
+
+qq_x4 <- qqnorm(fc_mean$X4); qqline(fc_mean$X4)
+
+hist_x5 <- ggplot(data = fc_mean, aes(x = X5)) + geom_histogram(bins = 100) + theme_few() 
+hist_x5
+
+qq_x5 <- qqnorm(fc_mean$X5); qqline(fc_mean$X5)
+
+
+```
+
+
+The results show that, from $h \geq 4$, the predicted value is the mean of the series.
+
+Now, some forecasting plots:
+
+``` {r forecast arima plots}
+
+fc <- forecast(df$value, model = aa_model, h = h)
+
+autoplot(fc) + theme_few()
+
+autoplot(fc_list[[1]]) + theme_few()
+
+autoplot(fc_list[[66]]) + theme_few()
+
+autoplot(fc_list[[796]]) + theme_few()
+
+
+```
