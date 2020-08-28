@@ -10,6 +10,9 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+Sys.setenv(RSTUDIO_PANDOC="C:/Users/William/anaconda3/envs/py_r/Library/Scripts/pandoc")
+
 library(ggplot2)
 library(forecast)
 library(AER)
@@ -298,7 +301,10 @@ unemp <- read_excel("C:/Users/William/Downloads/tabela2176.xlsx")
 
 unemp1 <- as.numeric(unemp[11,])
 
-unemp <- unemp1[-1]
+
+unemp2 <- unemp1[2:(length(unemp1)-2)]
+
+unemp <- unemp2
 
 df_unemp <- data.frame(1:length(unemp), unemp)
 
@@ -314,6 +320,43 @@ nairu <- hp_unemp$trend
 
 nairu
 
+t6162 <- get_sidra(6612, variable = 9318, category = 90707, period = c("200202", "200203", "200204", "200301", "200302", "200303", "200304", "200401", "200402", "200403", "200404", "200501", "200502", "200503", "200504", "200601", "200602", "200603", "200604", "200701", "200702", "200703", "200704", "200801", "200802", "200803", "200804", "200901", "200902", "200903", "200904", "201001", "201002", "201003", "201004", "201101", "201102", "201103", "201104", "201201", "201202", "201203", "201204", "201301", "201302", "201303", "201304", "201401", "201402", "201403", "201404", "201501", "201502", "201503", "201504"))
+
+View(t6162)
+
+tax <- t6162[(t6162$`Setores e subsetores (Código)` == 90706),]
+
+tax2 <- tax[,c(5,13)]
+
+names(tax2)[1] <- "t"
+names(tax2)[2] <- "r"
+
+tax <- tax2
+
+trimestra <- c(NA)
+
+i <- 0
+while (i<length(unemp)){
+
+  media <- (unemp[i] + unemp[i+1] + unemp [i+2])/3
+  trimestra <- append(trimestra, media)
+
+  i<- i +3
+}
+
+nairu_3m <- trimestra
+
+df <- data.frame(nairu_3m[-1], tax)
+
+df
+
+names(df) <- c("NAIRU", "t", "tax")
+
+growth_lm <- lm(NAIRU ~ tax, data = df)
+
+summary(growth_lm)
+
+ggplot(data = df, aes(x = tax, y = NAIRU)) + stat_smooth(nethod = "lm", se = F) + theme_few()
 
 ```
 
