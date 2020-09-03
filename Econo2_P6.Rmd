@@ -49,6 +49,12 @@ The random walk, defined above, is an example of the more general class of *unit
 $$ Y_t = c + \delta t + u_t,$$
 $u_t$ has an ARMA(p,q) representation:
 $$ \Phi_p (L) u_t = \Theta_q (L) \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2)$$
+Suppose that one of the roots of $\Theta_p (L)$ is equal to 1:
+$$ \Theta_p (L) = (1 - [1]L)(1 - \lambda_2 L)...(1 - \lambda_p L)$$
+$$ (1 - L)u_t = (1 - \lambda_2 L)^{-1} ... (1 - \lambda_p L)^{-1} \Theta_q (L) \varepsilon_t =: \Psi(L) \varepsilon_t $$
+
+
+
 
 
 ``` {r }
