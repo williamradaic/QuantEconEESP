@@ -38,7 +38,7 @@ install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.co
 
 
 
-\section{Part 2: Hypothesis testing for unit roots}
+\section{Part 2: Unit roots}
 
 As has been discussed during the lecture, when the population model is a *random walk*:
 $$ Y_t = 1*Y_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2), $$
@@ -46,20 +46,68 @@ $$ Y_t = 1*Y_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2
 it happens that the series *is not ergodic* (nor is it stationary). Therefore, the usual asymptotic properties *do not hold*, as all innovations have *permanent effects*. 
 $$ Y_t = c + \delta t + \sum_{i=1}^t \varepsilon_i $$
 
-
 The random walk, defined above, is an example of the more general class of *unit root processes*:
 $$ Y_t = c + \delta t + u_t,$$
+
 $u_t$ has an ARMA(p,q) representation:
+
 $$ \Phi_p (L) u_t = \Theta_q (L) \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2)$$
+
+
+
 Suppose that one of the roots of $\Theta_p (L)$ is equal to 1:
+
 $$ \Theta_p (L) = (1 - [1]L)(1 - \lambda_2 L)...(1 - \lambda_p L)$$
+
 $$ (1 - L)u_t = (1 - \lambda_2 L)^{-1} ... (1 - \lambda_p L)^{-1} \Theta_q (L) \varepsilon_t =: \Psi(L) \varepsilon_t $$
 
+We can now rewrite this as:
+$$ (1- L)Y_t = (1-L)c + (1-L)\delta t + (1-L)u_t $$
+
+$$ (1 - L)Y_t = \delta + \Psi (L) \varepsilon_t $$
+
+Defining $\Delta Y_t$, we have: 
+$$ \Delta Y_t := (1 - L)Y_t = Y_t - Y_{t-1} = \delta + \Psi (L) \varepsilon_t $$
+
+With this concept, we can define ARIMA(p,d,q) processes:
+$$ \Phi_p (L) (1-L)^d Y_t = c + \Theta_q (L) \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2) $$
+
+\subsection{Hypothesis testing}
+
+It turns out that testing for unit root presence presents some challenges. Under the null ($a_1 = 1$), its distribution *is not standard* and does not present the usual asymptotic properties. We can circumvent this issue with the use of numeric methods, such as the *Monte Carlo simulation*. It will now be employed, following Dickey and Fuller (1979).
+
+First, some notation: 
+
+We begin with a simple model:
+$$ Y_t = a_1 y_{t-1} + \varepsilon_t $$
+$$ \Delta Y_t = \gamma y_t-1 + \varepsilon_t, \hspace{1em} \gamma := a_1 - 1 $$ 
+Dickey and Fuller constructed the following regression equations:
+\begin{equation}
+$$ \Delta y_t = \gamma y_{t-1} + \varepsilon_t $$
+\end{equation}
+
+\begin{equation}
+$$ \Delta y_t = a_0 + \gamma y_{t-1} + \varepsilon_t $$
+\end{equation}
+
+\begin{equation}
+$$ \Delta y_t = a_0 + \gamma y_{t-1} + a_2t + \varepsilon_t $$
+\end{equation}
+
+(1) has no intercept and represents a simple random walk. (2) includes an intercept. (3) also adds a deterministic time trend. 
+
+Note that the critical values of the t-statistics are *different* between these regressions. This will now be shown with our Monte Carlo simulation.
 
 
+``` {r monte carlo}
 
+set.seed(76345)
 
-``` {r }
+# length of ts
+T <- 100
+
+# Loops
+S <- 10000
 
 
 
