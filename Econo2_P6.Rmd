@@ -1,0 +1,85 @@
+---
+title: "Econometrics II - Problem 6"
+author: "William Radaic Peron, Vinícius Marcial"
+date: "3 de setembro de 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+Sys.setenv(RSTUDIO_PANDOC="C:/Users/William/anaconda3/envs/py_r/Library/Scripts/pandoc")
+
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+library(readxl)
+library(fpp)
+library(sidrar)
+library(mFilter)
+library(detrendr)
+install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.com/')
+```
+
+\section{Part 1: Spurious regressions}
+
+{{matéria}}
+
+
+
+\section{Part 2: Hypothesis testing for unit roots}
+
+As has been discussed during the lecture, when the population model is a *random walk*:
+$$ Y_t = 1*Y_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2), $$
+it happens that the series *is not ergodic* (nor is it stationary). Therefore, the usual asymptotic properties *do not hold*, as all innovations have *permanent effects*. 
+$$ Y_t = c + \delta t + \sum_{i=1}^t \varepsilon_i $$
+
+The random walk, defined above, is an example of the more general class of *unit root processes*:
+$$ Y_t = c + \delta t + u_t,$$
+$u_t$ has an ARMA(p,q) representation:
+$$ \Phi_p (L) u_t = \Theta_q (L) \varepsilon_t, \hspace{1em} \sim wn(0, \sigma^2)$$
+
+
+``` {r }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+\section{Part 3: Applying the Dickey-Fuller test for GDP}
+
+
+
+
+
+
+
+
+
+
+
+
+
