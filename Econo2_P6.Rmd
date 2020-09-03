@@ -42,13 +42,14 @@ install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.co
 
 As has been discussed during the lecture, when the population model is a *random walk*:
 $$ Y_t = 1*Y_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2), $$
+
 it happens that the series *is not ergodic* (nor is it stationary). Therefore, the usual asymptotic properties *do not hold*, as all innovations have *permanent effects*. 
 $$ Y_t = c + \delta t + \sum_{i=1}^t \varepsilon_i $$
+
 
 The random walk, defined above, is an example of the more general class of *unit root processes*:
 $$ Y_t = c + \delta t + u_t,$$
 $u_t$ has an ARMA(p,q) representation:
-<<<<<<< HEAD
 $$ \Phi_p (L) u_t = \Theta_q (L) \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2)$$
 Suppose that one of the roots of $\Theta_p (L)$ is equal to 1:
 $$ \Theta_p (L) = (1 - [1]L)(1 - \lambda_2 L)...(1 - \lambda_p L)$$
@@ -56,9 +57,6 @@ $$ (1 - L)u_t = (1 - \lambda_2 L)^{-1} ... (1 - \lambda_p L)^{-1} \Theta_q (L) \
 
 
 
-=======
-$$ \Phi_p (L) u_t = \Theta_q (L) \varepsilon_t, \hspace{1em} \sim wn(0, \sigma^2)$$
->>>>>>> 9198ea8be980ce54486dd93be88060539cf3526c
 
 
 ``` {r }
