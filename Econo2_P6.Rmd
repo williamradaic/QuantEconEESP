@@ -1,13 +1,14 @@
 ---
 title: "Econometrics II - Problem 6"
 author: "William Radaic Peron, Vinícius Marcial"
-date: "3 de setembro de 2020"
+date: "September 3, 2020"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(tidy = FALSE)
 
 Sys.setenv(RSTUDIO_PANDOC="C:/Users/William/anaconda3/envs/py_r/Library/Scripts/pandoc")
 
@@ -83,24 +84,26 @@ We begin with a simple model:
 $$ Y_t = a_1 y_{t-1} + \varepsilon_t $$
 $$ \Delta Y_t = \gamma y_t-1 + \varepsilon_t, \hspace{1em} \gamma := a_1 - 1 $$ 
 Dickey and Fuller constructed the following regression equations:
-\begin{equation}
+% \begin{equation}
 $$ \Delta y_t = \gamma y_{t-1} + \varepsilon_t $$
-\end{equation}
+% \end{equation}
 
-\begin{equation}
+% \begin{equation}
 $$ \Delta y_t = a_0 + \gamma y_{t-1} + \varepsilon_t $$
-\end{equation}
+% \end{equation}
 
-\begin{equation}
+% \begin{equation}
 $$ \Delta y_t = a_0 + \gamma y_{t-1} + a_2t + \varepsilon_t $$
-\end{equation}
+% \end{equation}
 
 (1) has no intercept and represents a simple random walk. (2) includes an intercept. (3) also adds a deterministic time trend. 
 
 Note that the critical values of the t-statistics are *different* between these regressions. This will now be shown with our Monte Carlo simulation.
 
+For equation (1):
 
-``` {r monte carlo}
+
+``` {r monte carlo 1, tidy = FALSE}
 
 set.seed(76345)
 
@@ -149,28 +152,107 @@ tau <- vector()
 for (i in 1:S) {
   
   e <- rnorm(T,0,1)
+  y <- cumsum(e)
+  y <- as.ts(y)
   
+  y_diff <- diff(y)
+  
+  reg <- summary(dynlm(y_diff ~ 0 + L(y, 1)))
+  
+  tau[i] <- reg$coefficients[1,3]
   
 }
 
+tau.df <- data.frame(tau)
+
+ggplot(data = tau.df, aes(x = tau)) + geom_density(color = "blue") + stat_function(fun = dnorm, n = 101, args = c(mean = 0, sd = 1)) + theme_few()
 
 
+jarque.bera.test(tau) # We reject H0 at the 1% significance level.
+
+tau.ci <- quantile(tau, c(0.01, 0.05, 0.1))
+
+tau.ci
 
 
+```
+
+For equation (2) -- with an intercept:
+
+```{r monte carlo 2}
+
+# Loop
+
+tau_mu <- vector()
+
+for (i in 1:S) {
+  
+  e <- rnorm(T,0,1)
+  y <- cumsum(e)
+  y <- as.ts(y)
+  
+  y_diff <- diff(y)
+  
+  reg <- summary(dynlm(y_diff ~ 1 + L(y, 1)))
+  
+  tau_mu[i] <- reg$coefficients[2,3]
+  
+}
+
+tau_mu.df <- data.frame(tau_mu)
+
+ggplot(data = tau_mu.df, aes(x = tau_mu)) + geom_density(color = "blue") + stat_function(fun = dnorm, n = 101, args = c(mean = 0, sd = 1)) + theme_few()
 
 
+jarque.bera.test(tau_mu) # We reject H0 at the 1% significance level.
 
+tau_mu.ci <- quantile(tau_mu, c(0.01, 0.05, 0.1))
 
-
+tau_mu.ci
 
 
 
 ```
 
+And finally, for equation (3) -- with an intercept and a deterministic time trend:
 
 \section{Part 3: Applying the Dickey-Fuller test for GDP}
 
+```{r monte carlo 3}
 
+# Loop
+
+tau_t <- vector()
+time <- c(1:T)
+
+for (i in 1:S) {
+  
+  e <- rnorm(T,0,1)
+  y <- cumsum(e)
+  y <- as.ts(y)
+  
+  y_diff <- diff(y)
+  
+  reg <- summary(dynlm(y_diff ~ 1 + L(y, 1) + time[-1])) # removed 1 dimension for no. of obs. 
+  
+  tau_t[i] <- reg$coefficients[2,3]
+  
+}
+
+tau_t.df <- data.frame(tau_t)
+
+ggplot(data = tau_t.df, aes(x = tau_t)) + geom_density(color = "blue") + stat_function(fun = dnorm, n = 101, args = c(mean = 0, sd = 1)) + theme_few()
+
+
+jarque.bera.test(tau_t) # We reject H0 at the 1% significance level.
+
+tau_t.ci <- quantile(tau_t, c(0.01, 0.05, 0.1))
+
+tau_t.ci
+
+
+
+```
 
 
 
