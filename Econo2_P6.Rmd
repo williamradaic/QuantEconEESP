@@ -1,6 +1,6 @@
 ---
 title: "Econometrics II - Problem 6"
-author: "William Radaic Peron, Vinícius Marcial"
+author: "William Radaic Peron"
 date: "September 3, 2020"
 output: pdf_document
 ---
@@ -26,7 +26,7 @@ library(ggthemes)
 library(mdscore)
 library(readxl)
 library(fpp)
-library(sidrar)
+library(sidrar) 
 library(mFilter)
 library(detrendr)
 library(dynlm)
@@ -35,12 +35,6 @@ library(tseries)
 # install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.com/')
 
 ```
-
-\section{Part 1: Spurious regressions}
-
-{{matéria}}
-
-
 
 \section{Part 2: Unit roots}
 
@@ -82,19 +76,19 @@ First, some notation:
 
 We begin with a simple model:
 $$ Y_t = a_1 y_{t-1} + \varepsilon_t $$
-$$ \Delta Y_t = \gamma y_t-1 + \varepsilon_t, \hspace{1em} \gamma := a_1 - 1 $$ 
+$$ \Delta Y_t = \gamma y_{t-1} + \varepsilon_t, \hspace{1em} \gamma := a_1 - 1 $$ 
 Dickey and Fuller constructed the following regression equations:
-% \begin{equation}
-$$ \Delta y_t = \gamma y_{t-1} + \varepsilon_t $$
-% \end{equation}
+\begin{equation}
+ \Delta y_t = \gamma y_{t-1} + \varepsilon_t
+\end{equation}
 
-% \begin{equation}
-$$ \Delta y_t = a_0 + \gamma y_{t-1} + \varepsilon_t $$
-% \end{equation}
+\begin{equation}
+\Delta y_t = a_0 + \gamma y_{t-1} + \varepsilon_t
+\end{equation}
 
-% \begin{equation}
-$$ \Delta y_t = a_0 + \gamma y_{t-1} + a_2t + \varepsilon_t $$
-% \end{equation}
+\begin{equation}
+\Delta y_t = a_0 + \gamma y_{t-1} + a_2t + \varepsilon_t
+\end{equation}
 
 (1) has no intercept and represents a simple random walk. (2) includes an intercept. (3) also adds a deterministic time trend. 
 
@@ -216,8 +210,6 @@ tau_mu.ci
 
 And finally, for equation (3) -- with an intercept and a deterministic time trend:
 
-\section{Part 3: Applying the Dickey-Fuller test for GDP}
-
 ```{r monte carlo 3}
 
 # Loop
@@ -254,13 +246,177 @@ tau_t.ci
 
 ```
 
+Let's now change the distributions of the errors for equation (3):
+
+```{r monte carlo poisson}
+
+# Loop
+
+tau_t_pois <- vector()
+time <- c(1:T)
+
+for (i in 1:S) {
+  
+  e <- rpois(T,1)
+  y <- cumsum(e)
+  y <- as.ts(y)
+  
+  y_diff <- diff(y)
+  
+  reg <- summary(dynlm(y_diff ~ 1 + L(y, 1) + time[-1])) # removed 1 dimension for no. of obs. 
+  
+  tau_t_pois[i] <- reg$coefficients[2,3]
+  
+}
+
+tau_t_pois.df <- data.frame(tau_t_pois)
+
+ggplot(data = tau_t_pois.df, aes(x = tau_t_pois)) + geom_density(color = "blue") + stat_function(fun = dnorm, n = 101, args = c(mean = 0, sd = 1)) + theme_few()
+
+
+jarque.bera.test(tau_t_pois) # We reject H0 at the 1% significance level.
+
+tau_t_pois.ci <- quantile(tau_t_pois, c(0.01, 0.05, 0.1))
+
+tau_t_pois.ci
+
+
+
+```
+
+\section{Part 3: Applying the Dickey-Fuller test for GDP}
+
+Loading the data from the previous problem: 
+
+```{r loading gdp data}
+
+
+pib <- get_sidra(6612, variable = 9318, category = 90707, period = "all")
+
+pib_limpo <- pib[(pib$`Setores e subsetores (Código)` == 90707),]
+
+pib <- pib_limpo
+
+pib_limpo2 <- pib[,c(5,13)]
+
+pib <- pib_limpo2
+
+names(pib)[1] <- "t"
+names(pib)[2] <- "v"
+
+pib$t <- as.numeric(pib$t)
+
+names(pib)
+
+head(pib)
+
+tail(pib)
+
+pib <- ts(pib$v)
+
+```
+
+
+```{r auto arima GDP}
+
+
+# Choosing the correct model with auto.arima
+
+aa_pib <- auto.arima(pib, stepwise = F)
+
+summary(aa_pib) 
+
+
+```
+
+*auto.arima* yields an ARIMA(2,1,2) model with a drift parameter:
+$$ \Delta y_t = a_0 + a_1 \Delta y_{t-1} + a_2 \Delta y_{t-2} + a_3 \varepsilon_{t-1} + a_4 \varepsilon_{t-2} +\varepsilon_t $$
+
+Let's decompose this process. First, we'll perform the Dickey-Fuller test on the GDP ts.
+
+```{r df gdp test}
+
+adf.test(pib)
+
+```
+
+As we have not been able to reject $H_0$, it follows that the ts includes (at least one) unit root. Now, let's find the optimal model for the regression.
+
+```{r optimal model manual}
+
+max_p <- 5
+
+max_q <- 5
+
+max_d <- 2
+
+models1 <- vector("list", (max_p + 1) * (max_q + 1))
+
+models2 <- vector("list", (max_p + 1) * (max_q + 1))
+
+# Updating the model
+
+fit1 <- vector("list", (max_p + 1) * (max_q + 1))
+
+fit2 <- vector("list", (max_p + 1) * (max_q + 1))
+
+model_info1 <- data.frame(matrix(NA, nrow = ((max_p + 1) * (max_q + 1)), ncol = 3))
 
 
 
 
+# Updating the model
+
+for (u in 0:max_q) {
+
+for (j in 0:max_p) { 
+
+  
+ fit1[[(((max_p+1)*j)+u + 1)]] <- Arima(pib, order = c(j,1,u))
+ 
+ model_info1[(((max_p+1)*j)+u + 1), 1:2] <- c(fit1[[(((max_p+1)*j)+u + 1)]]$aic, fit1[[(((max_p+1)*j)+u + 1)]]$bic)
+   
+   
+
+ 
+}
+}
+
+names(model_info1) <- c("AIC", "BIC", "void")
 
 
 
+which.min(model_info1$AIC)
+which.min(model_info1$BIC)
+
+fit1[[which.min(model_info1$AIC)]]
+
+fit1[[which.min(model_info1$BIC)]]
+
+# For I(2)
+
+model_info2 <- data.frame(matrix(NA, nrow = max_d*((max_p + 1) * (max_q + 1)), ncol = 3))
+
+for (u in 0:max_q) {
+
+for (j in 0:max_p) { 
+
+  
+ fit2[[(((max_p+1)*j)+u + 1)]] <- Arima(pib, order = c(j,2,u))
+ 
+ model_info2[(((max_p+1)*j)+u + 1), 1:2] <- c(fit2[[(((max_p+1)*j)+u + 1)]]$aic, fit2[[(((max_p+1)*j)+u + 1)]]$bic)
+  
+}
+}
+
+names(model_info2) <- c("AIC", "BIC", "void")
+
+which.min(model_info2$AIC)
+which.min(model_info2$BIC)
+
+fit2[[which.min(model_info2$AIC)]]
+
+fit2[[which.min(model_info2$BIC)]]
 
 
-
+```
