@@ -20,7 +20,6 @@ library(dplyr)
 library(corrplot)
 library(ggthemes)
 library(gridExtra)
-library(gtsummary)
 library(readxl)
 library(ggthemes)
 library(mdscore)
@@ -29,7 +28,11 @@ library(fpp)
 library(sidrar)
 library(mFilter)
 library(detrendr)
-install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.com/')
+library(dynlm)
+library(ggfortify)
+library(tseries)
+# install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.com/')
+
 ```
 
 \section{Part 1: Spurious regressions}
@@ -52,8 +55,6 @@ $$ Y_t = c + \delta t + u_t,$$
 $u_t$ has an ARMA(p,q) representation:
 
 $$ \Phi_p (L) u_t = \Theta_q (L) \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2)$$
-
-
 
 Suppose that one of the roots of $\Theta_p (L)$ is equal to 1:
 
@@ -109,6 +110,48 @@ T <- 100
 # Loops
 S <- 10000
 
+e <- rnorm(T, 0, 1)
+
+# As y_{t+1} = y_t + \varepsilon_t, we can write this as an MA(\infty) model. y_t = \sum \varepsilon_i. This is now done with the cumsum function.
+
+y <- cumsum(e)
+
+y <- vector()
+
+y[1] = e[1]
+
+for (i in (2:T)) {
+
+    y[i] <- y[(i-1)] + e[i]
+
+}
+
+y <- as.ts(y)
+
+autoplot(y) + theme_bw()
+
+# Taking the first difference
+
+y_diff <- diff(y)
+
+# Regression of I(1) model
+
+reg <- dynlm(y_diff ~ 0 + L(y,1)) # no lag (x1 = 0)
+
+reg <-summary(reg)
+
+reg$coefficients[1,3] # t value
+
+# Loop
+
+tau <- vector()
+
+for (i in 1:S) {
+  
+  e <- rnorm(T,0,1)
+  
+  
+}
 
 
 
