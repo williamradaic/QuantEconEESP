@@ -4,6 +4,8 @@ library(forecast)
 library(dynlm)
 library(ggthemes)
 library(strucchange)
+library(lmtest)
+library(car)
 
 df <- read_excel("pibeua_real.xlsx")
 
@@ -24,6 +26,10 @@ m1 <- lm(series ~ df$d[13:236])
 summary(m1)
 
 m2 <- dynlm(series ~ df$d[13:236] + L(series, 1) + L(series, 1)*df$d[13:236])
+
+df$d[13:236]
+
+dummy
 
 summary(m2)
 
@@ -118,6 +124,56 @@ ggplot(df.cusums, aes(x = (1:length(cusums)), y = cusums)) + geom_line() + theme
 
 
 # 3. Recursive F-tests.
+
+models_unr = list(NA)
+
+models_r = list(NA)
+
+dummy <- df$d[13:236]
+
+f_values = matrix(NA, nrow = length(t0:tf), ncol = 1)
+
+hyp = c(0,-1,1,0)
+
+rhs = 0
+
+length((t0:tf))
+
+dummies = data.frame(matrix(NA, ncol = 224, nrow = 224))
+
+for (i in (13:236)) {
+  dummies[i] = as.numeric(df$observ[13:236] >= i)
+}
+
+dummies
+
+num.series = as.numeric(series)
+
+for (i in (1:136)) {
+  
+  models_unr[[i]] <- dynlm(num.series ~ dummies[(i+t0)] + lag(num.series) + lag(num.series)*dummies[(i+t0)])
+  
+ # f_values[i,] = linearHypothesis(models_unr[[i]], hyp, rhs)$F
+  
+}
+
+models_unr
+
+f_values
+
+coeftest()
+
+modelttt = dynlm(series ~ dummies[1:tf,100] + lag(series[(1:tf)]) + lag(series[(1:tf)])*dummies[1:tf,100])
+
+
+
+ffffff = linearHypothesis(m2, hyp, rhs)
+
+ffffff$F
+
+m2
+
+dummies = data.frame(matrix(NA, ncol = 135, nrow = 290))
 
 
 
