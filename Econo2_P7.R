@@ -20,30 +20,65 @@ df$d <- as.numeric(df$observ > 152)
 
 m1 <- lm(series ~ df$d[13:236])
 
+summary(m1)
+
 m2 <- dynlm(series ~ df$d[13:236] + L(series, 1) + L(series, 1)*df$d[13:236])
 
-summary(lm(serie ~ after_break[2:234]))
-summary(dynlm(serie ~ after_break[2:234] + lag(serie) + after_break[2:234]*lag(serie)))
+summary(m2)
 
-arima_total <- arima(serie, order = c(1,0,0))
-arima_antes <- arima(serie[1:172], order = c(1,0,0))
-arima_depois <- arima(serie[173:233], order = c(1,0,0))
+# ARIMA model
 
-SSR_total <- sum((arima_total$residuals)^2)
-SSR_antes <- sum((arima_antes$residuals)^2)
-SSR_depois <- sum((arima_depois$residuals)^2)
+arima_unr <- arima(series, order = c(1,0,0))
 
-chow <- function(SSR, SSR1, SSR2, Size, n){
-  ((SSR - SSR1 - SSR2)/n)/((SSR1 + SSR2)/(Size - 2*n))
+arima_r1 <- arima(series[1:152], order = c(1,0,0))
+
+arima_r2 <- arima(series[153:length(series)], order = c(1,0,0))
+
+ssr_unr <- sum(arima_unr$residuals^2)
+
+ssr_r1 <- sum(arima_r1$residuals^2)
+
+ssr_r2 <- sum(arima_r2$residuals^2)
+
+# We will now define the Chow test for the null H0: \beta_m1 - \beta_m2 = 0 (no structural break)
+
+chow <- function(SSR_unr, SSR_r1, SSR_r2, t, n) {
+  
+  ((SSR_unr - SSR_r1 - SSR_r2)/n)/((SSR_r1 + SSR_r2)/(t-2*n))
+  
 }
 
-Size <- length(serie)
-p <- 1
-q <- 0
-n <- p + q + 1
 
-chow(SSR_total, SSR_antes, SSR_depois, Size = Size, n = n)
-#Estatística F com (n, T - 2n) graus de liberdade
+chow(ssr_unr, ssr_r1, ssr_r2, length(series), n = length(arima_unr$coef)) # T statistic (n, T - 2n).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 datas <- dados[133:172,1]
 chows <- numeric(length = 40)
