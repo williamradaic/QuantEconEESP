@@ -6,8 +6,9 @@ library(ggthemes)
 library(strucchange)
 library(lmtest)
 library(car)
+library(dplyr)
 
-df <- read_excel("pibeua_real.xlsx")
+df <- read_excel("C:/Users/vinic/OneDrive/Documents/QuantEconEESP/pibeua_real.xlsx")
 
 series <- ts(df$`Cresimento percentual`[13:236], start = c(1950,1), end = c(2005,4), frequency = 4) # 1950-2005
 
@@ -123,15 +124,18 @@ df.cusums
 ggplot(df.cusums, aes(x = (1:length(cusums)), y = cusums)) + geom_line() + theme_few()
 
 
-# 3. Recursive F-tests.
+# 3. Recursive F-tests. (Vinicius Marcial protesta formalmente contra o uso da palavra recursivo quando isso é claramente iterativo)
 
 models_unr = list(NA)
 
 models_r = list(NA)
 
-dummy <- df$d[13:236]
 
-f_values = matrix(NA, nrow = length(t0:tf), ncol = 1)
+#dummy <- df$d[13:236]
+
+num_series = as.numeric(series)
+
+f_values = matrix(NA, nrow = length(num_series), ncol = 2)
 
 hyp = c(0,-1,1,0)
 
@@ -147,13 +151,25 @@ for (i in (13:236)) {
 
 dummies
 
-num.series = as.numeric(series)
 
-for (i in (1:136)) {
+
+for (i in (1:(tf-t0))) {
   
-  models_unr[[i]] <- dynlm(num.series ~ dummies[(i+t0)] + lag(num.series) + lag(num.series)*dummies[(i+t0)])
-  
- # f_values[i,] = linearHypothesis(models_unr[[i]], hyp, rhs)$F
+  adummy <- rep(0, 1)
+  j <- 0
+  k <- t0 + i
+  while (j <= length(num_series)){
+    if (j > k){#não sei se isso deveria ser maior ou igual ou só maior
+      adummy[j] <- 1
+    }
+    else{
+      adummy[j] <- 0
+    }
+    j <- j+1
+  }
+  models_unr[[i]] <- dynlm(num_series ~ adummy + lag(num_series) + lag(num_series)*adummy)
+  f_values[i,1] = linearHypothesis(models_unr[[i]], hyp, rhs)$F[1]
+  f_values[i,2] = linearHypothesis(models_unr[[i]], hyp, rhs)$F[2] #eu acho que funcionou?????
   
 }
 
