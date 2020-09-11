@@ -6,8 +6,9 @@ library(ggthemes)
 library(strucchange)
 library(lmtest)
 library(car)
+library(dplyr)
 
-df <- read_excel("pibeua_real.xlsx")
+df <- read_excel("G:/My Drive/FGV EESP/4o SEMESTRE/Econometria II/QuantEconEESP/QuantEconEESP/pibeua_real.xlsx")
 
 series <- ts(df$`Cresimento percentual`[13:236], start = c(1950,1), end = c(2005,4), frequency = 4) # 1950-2005
 
@@ -26,10 +27,6 @@ m1 <- lm(series ~ df$d[13:236])
 summary(m1)
 
 m2 <- dynlm(series ~ df$d[13:236] + L(series, 1) + L(series, 1)*df$d[13:236])
-
-df$d[13:236]
-
-dummy
 
 summary(m2)
 
@@ -109,7 +106,7 @@ e = na.omit(e)
 
 for (i in 1:(length(e))) {
   
-cusums[i,] = sum(e[1:i])/sd(e)  
+  cusums[i,] = sum(e[1:i])/sd(e)  
   
 }
 
@@ -123,17 +120,20 @@ df.cusums
 ggplot(df.cusums, aes(x = (1:length(cusums)), y = cusums)) + geom_line() + theme_few()
 
 
-# 3. Recursive F-tests.
+# 3. Iterative F-tests. 
 
 models_unr = list(NA)
 
 models_r = list(NA)
 
-dummy <- df$d[13:236]
 
-f_values = matrix(NA, nrow = length(t0:tf), ncol = 1)
+#dummy <- df$d[13:236]
 
-hyp = c(0,-1,1,0)
+num_series = as.numeric(series)
+
+f_values = matrix(NA, nrow = length(num_series), ncol = 2)
+
+hyp = c(0,-1,0,1)
 
 rhs = 0
 
@@ -147,13 +147,25 @@ for (i in (13:236)) {
 
 dummies
 
-num.series = as.numeric(series)
 
-for (i in (1:136)) {
+
+for (i in (1:(tf-t0))) {
   
-  models_unr[[i]] <- dynlm(num.series ~ dummies[(i+t0)] + lag(num.series) + lag(num.series)*dummies[(i+t0)])
-  
- # f_values[i,] = linearHypothesis(models_unr[[i]], hyp, rhs)$F
+  adummy <- rep(0, 1)
+  j <- 0
+  k <- t0 + i
+  while (j <= length(num_series)){
+    if (j > k){#não sei se isso deveria ser maior ou igual ou só maior
+      adummy[j] <- 1
+    }
+    else{
+      adummy[j] <- 0
+    }
+    j <- j+1
+  }
+  models_unr[[i]] <- dynlm(num_series ~ adummy + lag(num_series) + lag(num_series)*adummy)
+  f_values[i,1] = linearHypothesis(models_unr[[i]], hyp, rhs)$F[1]
+  f_values[i,2] = linearHypothesis(models_unr[[i]], hyp, rhs)$F[2] #eu acho que funcionou?????
   
 }
 
@@ -161,35 +173,19 @@ models_unr
 
 f_values
 
-coeftest()
+df.f_values <- data.frame(f_values)
 
-modelttt = dynlm(series ~ dummies[1:tf,100] + lag(series[(1:tf)]) + lag(series[(1:tf)])*dummies[1:tf,100])
+df.f_values <- df.f_values$X2
 
+df.f_values <- na.omit(df.f_values)
 
+df.f_values <- data.frame(df.f_values, ((t0+1):tf))
 
-ffffff = linearHypothesis(m2, hyp, rhs)
+names(df.f_values) <- c("fvalue", "t")
 
-ffffff$F
-
-m2
-
-dummies = data.frame(matrix(NA, ncol = 135, nrow = 290))
+ggplot(df.f_values, aes(x = t, y = fvalue)) + geom_line() + theme_few()
 
 
+linearHypothesis(models_unr[[10]], hyp, rhs)
 
-datas <- dados[133:172,1]
-chows <- numeric(length = 40)
-testes <- cbind.data.frame(datas, chows)
 
-for(i in 1:39){
-  
-  arima_total <- arima(serie, order = c(1,0,0))
-  arima_antes <- arima(serie[1:132+i], order = c(1,0,0))
-  arima_depois <- arima(serie[132+i+1:233], order = c(1,0,0))
-  
-  SSR_total <- sum((arima_total$residuals)^2)
-  SSR_antes <- sum((arima_antes$residuals)^2)
-  SSR_depois <- sum((arima_depois$residuals)^2)
-  
-  chows[i] <- chow(SSR_total, SSR_antes, SSR_depois, Size = Size, n = n)
-}
