@@ -3,6 +3,7 @@ library(ggplot2)
 library(forecast)
 library(dynlm)
 library(ggthemes)
+library(strucchange)
 
 df <- read_excel("pibeua_real.xlsx")
 
@@ -49,34 +50,74 @@ chow <- function(SSR_unr, SSR_r1, SSR_r2, t, n) {
 }
 
 
-chow(ssr_unr, ssr_r1, ssr_r2, length(series), n = length(arima_unr$coef)) # T statistic (n, T - 2n).
+chow(SSR_unr = ssr_unr, SSR_r1 = ssr_r1, SSR_r2 = ssr_r2, t = length(series), n = length(arima_unr$coef)) # T statistic (n, T - 2n).
+
+# Now, suppose that we do not know when the break happened.
+
+t0 = 45
+tf = 180 # Boundaries for the process.
+
+models = list(NA)
+
+coefs = matrix(NA, nrow = length(t0:tf), ncol = 2)
+
+forecasts = list(NA)
+
+ci = data.frame(matrix(NA, nrow = length(t0:tf), ncol = 5))
+
+e = matrix(NA, nrow = length(t0:tf), ncol = 1)
 
 
+# 1. Plotting coefficients. 
+
+for (i in (1:(tf-t0))) {
+  
+  models[[i]] = arima(series[1:(i+t0)], order = c(1,0,0))
+  
+  coefs[i,] = models[[i]]$coef
+  
+  forecasts[[i]] = forecast(series[1:(i+t0)], model = models[[i]], h = 1)
+  
+  e[i,] = forecasts[[i]]$mean - series[(i+t0+1)]
+  
+}
+
+coefs = data.frame(coefs)
+
+coefs = data.frame(coefs, (1:length(coefs$X1)))
+
+df.coefs = na.omit(data.frame(coefs))
+
+names(df.coefs) = c("ar1", "intercept", "index")
+
+ggplot(df.coefs, aes(x = index, y = ar1)) + geom_line() + theme_few()
+
+ggplot(df.coefs, aes(x = index, y = intercept)) + geom_line() + theme_few()
 
 
+# 2. Cusum test.
+
+cusums = matrix(NA, nrow = length(e), ncol = 1)
+
+e = na.omit(e)
+
+for (i in 1:(length(e))) {
+  
+cusums[i,] = sum(e[1:i])/sd(e)  
+  
+}
 
 
+cusums = na.omit(cusums)
+
+df.cusums = data.frame(cusums)
+
+df.cusums
+
+ggplot(df.cusums, aes(x = (1:length(cusums)), y = cusums)) + geom_line() + theme_few()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# 3. Recursive F-tests.
 
 
 
