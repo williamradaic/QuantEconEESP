@@ -1,0 +1,1226 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Econometrics II - Problem 4},
+            pdfauthor={William Radaic Peron, Vinícius Marcial},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{Econometrics II - Problem 4}
+\author{William Radaic Peron, Vinícius Marcial}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+In this problem, we'll be forecasting GDP in the short term and creating
+some models of GDP growth in the long run. This presents some
+challenges, namely those related to \emph{ergodicity} and
+\emph{stationarity}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pplot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ pib, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t, }\DataTypeTok{y =}\NormalTok{ v)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Time series plot"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\NormalTok{pplot }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/plots-1.pdf}
+
+As we have downloaded the \emph{pure} quarterly data, it presents
+\emph{seasonality} and an upwards tendency. This implies that the
+\emph{time series will not be stationary}. Therefore, we need to employ
+methods that circumvent this issue and assure us that we can continue
+modelling the series as an ARMA(p,q).
+
+\section{Decomposing the time series}
+
+We will now assume that we can decompose the time series in three
+distinct elements in an additive model: \[ X_t = f_t+ s_t + Y_t \],
+where \(f_t\) denotes the tendency of the ts, \(s_t\) denotes
+seasonality, \(Y_t\) is stochastic. We also assume that \(f_t, s_t\) are
+\emph{deterministic}.
+
+\subsection{Trend}
+
+First, we'll construct a \emph{parametric} model of the trend. Let's
+assume that \(f_t\) can be modelled by a linear form:
+\[ f_t = \gamma_0 + \gamma *t \]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{linear_trend <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(v }\OperatorTok{~}\StringTok{ }\NormalTok{t, }\DataTypeTok{data =}\NormalTok{ pib )}
+
+\KeywordTok{summary}\NormalTok{(linear_trend)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = v ~ t, data = pib)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -34187 -11102  -1888  11332  32261 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -1.225e+07  4.376e+05  -28.00   <2e-16 ***
+## t            6.226e+01  2.179e+00   28.57   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 15030 on 95 degrees of freedom
+## Multiple R-squared:  0.8957, Adjusted R-squared:  0.8946 
+## F-statistic: 816.2 on 1 and 95 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ pib, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t, }\DataTypeTok{y =}\NormalTok{ v)) }\OperatorTok{+}\StringTok{ }\KeywordTok{stat_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{"lm"}\NormalTok{, }\DataTypeTok{se =}\NormalTok{ F) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Linear trend, GDP"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula 'y ~ x'
+\end{verbatim}
+
+\includegraphics{Econo2_P5_files/figure-latex/parametric linear-1.pdf}
+
+Another way to find \(f_t\) is via a \emph{non-parametric} process. For
+this, we'll use an HP filter and a moving average.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pib_ts <-}\StringTok{ }\KeywordTok{ts}\NormalTok{(pib}\OperatorTok{$}\NormalTok{v)}
+
+\NormalTok{hp_trend <-}\StringTok{ }\KeywordTok{hpfilter}\NormalTok{(pib_ts, }\DataTypeTok{freq =} \DecValTok{1600}\NormalTok{, }\DataTypeTok{type =} \StringTok{"lambda"}\NormalTok{)}
+
+\KeywordTok{plot}\NormalTok{(hp_trend)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/hp filter-1.pdf}
+
+Now, a moving average.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pib_ma <-}\StringTok{ }\KeywordTok{ma}\NormalTok{(pib}\OperatorTok{$}\NormalTok{v, }\DataTypeTok{order =} \DecValTok{4}\NormalTok{)}
+
+\KeywordTok{autoplot}\NormalTok{(pib_ma, }\DataTypeTok{color =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ pib, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(pib}\OperatorTok{$}\NormalTok{t), }\DataTypeTok{y =}\NormalTok{ v), }\DataTypeTok{color =} \StringTok{"red"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Use of `pib$t` is discouraged. Use `t` instead.
+\end{verbatim}
+
+\includegraphics{Econo2_P5_files/figure-latex/moving average-1.pdf}
+
+\subsection{Seasonality}
+
+We can now create a function for \(s_t\). This will be done with
+dummies: \[ D_i = 1, i = t \] \[ D_i = 0 \, otherwise\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tri <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+
+\NormalTok{tri1 <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{)}
+
+\NormalTok{i =}\StringTok{ }\DecValTok{1}
+
+\ControlFlowTok{while}\NormalTok{ (i }\OperatorTok{<}\StringTok{ }\DecValTok{25}\NormalTok{) \{ }
+
+\NormalTok{  tri <-}\StringTok{ }\KeywordTok{append}\NormalTok{(tri, tri1)}
+  
+\NormalTok{  i =}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+  
+\NormalTok{  \}}
+
+\NormalTok{tri <-}\StringTok{ }\NormalTok{tri[}\OperatorTok{-}\DecValTok{1}\NormalTok{]}
+\NormalTok{tri <-}\StringTok{ }\KeywordTok{c}\NormalTok{(tri, }\DecValTok{1}\NormalTok{)}
+
+\NormalTok{tri}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2
+## [39] 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4
+## [77] 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pib <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(pib, tri)}
+
+\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{1}\NormalTok{] <-}\StringTok{ "t"}
+\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{2}\NormalTok{] <-}\StringTok{ "v"}
+\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{3}\NormalTok{] <-}\StringTok{ "tri"}
+
+\NormalTok{dummies <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \KeywordTok{length}\NormalTok{(pib}\OperatorTok{$}\NormalTok{t), }\DataTypeTok{ncol =} \DecValTok{4}\NormalTok{))}
+
+\ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{) \{}
+  
+\NormalTok{  dummies[j] <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(pib}\OperatorTok{$}\NormalTok{tri }\OperatorTok{==}\StringTok{ }\NormalTok{j)}
+  
+\NormalTok{\}}
+
+\NormalTok{hp_fitted <-}\StringTok{ }\NormalTok{hp_trend[}\DecValTok{2}\NormalTok{] }
+
+\NormalTok{hp_fitted <-}\StringTok{ }\NormalTok{hp_fitted}\OperatorTok{$}\NormalTok{trend}
+
+\NormalTok{detrend <-}\StringTok{ }\NormalTok{pib}\OperatorTok{$}\NormalTok{v }\OperatorTok{-}\StringTok{ }\NormalTok{hp_fitted}
+
+\NormalTok{pib <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(pib, dummies, detrend)}
+
+\KeywordTok{names}\NormalTok{(pib) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"v"}\NormalTok{, }\StringTok{"tri"}\NormalTok{, }\StringTok{"X1"}\NormalTok{, }\StringTok{"X2"}\NormalTok{, }\StringTok{"X3"}\NormalTok{, }\StringTok{"X4"}\NormalTok{, }\StringTok{"detrend"}\NormalTok{)}
+
+\KeywordTok{head}\NormalTok{(pib)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          t        v tri X1 X2 X3 X4   detrend
+## 18  199601 170920.0   1  1  0  0  0 -7639.547
+## 40  199602 176708.8   2  0  1  0  0 -2784.500
+## 62  199603 189844.3   3  0  0  1  0  9422.081
+## 84  199604 184112.9   4  0  0  0  1  2773.122
+## 106 199701 176732.2   1  1  0  0  0 -5513.291
+## 128 199702 185109.5   2  0  1  0  0  1969.025
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dummy_lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(detrend }\OperatorTok{~}\StringTok{ }\NormalTok{X2 }\OperatorTok{+}\StringTok{ }\NormalTok{X3 }\OperatorTok{+}\StringTok{ }\NormalTok{X4, }\DataTypeTok{data =}\NormalTok{ pib)}
+  
+\KeywordTok{summary}\NormalTok{(dummy_lm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = detrend ~ X2 + X3 + X4, data = pib)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -13331.9  -2630.5    527.3   2556.1  10393.6 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  -6237.1      901.3  -6.920 5.68e-10 ***
+## X2            5975.6     1287.9   4.640 1.14e-05 ***
+## X3           11595.9     1287.9   9.004 2.62e-14 ***
+## X4            7636.9     1287.9   5.930 5.12e-08 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4507 on 93 degrees of freedom
+## Multiple R-squared:  0.4752, Adjusted R-squared:  0.4583 
+## F-statistic: 28.07 on 3 and 93 DF,  p-value: 5.155e-13
+\end{verbatim}
+
+\subsection{$Y_t$}
+
+We'll now use the HP-fitered version of \(f_t\) and the dummy approach
+to \(s_t\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yt <-}\StringTok{ }\KeywordTok{as.vector}\NormalTok{(pib}\OperatorTok{$}\NormalTok{v) }\OperatorTok{-}\StringTok{ }\NormalTok{(hp_fitted }\OperatorTok{+}\StringTok{ }\NormalTok{dummy_lm}\OperatorTok{$}\NormalTok{fitted.values)}
+
+\KeywordTok{mean}\NormalTok{(yt)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3.300398e-12
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{autoplot}\NormalTok{(yt) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/stochastic yt-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{97}\NormalTok{, yt)}
+
+\KeywordTok{names}\NormalTok{(y) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"yt"}\NormalTok{)}
+
+\NormalTok{y}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     t           yt
+## 1   1  -1402.41369
+## 2   2  -2523.01651
+## 3   3   4063.33233
+## 4   4   1373.37256
+## 5   5    723.84187
+## 6   6   2230.50849
+## 7   7   3863.92989
+## 8   8   4706.55898
+## 9   9   -997.54878
+## 10 10   1561.05940
+## 11 11   1109.30140
+## 12 12  -1474.84104
+## 13 13  -3094.32198
+## 14 14  -2711.06480
+## 15 15  -3682.09728
+## 16 16  -1089.22329
+## 17 17   1013.09213
+## 18 18    803.79363
+## 19 19   1058.19431
+## 20 20   3566.65440
+## 21 21   3218.89028
+## 22 22    867.89808
+## 23 23  -2630.46624
+## 24 24  -2296.64964
+## 25 25   -845.87753
+## 26 26    232.06901
+## 27 27    369.65920
+## 28 28   2345.81672
+## 29 29  -1618.01826
+## 30 30  -4443.53279
+## 31 31  -4881.28103
+## 32 32  -3306.87043
+## 33 33  -1065.87009
+## 34 34    953.31655
+## 35 35   1160.97388
+## 36 36   1647.85000
+## 37 37   -842.42514
+## 38 38   1941.99747
+## 39 39  -3111.77504
+## 40 40  -2844.19975
+## 41 41  -1151.13141
+## 42 42  -2698.84818
+## 43 43  -2825.03717
+## 44 44  -2142.66917
+## 45 45     90.10818
+## 46 46   1867.51533
+## 47 47    527.30802
+## 48 48   2927.33435
+## 49 49   3770.18034
+## 50 50   6606.99132
+## 51 51   7355.57794
+## 52 52  -5425.05905
+## 53 53 -13331.94859
+## 54 54 -10170.65008
+## 55 55  -6764.16878
+## 56 56  -2532.14379
+## 57 57  -1481.53913
+## 58 58   1105.53274
+## 59 59   1349.60693
+## 60 60   2722.57709
+## 61 61   2556.14091
+## 62 62   4745.84336
+## 63 63   2502.03347
+## 64 64   1608.28362
+## 65 65   -547.79006
+## 66 66    336.83230
+## 67 67   3302.21456
+## 68 68   3038.23959
+## 69 69   2113.60387
+## 70 70   7857.97391
+## 71 71   8151.97684
+## 72 72   7916.47809
+## 73 73  10393.61558
+## 74 74   5328.42838
+## 75 75   5716.81118
+## 76 76   7492.11790
+## 77 77   6359.42698
+## 78 78  -1634.22681
+## 79 79  -5766.42171
+## 80 80  -7518.98503
+## 81 81  -6862.95259
+## 82 82  -8927.03190
+## 83 83 -10781.49950
+## 84 84 -11823.38303
+## 85 85  -3771.12417
+## 86 86  -4660.66608
+## 87 87  -4555.56332
+## 88 88  -3823.95804
+## 89 89   1304.36238
+## 90 90   -930.39059
+## 91 91    456.52095
+## 92 92     34.62592
+## 93 93   3158.11540
+## 94 94   2259.66776
+## 95 95   4010.86917
+## 96 96   4898.07304
+## 97 97   2311.58347
+\end{verbatim}
+
+\section{Identifying and estimating ARMA(p,q) for $Y_t$}
+
+We are now in a position to identify and estimate the best model for our
+time series \(Y_t\).
+
+Applying the function \emph{auto.arima} from the package \emph{forecast}
+to identify and estimate the model:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aa_model <-}\StringTok{ }\KeywordTok{auto.arima}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{num.cores =} \DecValTok{24}\NormalTok{, }\DataTypeTok{max.d =} \DecValTok{0}\NormalTok{, }\DataTypeTok{stepwise =}\NormalTok{ F)}
+
+\KeywordTok{summary}\NormalTok{(aa_model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: y$yt 
+## ARIMA(2,0,0) with zero mean 
+## 
+## Coefficients:
+##          ar1      ar2
+##       0.9392  -0.2166
+## s.e.  0.0984   0.0990
+## 
+## sigma^2 estimated as 7502261:  log likelihood=-904.92
+## AIC=1815.84   AICc=1816.09   BIC=1823.56
+## 
+## Training set error measures:
+##                    ME     RMSE      MAE      MPE     MAPE      MASE        ACF1
+## Training set 9.709132 2710.641 2027.254 55.27169 123.3816 0.9589014 0.005486639
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(}\StringTok{"t-values: "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "t-values: "
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{]))) \{ }
+
+\NormalTok{aa_t[i] <-}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{var.coef[i,i])}
+
+\NormalTok{\}}
+
+\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(aa_t)}
+
+\NormalTok{aa_t}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        aa_t
+## 1  9.540429
+## 2 -2.188490
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{aa_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+\NormalTok{aa_q}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Box-Pierce test
+## 
+## data:  aa_model$residuals
+## X-squared = 0.0050343, df = 2, p-value = 0.9975
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{criteria <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{aa_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"AR(2)*"}\NormalTok{, aa_model}\OperatorTok{$}\NormalTok{aic, aa_model}\OperatorTok{$}\NormalTok{bic)}
+
+\KeywordTok{names}\NormalTok{(aa_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+
+\NormalTok{aa_criteria}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Model      AIC      BIC
+## 1 AR(2)* 1815.835 1823.559
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fac_e <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+
+\NormalTok{facp_e <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fac_e}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/estimation autoarima-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{facp_e}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/estimation autoarima-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mean}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 9.709132
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/estimation autoarima-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{facst <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\NormalTok{faclt <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+
+\NormalTok{facpst <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{facplt <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{facst}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{faclt}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{facpst}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{facplt}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-4.pdf}
+
+The results of \emph{auto.arima} imply that the best model is an
+ARMA(2,0) -- i.e., an AR(2):
+\[ y_t = c + \phi_1 y_{t-1} + \phi_2 y_{t-2} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fc <-}\StringTok{ }\KeywordTok{forecast}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{model =}\NormalTok{ aa_model, }\DataTypeTok{h =} \DecValTok{4}\NormalTok{)}
+
+\KeywordTok{autoplot}\NormalTok{(fc) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/forecast plot-1.pdf}
+
+\section{Long term GDP growth}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{unemp <-}\StringTok{ }\KeywordTok{read_excel}\NormalTok{(}\StringTok{"C:/Users/William/Downloads/tabela2176.xlsx"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## New names:
+## * `` -> ...2
+## * `` -> ...3
+## * `` -> ...4
+## * `` -> ...5
+## * `` -> ...6
+## * ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{unemp1 <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(unemp[}\DecValTok{11}\NormalTok{,])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: NAs introduced by coercion
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{unemp2 <-}\StringTok{ }\NormalTok{unemp1[}\DecValTok{2}\OperatorTok{:}\NormalTok{(}\KeywordTok{length}\NormalTok{(unemp1)}\OperatorTok{-}\DecValTok{2}\NormalTok{)]}
+
+\NormalTok{unemp <-}\StringTok{ }\NormalTok{unemp2}
+
+\NormalTok{df_unemp <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(unemp), unemp)}
+
+\KeywordTok{names}\NormalTok{(df_unemp) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"r"}\NormalTok{)}
+
+\NormalTok{df_unemp}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       t    r
+## 1     1 12.9
+## 2     2 12.5
+## 3     3 11.9
+## 4     4 11.6
+## 5     5 11.9
+## 6     6 11.7
+## 7     7 11.5
+## 8     8 11.2
+## 9     9 10.9
+## 10   10 10.5
+## 11   11 11.2
+## 12   12 11.6
+## 13   13 12.1
+## 14   14 12.4
+## 15   15 12.9
+## 16   16 13.0
+## 17   17 12.8
+## 18   18 13.0
+## 19   19 13.0
+## 20   20 12.9
+## 21   21 12.2
+## 22   22 10.9
+## 23   23 11.7
+## 24   24 12.0
+## 25   25 12.8
+## 26   26 13.1
+## 27   27 12.2
+## 28   28 11.7
+## 29   29 11.2
+## 30   30 11.4
+## 31   31 10.9
+## 32   32 10.5
+## 33   33 10.7
+## 34   34  9.6
+## 35   35 10.2
+## 36   36 10.7
+## 37   37 10.8
+## 38   38 10.8
+## 39   39 10.2
+## 40   40  9.4
+## 41   41  9.4
+## 42   42  9.4
+## 43   43  9.6
+## 44   44  9.6
+## 45   45  9.6
+## 46   46  8.4
+## 47   47  9.3
+## 48   48 10.1
+## 49   49 10.4
+## 50   50 10.4
+## 51   51 10.2
+## 52   52 10.4
+## 53   53 10.7
+## 54   54 10.6
+## 55   55 10.0
+## 56   56  9.8
+## 57   57  9.5
+## 58   58  8.4
+## 59   59  9.3
+## 60   60  9.9
+## 61   61 10.2
+## 62   62 10.2
+## 63   63 10.2
+## 64   64  9.7
+## 65   65  9.5
+## 66   66  9.5
+## 67   67  9.0
+## 68   68  8.7
+## 69   69  8.2
+## 70   70  7.4
+## 71   71  8.0
+## 72   72  8.7
+## 73   73  8.6
+## 74   74  8.5
+## 75   75  7.9
+## 76   76  7.8
+## 77   77  8.1
+## 78   78  7.6
+## 79   79  7.7
+## 80   80  7.5
+## 81   81  7.6
+## 82   82  6.8
+## 83   83  8.2
+## 84   84  8.5
+## 85   85  9.0
+## 86   86  8.9
+## 87   87  8.8
+## 88   88  8.1
+## 89   89  8.0
+## 90   90  8.1
+## 91   91  7.7
+## 92   92  7.5
+## 93   93  7.3
+## 94   94  6.8
+## 95   95  7.2
+## 96   96  7.4
+## 97   97  7.6
+## 98   98  7.3
+## 99   99  7.4
+## 100 100  7.0
+## 101 101  6.9
+## 102 102  6.7
+## 103 103  6.2
+## 104 104  6.0
+## 105 105  5.7
+## 106 106  5.3
+## 107 107  6.0
+## 108 108  6.3
+## 109 109  6.4
+## 110 110  6.4
+## 111 111  6.3
+## 112 112  6.2
+## 113 113  6.0
+## 114 114  6.0
+## 115 115  6.0
+## 116 116  5.7
+## 117 117  5.2
+## 118 118  4.7
+## 119 119  5.5
+## 120 120  5.7
+## 121 121  6.2
+## 122 122  6.0
+## 123 123  5.8
+## 124 124  5.9
+## 125 125  5.4
+## 126 126  5.3
+## 127 127  5.4
+## 128 128  5.3
+## 129 129  4.9
+## 130 130  4.6
+## 131 131  5.5
+## 132 132  5.6
+## 133 133  5.7
+## 134 134  5.8
+## 135 135  5.8
+## 136 136  6.0
+## 137 137  5.6
+## 138 138  5.3
+## 139 139  5.4
+## 140 140  5.2
+## 141 141  4.6
+## 142 142  4.3
+## 143 143  4.8
+## 144 144  5.1
+## 145 145  5.0
+## 146 146  4.8
+## 147 147  4.9
+## 148 148  4.8
+## 149 149  4.9
+## 150 150  5.0
+## 151 151  4.8
+## 152 152  4.6
+## 153 153  4.8
+## 154 154  4.3
+## 155 155  5.3
+## 156 156  5.8
+## 157 157  6.1
+## 158 158  6.4
+## 159 159  6.7
+## 160 160  6.9
+## 161 161  7.5
+## 162 162  7.5
+## 163 163  7.5
+## 164 164  7.8
+## 165 165  7.5
+## 166 166  6.9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hp_unemp <-}\StringTok{ }\KeywordTok{hpfilter}\NormalTok{(df_unemp}\OperatorTok{$}\NormalTok{r, }\DataTypeTok{freq =} \DecValTok{1600}\NormalTok{, }\DataTypeTok{type =} \StringTok{"lambda"}\NormalTok{)}
+
+\KeywordTok{plot}\NormalTok{(hp_unemp)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Econo2_P5_files/figure-latex/loading data pme-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nairu <-}\StringTok{ }\NormalTok{hp_unemp}\OperatorTok{$}\NormalTok{trend}
+
+\NormalTok{nairu}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             [,1]
+##   [1,] 11.927416
+##   [2,] 11.924286
+##   [3,] 11.921765
+##   [4,] 11.920818
+##   [5,] 11.922402
+##   [6,] 11.927269
+##   [7,] 11.936158
+##   [8,] 11.949668
+##   [9,] 11.968123
+##  [10,] 11.991379
+##  [11,] 12.018626
+##  [12,] 12.048121
+##  [13,] 12.077607
+##  [14,] 12.104550
+##  [15,] 12.126430
+##  [16,] 12.140909
+##  [17,] 12.146136
+##  [18,] 12.140793
+##  [19,] 12.123974
+##  [20,] 12.095308
+##  [21,] 12.054973
+##  [22,] 12.003649
+##  [23,] 11.942106
+##  [24,] 11.870426
+##  [25,] 11.788538
+##  [26,] 11.696453
+##  [27,] 11.594813
+##  [28,] 11.485140
+##  [29,] 11.369331
+##  [30,] 11.249419
+##  [31,] 11.127330
+##  [32,] 11.005086
+##  [33,] 10.884566
+##  [34,] 10.767331
+##  [35,] 10.654831
+##  [36,] 10.547783
+##  [37,] 10.446622
+##  [38,] 10.351876
+##  [39,] 10.264295
+##  [40,] 10.184909
+##  [41,] 10.114709
+##  [42,] 10.054192
+##  [43,] 10.003413
+##  [44,]  9.962014
+##  [45,]  9.929387
+##  [46,]  9.904698
+##  [47,]  9.886905
+##  [48,]  9.874028
+##  [49,]  9.863719
+##  [50,]  9.853772
+##  [51,]  9.842314
+##  [52,]  9.827816
+##  [53,]  9.808972
+##  [54,]  9.784832
+##  [55,]  9.755005
+##  [56,]  9.719608
+##  [57,]  9.678911
+##  [58,]  9.633236
+##  [59,]  9.582792
+##  [60,]  9.527016
+##  [61,]  9.465171
+##  [62,]  9.396752
+##  [63,]  9.321711
+##  [64,]  9.240505
+##  [65,]  9.154139
+##  [66,]  9.063905
+##  [67,]  8.971311
+##  [68,]  8.878138
+##  [69,]  8.786185
+##  [70,]  8.697138
+##  [71,]  8.612320
+##  [72,]  8.532241
+##  [73,]  8.457027
+##  [74,]  8.386911
+##  [75,]  8.322216
+##  [76,]  8.263334
+##  [77,]  8.210393
+##  [78,]  8.163232
+##  [79,]  8.121622
+##  [80,]  8.084981
+##  [81,]  8.052462
+##  [82,]  8.022855
+##  [83,]  7.994666
+##  [84,]  7.965636
+##  [85,]  7.933637
+##  [86,]  7.896871
+##  [87,]  7.854210
+##  [88,]  7.805152
+##  [89,]  7.749784
+##  [90,]  7.688379
+##  [91,]  7.621368
+##  [92,]  7.549437
+##  [93,]  7.473321
+##  [94,]  7.393725
+##  [95,]  7.311247
+##  [96,]  7.226110
+##  [97,]  7.138472
+##  [98,]  7.048596
+##  [99,]  6.957036
+## [100,]  6.864503
+## [101,]  6.771982
+## [102,]  6.680546
+## [103,]  6.591347
+## [104,]  6.505548
+## [105,]  6.424068
+## [106,]  6.347512
+## [107,]  6.276030
+## [108,]  6.209117
+## [109,]  6.146098
+## [110,]  6.086352
+## [111,]  6.029420
+## [112,]  5.975035
+## [113,]  5.923103
+## [114,]  5.873667
+## [115,]  5.826822
+## [116,]  5.782738
+## [117,]  5.741696
+## [118,]  5.703924
+## [119,]  5.669312
+## [120,]  5.637122
+## [121,]  5.606511
+## [122,]  5.576675
+## [123,]  5.547180
+## [124,]  5.517857
+## [125,]  5.488697
+## [126,]  5.459926
+## [127,]  5.431719
+## [128,]  5.404147
+## [129,]  5.377264
+## [130,]  5.351057
+## [131,]  5.325217
+## [132,]  5.298963
+## [133,]  5.271624
+## [134,]  5.242719
+## [135,]  5.212032
+## [136,]  5.179698
+## [137,]  5.146216
+## [138,]  5.112602
+## [139,]  5.080152
+## [140,]  5.050281
+## [141,]  5.024603
+## [142,]  5.004827
+## [143,]  4.992394
+## [144,]  4.988308
+## [145,]  4.993449
+## [146,]  5.008769
+## [147,]  5.035225
+## [148,]  5.073642
+## [149,]  5.124759
+## [150,]  5.189148
+## [151,]  5.267236
+## [152,]  5.359336
+## [153,]  5.465466
+## [154,]  5.585171
+## [155,]  5.717579
+## [156,]  5.861015
+## [157,]  6.013544
+## [158,]  6.173192
+## [159,]  6.338039
+## [160,]  6.506307
+## [161,]  6.676444
+## [162,]  6.847145
+## [163,]  7.017617
+## [164,]  7.187480
+## [165,]  7.356650
+## [166,]  7.525429
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t6162 <-}\StringTok{ }\KeywordTok{get_sidra}\NormalTok{(}\DecValTok{6612}\NormalTok{, }\DataTypeTok{variable =} \DecValTok{9318}\NormalTok{, }\DataTypeTok{category =} \DecValTok{90707}\NormalTok{, }\DataTypeTok{period =} \KeywordTok{c}\NormalTok{(}\StringTok{"200202"}\NormalTok{, }\StringTok{"200203"}\NormalTok{, }\StringTok{"200204"}\NormalTok{, }\StringTok{"200301"}\NormalTok{, }\StringTok{"200302"}\NormalTok{, }\StringTok{"200303"}\NormalTok{, }\StringTok{"200304"}\NormalTok{, }\StringTok{"200401"}\NormalTok{, }\StringTok{"200402"}\NormalTok{, }\StringTok{"200403"}\NormalTok{, }\StringTok{"200404"}\NormalTok{, }\StringTok{"200501"}\NormalTok{, }\StringTok{"200502"}\NormalTok{, }\StringTok{"200503"}\NormalTok{, }\StringTok{"200504"}\NormalTok{, }\StringTok{"200601"}\NormalTok{, }\StringTok{"200602"}\NormalTok{, }\StringTok{"200603"}\NormalTok{, }\StringTok{"200604"}\NormalTok{, }\StringTok{"200701"}\NormalTok{, }\StringTok{"200702"}\NormalTok{, }\StringTok{"200703"}\NormalTok{, }\StringTok{"200704"}\NormalTok{, }\StringTok{"200801"}\NormalTok{, }\StringTok{"200802"}\NormalTok{, }\StringTok{"200803"}\NormalTok{, }\StringTok{"200804"}\NormalTok{, }\StringTok{"200901"}\NormalTok{, }\StringTok{"200902"}\NormalTok{, }\StringTok{"200903"}\NormalTok{, }\StringTok{"200904"}\NormalTok{, }\StringTok{"201001"}\NormalTok{, }\StringTok{"201002"}\NormalTok{, }\StringTok{"201003"}\NormalTok{, }\StringTok{"201004"}\NormalTok{, }\StringTok{"201101"}\NormalTok{, }\StringTok{"201102"}\NormalTok{, }\StringTok{"201103"}\NormalTok{, }\StringTok{"201104"}\NormalTok{, }\StringTok{"201201"}\NormalTok{, }\StringTok{"201202"}\NormalTok{, }\StringTok{"201203"}\NormalTok{, }\StringTok{"201204"}\NormalTok{, }\StringTok{"201301"}\NormalTok{, }\StringTok{"201302"}\NormalTok{, }\StringTok{"201303"}\NormalTok{, }\StringTok{"201304"}\NormalTok{, }\StringTok{"201401"}\NormalTok{, }\StringTok{"201402"}\NormalTok{, }\StringTok{"201403"}\NormalTok{, }\StringTok{"201404"}\NormalTok{, }\StringTok{"201501"}\NormalTok{, }\StringTok{"201502"}\NormalTok{, }\StringTok{"201503"}\NormalTok{, }\StringTok{"201504"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Considering all categories once 'classific' was set to 'all' (default)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{View}\NormalTok{(t6162)}
+
+\NormalTok{tax <-}\StringTok{ }\NormalTok{t6162[(t6162}\OperatorTok{$}\StringTok{`}\DataTypeTok{Setores e subsetores (Código)}\StringTok{`} \OperatorTok{==}\StringTok{ }\DecValTok{90706}\NormalTok{),]}
+
+\NormalTok{tax2 <-}\StringTok{ }\NormalTok{tax[,}\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{,}\DecValTok{13}\NormalTok{)]}
+
+\KeywordTok{names}\NormalTok{(tax2)[}\DecValTok{1}\NormalTok{] <-}\StringTok{ "t"}
+\KeywordTok{names}\NormalTok{(tax2)[}\DecValTok{2}\NormalTok{] <-}\StringTok{ "r"}
+
+\NormalTok{tax <-}\StringTok{ }\NormalTok{tax2}
+
+\NormalTok{trimestra <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+
+\NormalTok{i <-}\StringTok{ }\DecValTok{0}
+\ControlFlowTok{while}\NormalTok{ (i}\OperatorTok{<}\KeywordTok{length}\NormalTok{(unemp))\{}
+
+\NormalTok{  media <-}\StringTok{ }\NormalTok{(unemp[i] }\OperatorTok{+}\StringTok{ }\NormalTok{unemp[i}\OperatorTok{+}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{unemp [i}\OperatorTok{+}\DecValTok{2}\NormalTok{])}\OperatorTok{/}\DecValTok{3}
+\NormalTok{  trimestra <-}\StringTok{ }\KeywordTok{append}\NormalTok{(trimestra, media)}
+
+\NormalTok{  i<-}\StringTok{ }\NormalTok{i }\OperatorTok{+}\DecValTok{3}
+\NormalTok{\}}
+
+\NormalTok{nairu_3m <-}\StringTok{ }\NormalTok{trimestra}
+
+\NormalTok{df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(nairu_3m[}\OperatorTok{-}\DecValTok{1}\NormalTok{], tax)}
+
+\NormalTok{df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      nairu_3m..1.      t        r
+## 17      11.800000 200202 27105.64
+## 39      11.466667 200203 27761.39
+## 61      10.866667 200204 27645.46
+## 83      12.033333 200301 26900.42
+## 105     12.900000 200302 26877.27
+## 127     12.966667 200303 27423.26
+## 149     11.600000 200304 27890.17
+## 171     12.633333 200401 27650.37
+## 193     11.700000 200402 28727.94
+## 215     10.933333 200403 29776.18
+## 237     10.166667 200404 29890.40
+## 259     10.766667 200501 28736.12
+## 281      9.666667 200502 30275.09
+## 303      9.533333 200503 30877.38
+## 325      9.100000 200504 31098.96
+## 347     10.300000 200601 30798.18
+## 369     10.433333 200602 31768.30
+## 391     10.133333 200603 32743.37
+## 413      9.066667 200604 32347.13
+## 435     10.100000 200701 32550.07
+## 457      9.800000 200702 34105.20
+## 479      9.066667 200703 34884.01
+## 501      7.866667 200704 35832.30
+## 523      8.600000 200801 35227.37
+## 545      7.933333 200802 37054.11
+## 567      7.600000 200803 38728.42
+## 589      7.533333 200804 36680.04
+## 611      8.800000 200901 34106.02
+## 633      8.300000 200902 35886.78
+## 655      7.766667 200903 38103.93
+## 677      7.100000 200904 39175.00
+## 699      7.433333 201001 38717.90
+## 721      7.100000 201002 39961.02
+## 743      6.300000 201003 41933.45
+## 765      5.666667 201004 42540.35
+## 787      6.366667 201101 41367.14
+## 809      6.166667 201102 42736.91
+## 831      5.900000 201103 43741.57
+## 853      5.133333 201104 43929.18
+## 875      5.966667 201201 42616.53
+## 897      5.700000 201202 43727.51
+## 919      5.333333 201203 45251.56
+## 941      5.000000 201204 46492.43
+## 963      5.700000 201301 43903.67
+## 985      5.800000 201302 45932.85
+## 1007     5.300000 201303 47239.43
+## 1029     4.566667 201304 47669.43
+## 1051     4.966667 201401 45634.31
+## 1073     4.866667 201402 45631.55
+## 1095     4.800000 201403 46892.87
+## 1117     4.800000 201404 47982.22
+## 1139     6.100000 201501 44453.25
+## 1161     7.033333 201502 43600.46
+## 1183     7.600000 201503 43585.04
+## 1205           NA 201504 43359.17
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(df) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"NAIRU"}\NormalTok{, }\StringTok{"t"}\NormalTok{, }\StringTok{"tax"}\NormalTok{)}
+
+\NormalTok{growth_lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(NAIRU }\OperatorTok{~}\StringTok{ }\NormalTok{tax, }\DataTypeTok{data =}\NormalTok{ df)}
+
+\KeywordTok{summary}\NormalTok{(growth_lm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = NAIRU ~ tax, data = df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.1801 -0.3400 -0.0709  0.3167  1.6633 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  2.110e+01  4.471e-01   47.19   <2e-16 ***
+## tax         -3.479e-04  1.184e-05  -29.37   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.5991 on 52 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.9431, Adjusted R-squared:  0.942 
+## F-statistic: 862.5 on 1 and 52 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tax, }\DataTypeTok{y =}\NormalTok{ NAIRU)) }\OperatorTok{+}\StringTok{ }\KeywordTok{stat_smooth}\NormalTok{(}\DataTypeTok{nethod =} \StringTok{"lm"}\NormalTok{, }\DataTypeTok{se =}\NormalTok{ F) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Ignoring unknown parameters: nethod
+\end{verbatim}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1 rows containing non-finite values (stat_smooth).
+\end{verbatim}
+
+\includegraphics{Econo2_P5_files/figure-latex/loading data pme-2.pdf}
+
+\end{document}

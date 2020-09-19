@@ -1,0 +1,192 @@
+\documentclass[11pt, a4paper]{report}
+\usepackage[utf8]{inputenc}
+%\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage[left=2.5cm,top=2.5cm,right=2.5cm,bottom=4cm]{geometry}
+%\usepackage[none]{hyphenat}
+%\usepackage{showframe}
+\usepackage{ragged2e}
+\usepackage[english]{babel}
+\usepackage{indentfirst}
+\usepackage{sectsty}
+\usepackage{authblk}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,epsfig,epstopdf,titling,url,array}
+\usepackage{mathtools}
+\usepackage{tikz, tkz-base, tkz-fct}
+\usepackage{mathdesign}
+\usepackage{cancel}
+\usepackage{dirtytalk}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\renewcommand{\baselinestretch}{1.0}
+
+\definecolor{coolblack}{rgb}{0.0, 0.18, 0.39}
+\hypersetup{colorlinks, breaklinks,
+	linkcolor=coolblack,
+	filecolor=[rgb]{0.19, 0.55, 0.91},      
+	urlcolor=[rgb]{0.19, 0.55, 0.91},
+	anchorcolor=[rgb]{0.19, 0.55, 0.91},
+	citecolor=black
+}
+
+\newcommand{\indep}{\perp \!\!\! \perp}
+\newcommand{\nindep}{\not\!\perp\!\!\!\perp}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollary}
+
+\theoremstyle{plain}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{conj}{Conjecture}[section]
+\newtheorem{exmp}{Example}[section]
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+
+\title{\Huge \textbf{Econometrics II} \\ \LARGE Notes - Midterm}
+\author{\Large William Radaic Peron}
+\affil{\Large EESP-FGV}
+
+%\sectionfont{\fontsize{12}{12}\selectfont}
+%\chapterfont{\fontsize{16}{12}\selectfont}
+%\subsectionfont{\fontsize{11}{11}\selectfont}
+
+\begin{document}
+%\setlength{\parindent}{2em}
+%\setlength{\parskip}{0.6em}
+\maketitle
+
+
+\chapter{Introduction}
+
+\section{Motivation}
+
+This course will be dedicated to \textit{time series analysis.} Informally, a \textit{time series} is any type of data collected over time -- or, more formally, it is the realization of a stochastic process indexed in time. We usually denote the time series as follows: 
+$$ y_1, ..., y_T; \hspace{1em} \{y_t\}_{i=1}^T; \hspace{1em} \{y_t\}_t $$
+
+Time series analysis is useful for a number of different applications: 
+\begin{itemize}
+	\item \textbf{Forecasting.} \begin{itemize}
+		\item Uni and multivariate models 
+		\item \textbf{ARIMA} models: mean and confidence interval forecasting
+		\item \textbf{ARCH} models: variance forecasting -- especially useful in finance for volatility and risk
+	\end{itemize}
+	\item \textbf{Dynamics.} Evaluate the impact of one variable in another over time. \begin{itemize}
+		\item Multivariate models including VAR, ECM
+		\item Contemporaneous lagged structural relations
+	\end{itemize}
+\end{itemize}
+
+It is important to address a first and simple question. \textbf{Why time series are different from other data?} The answer is also simple but incredibly relevant: \textit{time series observations are not serially independent!}
+$$ Y_t \nindep Y_{t-j} $$
+In fact, they don't even have to be identically distributed:
+$$ F_{Y_t} \neq F_{Y_{t-j}} $$
+This means that the essential \textit{iid} hypothesis for traditional Econometrics \textit{does not hold.} This means that we'll have to make some adjustments to our methods. That is the task of time series analysis.
+
+\section{Statistics with dependence}
+
+Let's begin with a proper definition of a time series. 
+
+\subsection{Definition of a time series}
+
+Suppose that we have a probability space $(\Omega, S, \mathbb{P})$. $\Omega$ is the sample space; $S$ is the set of all events; $\mathbb{P}$ is a measure of probability $\mathbb{P}: S \rightarrow [0,1]$. From this, we define a random variable $Y: \Omega \rightarrow \mathbb{R}$. A realization of this r.v. is denoted by $y = Y(\omega)$ with fixed $\omega$.
+
+From this, we can define multiple random variables in the same sample space, indexed by integers:
+$$	Y = \{..., Y_{t-2}, Y_{t-1}, Y_t, ...\} $$
+This is equivalent to writing:
+$$ Y: \Omega x \mathbb{Z} \rightarrow \mathbb{R}$$
+
+We now arrive at our formal definition of a time series: $\{Y_t, t \in \mathbb{Z} \}$ is a time-indexed stochastic process.
+\begin{itemize}
+	\item $Y(\cdot, t): \Omega \rightarrow \mathbb{R}$ is a r.v. for fixed $t$.
+	\item $Y(\omega, \cdot): \mathbb{Z} \rightarrow \mathbb{R}$ is a \textit{sequence of real numbers} for a fixed $\omega$. In other words, this represents the \textit{observed time series.}
+	\item For fixed $t, \omega$, $Y(\omega, t) \in \mathbb{R}$.
+\end{itemize}
+
+\subsection{Unconditional expectation}
+
+An important concept to make clear here is \textit{unconditional expectation.} With fixed $t$, 
+$$ \mathbb{E}(Y_t) = \int_{-\infty}^{\infty} x f_{Y_t}(x) dx $$
+Note the $Y_t$ subscript on the probability density function $f_{Y_t}$. This means that $\mathbb{E}(Y_t)$ is not calculated with the values assumed by $Y_{t-1}, Y_{t+1}$. This raises an important problem: \textit{how would you be able to estimate $\mathbb{E}(Y_t)$?} Note that we only observe $Y_t = y_t$, i.e., one realization of the r.v.
+
+
+\subsection{Statistical dependence}
+
+For any random variables $X, Y$, we can define multiple measures of dependency:
+\begin{itemize}
+	\item \textbf{Linear:} $Cov(X,Y) \equiv \mathbb{E}(XY) - \mathbb{E}(X)\mathbb{E}(Y) $
+	\item \textbf{Quadratic:} $Cov(X^2, Y^2)$
+	\item \textbf{General:} $Cov(f(X), g(Y))$. This is a measure of covariance between two general functional forms of $X$ and $Y$.
+\end{itemize}
+With this general definition, we arrive at an equivalent definition for independent random variables:
+\begin{itemize}
+	\item $F_{X,Y}(x,y) = F_X(x) * F_Y(y),$ i.e., joint pdf is equal to the product of the marginal pdfs.
+	\item $Cov(f(X), g(Y)) = 0$ for every pair of bounded functions $f, g$.
+\end{itemize}
+
+From this, we now define the \textit{autocovariance and autocorrelation functions.}
+
+\begin{defn}
+	$\gamma_{j,t} := Cov(Y_t, Y_{t-j})$ is the autocovariance function for a given time series $\{Y_t, t \in \mathbb{Z} \}.$
+\end{defn}
+
+\begin{defn}
+	$\rho_{j,t} := \dfrac{\gamma_{j,t}}{\sqrt{\gamma_{0,t}\gamma_{0,t-j}}}$ is the autocorrelation function for a given time series $\{Y_t, t \in \mathbb{Z} \}.$
+\end{defn}
+
+Note that, if \textit{iid} holds:
+$$ \gamma_{j,t} = \begin{cases}
+	0 & j \neq 0, \forall t \\
+	Var(Y) & otherwise 
+\end{cases} $$
+
+This is an example of an autocorrelation function.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{"acf example"}
+	%\caption{}
+	\label{fig:acf-example}
+\end{figure}
+
+\subsection{Asymptotic theory with dependence}
+
+Some form of asymptotic theory is needed to enable \textit{any kind of statistical analysis.} Namely, we need to have some form of Law of Large Numbers (LLN) and Central Limit Theorem (CLT) that are analogous to the iid environment. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

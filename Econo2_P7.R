@@ -131,6 +131,8 @@ models_r = list(NA)
 
 num_series = as.numeric(series)
 
+nwest = matrix(NA, ncol = 20, nrow = length(num_series))
+
 f_values = matrix(NA, nrow = length(num_series), ncol = 2)
 
 hyp = c(0,-1,0,1)
@@ -166,8 +168,15 @@ for (i in (1:(tf-t0))) {
   models_unr[[i]] <- dynlm(num_series ~ adummy + lag(num_series) + lag(num_series)*adummy)
   f_values[i,1] = linearHypothesis(models_unr[[i]], hyp, rhs)$F[1]
   f_values[i,2] = linearHypothesis(models_unr[[i]], hyp, rhs)$F[2] #eu acho que funcionou?????
+  nwest[i,] = NeweyWest(models_unr[[i]])
+  
+  
   
 }
+
+nwtest = NeweyWest(models_unr[[5]])
+
+nwtest
 
 models_unr
 

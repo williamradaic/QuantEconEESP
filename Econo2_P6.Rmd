@@ -143,17 +143,21 @@ reg$coefficients[1,3] # t value
 
 tau <- vector()
 
+k <- 1
+
+delta <- 0
+
 for (i in 1:S) {
   
   e <- rnorm(T,0,1)
-  y <- cumsum(e)
+  y = k + delta*seq(1:T) + cumsum(e)
   y <- as.ts(y)
   
   y_diff <- diff(y)
   
-  reg <- summary(dynlm(y_diff ~ 0 + L(y, 1)))
+  reg <- summary(dynlm(y_diff ~ 1 + L(y, 1)))
   
-  tau[i] <- reg$coefficients[1,3]
+  tau[i] <- reg$coefficients[2,3]
   
 }
 
@@ -330,7 +334,7 @@ summary(aa_pib)
 ```
 
 *auto.arima* yields an ARIMA(2,1,2) model with a drift parameter:
-$$ \Delta y_t = a_0 + a_1 \Delta y_{t-1} + a_2 \Delta y_{t-2} + a_3 \varepsilon_{t-1} + a_4 \varepsilon_{t-2} +\varepsilon_t $$
+$$ \Delta y_t = a_0 + a_1 \Delta y_{t-1} + a_2 \Delta y_{t-2} + a_3 \Delta \varepsilon_{t-1} + a_4 \Delta \varepsilon_{t-2} +\varepsilon_t $$
 
 Let's decompose this process. First, we'll perform the Dickey-Fuller test on the GDP ts.
 
