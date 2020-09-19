@@ -133,11 +133,11 @@ With this general definition, we arrive at an equivalent definition for independ
 From this, we now define the \textit{autocovariance and autocorrelation functions.}
 
 \begin{defn}
-	$\gamma_{j,t} := Cov(Y_t, Y_{t-j})$ is the autocovariance function for a given time series $\{Y_t, t \in \mathbb{Z} \}.$
+	$\gamma_{j,t} := Cov(Y_t, Y_{t-j})$ is the \textbf{autocovariance function} for a given time series $\{Y_t, t \in \mathbb{Z} \}.$
 \end{defn}
 
 \begin{defn}
-	$\rho_{j,t} := \dfrac{\gamma_{j,t}}{\sqrt{\gamma_{0,t}\gamma_{0,t-j}}}$ is the autocorrelation function for a given time series $\{Y_t, t \in \mathbb{Z} \}.$
+	$\rho_{j,t} := \dfrac{\gamma_{j,t}}{\sqrt{\gamma_{0,t}\gamma_{0,t-j}}}$ is the \textbf{autocorrelation function} for a given time series $\{Y_t, t \in \mathbb{Z} \}.$
 \end{defn}
 
 Note that, if \textit{iid} holds:
@@ -155,20 +155,132 @@ This is an example of an autocorrelation function.
 	\label{fig:acf-example}
 \end{figure}
 
-\subsection{Asymptotic theory with dependence}
+\section{Asymptotic theory with dependence}
 
-Some form of asymptotic theory is needed to enable \textit{any kind of statistical analysis.} Namely, we need to have some form of Law of Large Numbers (LLN) and Central Limit Theorem (CLT) that are analogous to the iid environment. 
+Some form of asymptotic theory is needed to enable \textit{any kind of statistical analysis.} Namely, we need to have some form of Law of Large Numbers (LLN) and Central Limit Theorem (CLT) that are analogous to the \textit{iid} environment. This will be achieved in our setting with some conditions called \textit{stationarity} and \textit{ergodicity.}
 
+\subsection{Stationarity}
 
+\begin{defn}
+	A process $\{Y_t, t \in \mathbb{Z} \}$ is \textbf{strictly stationary} if, for all finite set of indexes $\{t_1, ..., t_r\}$ and for all $m \in \mathbb{Z}$, $F(y_{t_1},..., y_{t_r}) = F(y_{t_1+m},..., y_{t_r+m})$ holds, where $F(y_{t_1},..., y_{t_r})$ is the joint cdf of $(Y_{t_1},..., Y_{t_r}).$
+\end{defn}
 
+More informally, a given process is called \textit{strictly stationary} if its statistical properties depend only on the \textit{relative position} between observations, and not its \textit{absolute position.}
 
+We'll usually adopt a weaker definition of stationarity for our models. Henceforth, we will refer to stationarity in this sense.
 
+\begin{defn}
+	A process $\{Y_t, t \in \mathbb{Z} \}$ is \textbf{stationary} (or weakly stationary) if there exists $\mu \in \mathbb{R}$ and $\{\gamma_j\}_{j \in \mathbb{N}}$ such that:
+	\begin{itemize}
+		\item $\mathbb{E}(Y_t) = \mu, \hspace{1em} \forall t$
+		\item $\mathbb{E}[(Y_t - \mu)(Y_{t-j}-\mu)] = \gamma_j, \hspace{1em} \forall (t,j) \in \mathbb{N}^2$
+	\end{itemize}
+\end{defn}
 
+	Note that, from the second condition in the definition, we have $\mathbb{E}(Y_t - \mu)^2 = \gamma_0 \in \mathbb{R}, \forall t \in \mathbb{N}.$ In other words, \textit{the unconditional variance of the time series is constant.}
 
+\vspace{1em}
 
+Some important remarks on stationarity: 
+\begin{itemize}
+	\item Stationarity does not imply strict stationarity
+	\item Stricy stationarity does not imply stationarity
+	\item Every strictly stationary process with finite variance is stationary
+	\item Every iid process is strictly stationary
+	\item Every strictly stationary process is identically distributed
+	\item A stationary process is not necessarily identically distributed
+\end{itemize}
 
+\subsection{Ergodicity}
 
+Stationarity is not enough to guarantee that we have even a Law of Large Numbers. To see why that is the case, consider the following example:
+$$ Y_t = X + \varepsilon_t, \hspace{1em} \varepsilon \sim \mathcal{N}(0, \sigma^2), \hspace{1em} X \sim \mathcal{N}(0,1), \hspace{1em} X \indep \varepsilon_t $$
 
+Is this process stationary? No, because the sample \textit{time average} $\bar{y} = \frac{1}{T}\sum_{t=1}^T y_t$ does not converge to the population \textit{ensemble average} $\mathbb{E}(Y_t) = \mu$.
+
+We need some condition that guarantees that the dependence structure of the time series decays as the observation get further from each other. That is the intuition behind \textit{ergodicity.}
+
+\begin{defn}
+	A strictly stationary process $\{Y_t, t \in \mathbb{Z} \}$ is called \textbf{ergodic} if
+	$$ \lim_{J \rightarrow \infty} \dfrac{1}{J} \sum_{j=1}^J Cov[f(X_1), g(X,j)] = 0, $$
+	for all pairs of bounded functions $f, g$.
+\end{defn}
+
+This is a kind of mean asymptotic independence, in which the asymptotic independence would be defined by $Cov[f(X_1), g(X_J)] \rightarrow 0$ as $J \rightarrow \infty$. 
+
+Now, we can define a Law of Large Numbers -- also called the \textit{Ergodic Theorem}.
+
+\begin{thm}
+	Given an ergodic stochastic process $\{Y_t, t \in \mathbb{Z} \}$ such that $\mathbb{E}|Y_1| < \infty$,
+	$$\lim_{T \rightarrow \infty} \dfrac{1}{T} \sum_{t=1}^T Y_t = \mathbb{E}(Y_1) \hspace{1em} almost \, sure$$
+\end{thm}
+
+This theorem is the generalization of the strong LLN. However, it presupposes \textit{strict stationarity,} which is a very strong assumption most of the time. Fortunately, this theorem gave rise to other definitions that arrive at our objective, namely, a LLN for the first two moments.
+
+\begin{defn}
+	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is said to be \textbf{ergodic for the mean} if
+	$$ \dfrac{1}{T} \sum_{t=1}^T Y_t \to_p \mathbb{E}(Y_t), \hspace{1em} T \to \infty $$
+\end{defn}
+
+\begin{defn}
+	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is said to be \textbf{ergodic for the second moment} if, for every $j,$
+	$$ \dfrac{1}{T-j} \sum_{t=j+1}^T Y_t Y_{t-j} \to_p \mathbb{E}(Y_t), \hspace{1em} T \to \infty $$
+\end{defn}
+
+\begin{prop}
+	$\sum_{j=0}^{\infty} |\gamma_j| < \infty $ is a suficient condition for ergodicity for the mean.
+\end{prop}
+
+\begin{proof}
+	Let $Z_t := Y_t - \mu$ and $\bar{Z_t} := \frac{1}{T} \sum_{t=1}^T Z_t$, where $\{Y_t, t \in \mathbb{Z} \}$ is a stationary process. We will show that $\bar{Z_t}$ converges to 0 in mean square.
+	
+	\begin{math}
+		\begin{aligned}
+			\mathbb{E}\left(\bar{Z}_{T}^{2}\right) &=\mathbb{E}\left[\left(\frac{1}{T} \sum_{t=1}^{T} Z_{t}\right)\left(\frac{1}{T} \sum_{t=1}^{T} Z_{t}\right)\right]=\frac{1}{T^{2}} \mathbb{E}\left(\sum_{s=1}^{T} \sum_{t=1}^{T} Z_{s} Z_{t}\right) \\
+			&=\frac{1}{T^{2}} \sum_{s=1}^{T} \sum_{t=1}^{T} \mathbb{E}\left(Z_{s} Z_{t}\right)=\frac{1}{T^{2}} \sum_{s=1}^{T} \sum_{t=1}^{T} \gamma_{s-t}=\frac{1}{T} \sum_{j=-T+1}^{T-1} \frac{T-|j|}{T} \gamma_{j} \\
+			& \leq \frac{1}{T} \sum_{j=-T+1}^{T-1} \frac{T-|j|}{T}\left|\gamma_{j}\right| \leq \frac{1}{T} \sum_{j=-T+1}^{T-1}\left|\gamma_{j}\right| \rightarrow 0
+		\end{aligned}
+	\end{math} 
+
+\end{proof}
+
+\subsection{A Central Limit Theorem for time series}
+
+The conditions that guarantee the existence of a CLT for stationary and ergodic processes are much more envolving than in the \textit{iid} environment. However, we have a relatively simple result that will be useful to us in time series analysis. It will now be presented without proof.
+
+\begin{thm}
+	Let $\{Y_t, t \in \mathbb{Z} \}$ be a \textbf{linear} stationary process, i.e., that can be written in the form $Y_t = \mu + \sum_{j=0}^{\infty} \psi_j \epsilon_{t-j}$, where $\varepsilon \sim_{iid} (0, \sigma^2)$ and $\sum_{j = -\infty}^{\infty} | \psi_j | < \infty$. Then,
+	$$ \sqrt{T}(\bar{Y_t}-\mu) \to_d \mathcal{N}(0, \omega^2), $$ 
+	where $\omega^2 := \sum_{j = -\infty}^{\infty} \gamma_{j} < \infty $	
+\end{thm}
+
+\chapter{ARMA Models}
+
+ARMA is a class of models that we'll employ frequently in time series analysis. Let's begin with some definitions.
+
+\section{White noise}
+
+We call \textit{white noise} stationary time series with mean zero that do not have serial correlation. 
+
+\begin{defn}
+	$\{Y_t, t \in \mathbb{Z} \}$ is \textbf{white noise}, denoted by $Y_t \sim wn(0,\sigma^2)$, if
+	$$\mathbb{E}\left(Y_{t}\right)=0 ; \quad \mathbb{E}\left(Y_{t}, Y_{t-j}\right)=\left\{\begin{array}{ll}
+		\sigma^{2} & j=0 \\
+		0 & j \neq 0
+	\end{array}\right.$$
+\end{defn}
+
+This is the most simple time series -- except for the \textit{iid} case, where independence also holds. It will be the building block for a number of processes that we will study.
+
+\section{Moving Average processes}
+
+Let's begin with the simplest form of MA processes: MA(1). 
+\begin{defn}
+	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is called \textbf{MA(1)}, or a \textbf{moving average of order 1}, if it follows the following form:
+	$$ Y_t = c + \varepsilon_t + \theta \varepsilon_{t-1}, \varepsilon_t \sim wn(0, \sigma^2) $$
+\end{defn}
+
+\subsection{Moments of an MA(1) model}
 
 
 
