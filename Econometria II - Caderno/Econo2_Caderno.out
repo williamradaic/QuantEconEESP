@@ -12,3 +12,26 @@
 \BOOKMARK [1][-]{section.2.1}{White noise}{chapter.2}% 12
 \BOOKMARK [1][-]{section.2.2}{Moving Average processes}{chapter.2}% 13
 \BOOKMARK [2][-]{subsection.2.2.1}{Moments of an MA\(1\) model}{section.2.2}% 14
+\BOOKMARK [2][-]{subsection.2.2.2}{Some examples of MA\(1\) processes}{section.2.2}% 15
+\BOOKMARK [2][-]{subsection.2.2.3}{Deriving the Autocorrelation function of the MA\(1\) process}{section.2.2}% 16
+\BOOKMARK [1][-]{section.2.3}{Generalizing the MA model}{chapter.2}% 17
+\BOOKMARK [2][-]{subsection.2.3.1}{Moments of an MA\(q\) process}{section.2.3}% 18
+\BOOKMARK [2][-]{subsection.2.3.2}{Deriving the Autocorrelation function of the MA\(q\) process}{section.2.3}% 19
+\BOOKMARK [1][-]{section.2.4}{The MA\(\) model}{chapter.2}% 20
+\BOOKMARK [1][-]{section.2.5}{The Wold Decomposition}{chapter.2}% 21
+\BOOKMARK [1][-]{section.2.6}{Autoregressive models}{chapter.2}% 22
+\BOOKMARK [2][-]{subsection.2.6.1}{Moments of an AR\(1\) process}{section.2.6}% 23
+\BOOKMARK [2][-]{subsection.2.6.2}{Some examples of AR\(1\) series}{section.2.6}% 24
+\BOOKMARK [2][-]{subsection.2.6.3}{Autocorrelation function of an AR\(1\) process}{section.2.6}% 25
+\BOOKMARK [2][-]{subsection.2.6.4}{Partial Autocorrelation Function}{section.2.6}% 26
+\BOOKMARK [2][-]{subsection.2.6.5}{Conditions for stationarity}{section.2.6}% 27
+\BOOKMARK [1][-]{section.2.7}{Generalizing the AR model}{chapter.2}% 28
+\BOOKMARK [2][-]{subsection.2.7.1}{Moments of an AR\(p\) process}{section.2.7}% 29
+\BOOKMARK [2][-]{subsection.2.7.2}{ACF of an AR\(p\) process}{section.2.7}% 30
+\BOOKMARK [1][-]{section.2.8}{The Lag Operator}{chapter.2}% 31
+\BOOKMARK [2][-]{subsection.2.8.1}{The lag operator as a polynomial}{section.2.8}% 32
+\BOOKMARK [2][-]{subsection.2.8.2}{Stationarity and the lag operator}{section.2.8}% 33
+\BOOKMARK [1][-]{section.2.9}{Finally, the ARMA\(p,q\) process}{chapter.2}% 34
+\BOOKMARK [2][-]{subsection.2.9.1}{Stationarity and invertibility of an ARMA\(p,q\) process}{section.2.9}% 35
+\BOOKMARK [2][-]{subsection.2.9.2}{Moments of an ARMA\(p,q\) process}{section.2.9}% 36
+\BOOKMARK [2][-]{subsection.2.9.3}{ACF of an ARMA\(p,q\) process}{section.2.9}% 37

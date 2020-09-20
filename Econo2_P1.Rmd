@@ -3,12 +3,13 @@ title: "Econometrics II - Problem 1"
 author: "William Radaic Peron"
 date: \today
 output:
+  pdf_document: 
+    keep_tex: yes
   html_document: default
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
 library(ggplot2)
 library(forecast)
 library(AER)
@@ -22,6 +23,11 @@ library(gtsummary)
 library(readxl)
 library(ggthemes)
 library(mdscore)
+
+library(formatR)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+
 ```
 
 Loading the database and creating dummy variables:
