@@ -331,7 +331,7 @@ This theorem is the generalization of the strong LLN. However, it presupposes \t
 	$$ \dfrac{1}{T-j} \sum_{t=j+1}^T Y_t Y_{t-j} \to_p \mathbb{E}(Y_t), \hspace{1em} T \to \infty $$
 \end{defn}
 
-\begin{prop}
+\begin{prop} \label{sum-ergodicity}
 	$\sum_{j=0}^{\infty} |\gamma_j| < \infty $ is a suficient condition for ergodicity for the mean.
 \end{prop}
 
@@ -379,7 +379,7 @@ This is the most simple time series -- except for the \textit{iid} case, where i
 \section{Moving Average processes}
 
 Let's begin with the simplest form of MA processes: MA(1). 
-\begin{defn}
+\begin{defn} \label{ma1-def}
 	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is called \textbf{MA(1)}, or a \textbf{moving average of order 1}, if it follows the following form:
 	$$ Y_t = c + \varepsilon_t + \theta \varepsilon_{t-1}, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2), $$
 	where $c, \theta$ are constant.
@@ -523,7 +523,7 @@ This result motivates all ARMA models. It can be defined informally as ``any sta
 
 Again, we'll begin with its simplest form, AR(1).
 
-\begin{defn}
+\begin{defn} \label{ar1-def}
 	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is called \textbf{AR(1)}, or an \textbf{autoregressive process of order 1}, if it follows the following form:
 	$$ Y_t = c + \phi Y_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2), $$
 	where $c, \theta$ are constant.
@@ -811,6 +811,77 @@ It is usually easy to identify an AR(p) or MA(q) visually by inspecting its ACF 
 \end{center}
 
 \section{Testing for time dependence} %% Material complementar
+
+
+We've seen that a sufficient condition for ergodicity is convergence of the absolute sum of all covariances. This presents a problem: how can we \textit{estimate} these covariances?
+
+Let $Z_t$ be our series to be tested. Denote the autocovariance of order $j$ as $\gamma_{j} := Cov(Z_t, Z_{t-j})$. We can try to estimate these parameters with its sample equivalents: 
+$$ \bar{z_t} := \dfrac{1}{T} \sum_{t=1}^{T} z_t $$
+$$ \hat{\gamma}_{j} := \dfrac{1}{T - j - 1} \sum_{t = j+1}^{T} (z_t - \bar{z_t})(z_{t-j} - \bar{z_t}) $$
+
+But this is not as simple as it seems. We know that $\hat{\gamma}_{j}$ converges almost sure to $\gamma_{j}$ \textit{if the process is ergodic.} If it \textit{isn't,} the information from $\hat{\gamma}_{j}$ may not be reliable -- after all, we won't have a Law of Large Numbers! 
+
+Our solution to this problem won't be very rigorous here. We'll plot $\{\hat{\gamma}_{j}, j \in \mathbb{N}\}$ and check if it looks stationary. If the series passes this intuitive test, we can assume that $\{\hat{\gamma}_{j}, j \in \mathbb{N}\}$ will be informative about $\{{\gamma}_{j}, j \in \mathbb{N}\}$. 
+
+The visual inspection should focus on two main factors: (i) constant mean over time; (ii) constant variance over time. Here are some examples of series to be inspected:
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{"exemplos ts"}
+	\label{fig:exemplos-ts}
+\end{figure}
+
+After plotting the time series and assuring that it is well behaved, we can plot its \textit{correlogram:} $\{ \hat{\rho}_{j} := \frac{\hat{\gamma}_{j}}{\hat{\gamma}_{0}}, j \in \mathbb{N}\}$. If its sum looks convergent, we will assume that the process is \textit{stationary} and \textit{ergodic} -- which will enable us to use sample equivalents as representations of population parameters.
+
+\subsection{Hypothesis testing}
+
+Consider this correlogram:
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{"correlograma rx"}
+	\label{fig:correlograma-rx}
+\end{figure}
+
+This series appears to not be correlated with its past. How can we test this? 
+$$ H_0 = \rho_j = 0, \forall j \neq 0 $$
+This implies, in theory, that we would need to test infinite correlations. In practice, we limit the range to an arbitrary $J$. Let $\hat{\rho} := (\hat{\rho}_1, \hat{\rho}_2, ..., \hat{\rho}_J)^T, \rho = (\rho_1, \rho_2, ..., \rho_J)^T.$ Under the null, $\rho = 0$, and as $T \to \infty$:
+$$ \sqrt{T}\hat{\rho} \to \mathcal{N}(0, I_J) $$
+The intuition here is that, under $H_0$, $\hat{\rho}$ is a sequence of \textit{iid} variables with mean zero and variance-covariance matrix $I_J$ -- which makes the CLT valid. 
+
+Given this result, we can now create a statistic that does not depend on the multivariate normal distribution. We will square and sum the expression to arrive at a Chi-squared distribution. This enables us to test the hypothesis with a Wald statistic. Under the null:
+
+$$
+W_{T}=T \hat{\rho}^{T} \hat{\rho}=T \sum_{j=1}^{J} \hat{\rho_{j}}^{2} \rightarrow \chi_{J}^{2}
+$$
+
+\subsection{Testing autocorrelations or regressions?}
+
+Note that inferring about the autocorrelations is intimately related to inferring in a regression of a time series on its past values. This can be understood by remembering the linear projection interpretation of OLS. Ordinary Least Squares estimation \textit{always} reports the parameters of the linear projection of $Y$ in $X$, no matter how the model is specified!
+
+Consider the following model:
+$$
+\begin{aligned}
+	Y_{t} &=\alpha+\beta_{1} Y_{t-1}+\beta_{2} Y_{t-2}+\cdots+\beta_{J} Y_{t_{J}}+\varepsilon_{t} \\
+	&=\alpha+X_{t} \beta+\varepsilon_{t}
+\end{aligned}
+$$
+where $\beta:=\left(\beta_{1}, \ldots, \beta_{J}\right)^{T}$ and $X_{t}=\left(Y_{t-1}, \ldots, Y_{t-j}\right) .$ If we define the coefficients of the model above as the parameters of the linear projection of $Y_t$ on the unit vector and $X_t$, $\alpha=\mu_{Y}-\mu_{X} \beta$ where $\mu_{Y}=\mathrm{E}\left(Y_{t}\right)$ and $\mu_{X}=\mathrm{E}\left(X_{t}\right)$
+
+Using this result, we have:
+$$
+Y_{t}-\mu_{Y}=\left(X_{t}-\mu_{X}\right) \beta+\varepsilon_{t}
+$$
+This means that $\beta$ can be written as:
+$$
+\beta=\mathbb{E}\left[\left(X_{t}-\mu_{X}\right)^{T}\left(X_{t}-\mu_{X}\right)\right]^{-1} \mathbb{E}\left[\left(X_{t}-\mu_{X}\right)^{T}\left(Y_{t}-\mu_{Y}\right)\right]=\Gamma^{-1} \gamma
+$$
+where the matrix $\Gamma^{-1}$ is symmetric with diagonal elements all equal to $\gamma_{1}, \gamma_{2}, \ldots, \gamma_{J-1}$, due to the assumed stationarity. Note that $\mathbb{E}(Y_t - \mu_Y)^2 = \mathbb{E}(Y_{t-j} - \mu_{Y-j})^2 = \gamma_0 \forall j$.
+
+Thus, $\beta=\overrightarrow{0} \Longleftrightarrow \gamma=\overrightarrow{0}$, because $\Gamma$ is a positive definite matrix. This means that \textit{testing $\beta = 0$ is equivalent to testing $\gamma = 0$.}
+
+It is important to highlight that this analysis is based upon the inference of $\gamma_{j}=\mathbb{E}\left(z_{t}-\bar{z}_{T}\right)\left(z_{t-j}-\bar{z}_{T}\right).$ If we were interested in \textit{other types of relations between $Z_t$ and its past, the analysis would have to be adapted} -- for example, $Z_t^2$. It would be necessary to check again for stationarity and ergodicity.
+
 
 \chapter{Problem 1: Modelling exchange rates}
 
@@ -1488,5 +1559,1668 @@ Now, let's run \emph{auto.arima}.
 ## ar1       -0.003988796 0.08042284
 ## intercept  0.003511958 0.08308440
 \end{verbatim}
+
+
+\chapter{Problem 2: Estimating ARMA models}
+
+\{HAMILTON 5.1-5.6\}
+
+
+\chapter{Problem 3: Identification of ARMA models}
+
+In this problem, we'll be tackling the issue of \emph{identification} of
+an ARMA model. Namely, we will employ the \emph{Box-Jenkins} model
+selection strategy, based upon the concept of \emph{parsimony}.
+
+The principle of \emph{parsimony} is inspired on the trade-off between
+\emph{fit}, i.e., \(R^2\), and \emph{degrees of freedom}. ``Box and
+Jenkins argue that parsimonious models produce better forecasts than
+overparametrized models''. (p.~76)
+
+The Box-Jenkins strategy is divided in three main stages:
+
+\begin{itemize}
+	\item Identification;
+	\item Estimation;
+	\item Diagnostic checking.
+\end{itemize}
+
+These estimations depend upon two essential conditions (discussed in
+earlier problems and lectures): \emph{stationarity} and
+\emph{invertibility}. Stationarity, as we have discussed earlier, is
+necessary to effectively \emph{employ econometric methods} and to infer
+characteristics of a population through a given sample. Enders also
+points out that t-statistics and Q-statistics are based upon the
+assumption that the data are stationary (p.~77). This implies a
+condition on the \emph{AR} process of an ARMA model (roots of
+characteristic polynomial outside of unity circle).
+
+Furthermore, the model shall be \emph{invertible} -- i.e., if it can be
+represented by a finite or convergent AR model. This implies a condition
+on the \emph{MA} process -- i.e., if it can be written as an
+AR(\(\infty\)).
+
+We're going to check these conditions intuitively by plotting the ACFs
+and PACFs of the time series:
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(df)}
+		
+		\NormalTok{pplot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t, }\DataTypeTok{y =}\NormalTok{ value)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Time series plot"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{pplot}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/plots-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{acf_ts <-}\StringTok{ }\KeywordTok{Acf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/plots-2} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{acf_test_values <-}\StringTok{ }\NormalTok{acf_ts}\OperatorTok{$}\NormalTok{acf}\OperatorTok{/}\KeywordTok{sd}\NormalTok{(acf_ts}\OperatorTok{$}\NormalTok{acf)}
+		
+		\KeywordTok{head}\NormalTok{(}\KeywordTok{data.frame}\NormalTok{(acf_test_values))}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##   acf_test_values
+	## 1       6.5814152
+	## 2       3.9180772
+	## 3      -0.6619326
+	## 4      -2.6109255
+	## 5      -1.4713722
+	## 6       0.6589976
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facst <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{20}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{faclt <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		
+		\NormalTok{facpst <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{100}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facplt <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facst}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/plots-3} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{faclt}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/plots-4} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facpst}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/plots-5} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facplt}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/plots-6} \end{center}
+
+Aside from usual methods, we'll employ the following criteria:
+
+\begin{itemize}
+	\item Akaike Information Criterion (AIC). 
+	$$ AIC = T * ln(SSR) + 2n $$
+	\item  Schwartz Bayesian Criterion (SBC).
+	$$ SBC = T * ln(SSR) + n * ln(T) $$
+\end{itemize}
+
+\(n\) denotes the number of parameters estimated (an useful metric given
+the importance of the degrees of freedom). \(T\) denotes the number of
+\emph{usable} observations. Note that, when comparing different models,
+it is important to \emph{fix} \(T\) to ensure that the \(AIC\) and
+\(SBC\) values are comparable and are capturing only variations in the
+actual model and not the effect of changing T.
+
+The objective with these criteria is to \emph{minimize} their values.
+``As the fit of the model improves, the AIC and SBC will approach
+-\(\infty\).'' (p.~70) \(AIC\) and \(SBC\) have different advantages and
+drawbacks: while the former is biased toward overparametrization and
+more powerful in small samples, \(SBC\) is consistent and has superior
+large sample properties. If both metrics point to the same model, we
+should be fairly confident that it is, indeed, the correct
+specification.
+
+It is also important to apply hypothesis tests to the estimates of the
+population parameters \(\mu, \sigma^2\) and \(\rho_s\) --
+\(\bar{y}, \hat{sigma}^2, r_s\), respectively. Worthy of note here is
+\(r_s\), which presents the following distributions under the null that
+\(y_t\) is stationary with \(\varepsilon_t \sim \mathcal{N}\):
+\[ Var(r_s) = T^{-1} \hspace{2em} for \, s = 1\]
+\[ Var(r_s) = T^{-1}(1 + 2\sum_{j=1}^{s-1} r_j^2) \hspace{2em} for \, s > 1\]
+
+The Q-statistic is also introduced by Enders in this chapter. It is used
+to test whether a group of autocorrelations is significantly different
+from zero. \[Q = T\sum_{k=1}^s r_k^2\] Under the null of
+\(r_k = 0 \forall k\), Q is asymptotically \(\chi^2\) with s degrees of
+freedom. ``Certainly, a white-noise process (in which all
+autocorrelations should be zero) would have a Q value of zero''. (p.~68)
+
+An alternative form for \(Q\) is presented by Ljung and Box (1978):
+\[ Q = T(T+2) \sum_{k=1}^s \dfrac{r_k^2}{(T-k)} \]
+
+Furthermore, it is also important to check whether the residuals of the
+model are actually \emph{white noise}. This can be done via the
+Q-statistic, which \emph{should not result in the rejection of the
+	null}. If that is not the case, the model specified is not the best one
+available, as there's still a relevant underlying variable (\(y\) or
+\(\varepsilon\)).
+
+Let's now perform the \emph{estimation stage}. This shall be done via
+the function \emph{auto.arima} from the package \emph{forecast}.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_model <-}\StringTok{ }\KeywordTok{auto.arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{num.cores =} \DecValTok{24}\NormalTok{, }\DataTypeTok{max.d =} \DecValTok{0}\NormalTok{, }\DataTypeTok{max.D =} \DecValTok{0}\NormalTok{, }
+		\DataTypeTok{stepwise =}\NormalTok{ F)}
+		
+		\KeywordTok{summary}\NormalTok{(aa_model)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: df$value 
+	## ARIMA(2,0,1) with non-zero mean 
+	## 
+	## Coefficients:
+	##          ar1      ar2    ma1    mean
+	##       0.7524  -0.5545  0.797  3.5305
+	## s.e.  0.0818   0.0813  0.064  0.3485
+	## 
+	## sigma^2 estimated as 3.002:  log likelihood=-235.87
+	## AIC=481.75   AICc=482.27   BIC=495.68
+	## 
+	## Training set error measures:
+	##                      ME     RMSE      MAE      MPE    MAPE      MASE
+	## Training set 0.01363546 1.703559 1.426984 5.237664 82.3373 0.5612557
+	##                     ACF1
+	## Training set 0.004670695
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{print}\NormalTok{(}\StringTok{"t-values: "}\NormalTok{)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] "t-values: "
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{4}\NormalTok{)}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{)) \{}
+		
+		\NormalTok{    aa_t[i] <-}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{var.coef[i, i])}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(aa_t)}
+		
+		\NormalTok{aa_t}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##        aa_t
+	## 1  9.203615
+	## 2 -6.822352
+	## 3 12.444488
+	## 4 10.129782
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{aa_q}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	##  Box-Pierce test
+	## 
+	## data:  aa_model$residuals
+	## X-squared = 0.078351, df = 3, p-value = 0.9943
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{ggAcf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{20}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/estimation autoarima-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{ggPacf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{20}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{center}\includegraphics{Econo2_P3_files/figure-latex/estimation autoarima-2} \end{center}
+
+The results of \emph{auto.arima} imply that the best model is an
+ARMA(2,1):
+\[ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+Furthermore, the Q-statistic \emph{(Box.test)} seems to indicate that
+\(\varepsilon_t\) is truly white noise.
+
+Let's now run some different models and compare them against the results
+of \emph{auto.arima}. We'll begin with some overspecified model. First,
+an ARMA(2,2):
+\[ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma22 <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+		
+		\KeywordTok{summary}\NormalTok{(arma22)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: df$value 
+	## ARIMA(2,0,2) with non-zero mean 
+	## 
+	## Coefficients:
+	##          ar1      ar2     ma1     ma2    mean
+	##       0.7417  -0.5502  0.8113  0.0149  3.5311
+	## s.e.  0.1442   0.0950  0.1692  0.1631  0.3514
+	## 
+	## sigma^2 estimated as 3.028:  log likelihood=-235.87
+	## AIC=483.74   AICc=484.48   BIC=500.46
+	## 
+	## Training set error measures:
+	##                      ME     RMSE      MAE      MPE     MAPE      MASE
+	## Training set 0.01360342 1.703508 1.426237 4.791703 81.74486 0.5609619
+	##                     ACF1
+	## Training set 0.001161589
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma22_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{5}\NormalTok{)}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{)) \{}
+		
+		\NormalTok{    arma22_t[i] <-}\StringTok{ }\NormalTok{arma22}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(arma22}\OperatorTok{$}\NormalTok{var.coef[i, i])}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{arma22_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(arma22_t)}
+		
+		\NormalTok{arma22_t}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##      arma22_t
+	## 1  5.14206433
+	## 2 -5.78853038
+	## 3  4.79577309
+	## 4  0.09134106
+	## 5 10.04968297
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma22_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(arma22}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ arma22}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{arma22}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{arma22_q}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	##  Box-Pierce test
+	## 
+	## data:  arma22$residuals
+	## X-squared = 0.26458, df = 4, p-value = 0.992
+\end{verbatim}
+
+The t-value of \(ma2\) is not able to reject the null hypothesis.
+Furthermore, the Q-statistic \emph{(Box.test)} seems to indicate that
+\(\varepsilon_t\) is truly white noise.
+
+Now, an ARMA(3,1):
+\[ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \Phi_3 y_{t-3} + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma31 <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+		
+		\KeywordTok{summary}\NormalTok{(arma31)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: df$value 
+	## ARIMA(3,0,1) with non-zero mean 
+	## 
+	## Coefficients:
+	##          ar1     ar2     ar3     ma1    mean
+	##       0.7610  -0.565  0.0112  0.7923  3.5312
+	## s.e.  0.1215   0.137  0.1174  0.0825  0.3516
+	## 
+	## sigma^2 estimated as 3.028:  log likelihood=-235.87
+	## AIC=483.74   AICc=484.48   BIC=500.46
+	## 
+	## Training set error measures:
+	##                      ME     RMSE      MAE      MPE     MAPE      MASE
+	## Training set 0.01359734 1.703504 1.426202 4.779284 81.71699 0.5609482
+	##                      ACF1
+	## Training set 0.0008885573
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma31_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{5}\NormalTok{)}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{)) \{}
+		
+		\NormalTok{    arma31_t[i] <-}\StringTok{ }\NormalTok{arma31}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(arma31}\OperatorTok{$}\NormalTok{var.coef[i, i])}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{arma31_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(arma31_t)}
+		
+		\NormalTok{arma31_t}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##      arma31_t
+	## 1  6.26539086
+	## 2 -4.12346904
+	## 3  0.09501299
+	## 4  9.59788435
+	## 5 10.04172094
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma31_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(arma31}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ arma31}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{arma31}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{arma31_q}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	##  Box-Pierce test
+	## 
+	## data:  arma31$residuals
+	## X-squared = 0.25911, df = 4, p-value = 0.9923
+\end{verbatim}
+
+The t-value of \(ar3\) is not able to reject the null hypothesis.
+Furthermore, the Q-statistic \emph{(Box.test)} seems to indicate that
+\(\varepsilon_t\) is truly white noise.
+
+Now, let's try some \emph{underspecified models}. Beginning with an
+ARMA(2,0):
+\[ y_t = c + \Phi_1 y_{t-1} + \Phi_2 y_{t-2} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma20 <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{))}
+		
+		\KeywordTok{summary}\NormalTok{(arma20)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: df$value 
+	## ARIMA(2,0,0) with non-zero mean 
+	## 
+	## Coefficients:
+	##          ar1      ar2    mean
+	##       1.0226  -0.7153  3.5194
+	## s.e.  0.0634   0.0635  0.2694
+	## 
+	## sigma^2 estimated as 4.24:  log likelihood=-256.37
+	## AIC=520.74   AICc=521.09   BIC=531.89
+	## 
+	## Training set error measures:
+	##                      ME     RMSE      MAE      MPE     MAPE      MASE      ACF1
+	## Training set 0.01106086 2.033314 1.630805 73.16585 128.4039 0.6414218 0.2915253
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma20_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{3}\NormalTok{)}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{)) \{}
+		
+		\NormalTok{    arma20_t[i] <-}\StringTok{ }\NormalTok{arma20}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(arma20}\OperatorTok{$}\NormalTok{var.coef[i, i])}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{arma20_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(arma20_t)}
+		
+		\NormalTok{arma20_t}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##    arma20_t
+	## 1  16.12226
+	## 2 -11.26848
+	## 3  13.06561
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma20_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(arma20}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ arma20}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{arma20}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{arma20_q}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	##  Box-Pierce test
+	## 
+	## data:  arma20$residuals
+	## X-squared = 13.728, df = 2, p-value = 0.001045
+\end{verbatim}
+
+The Q-statistic indicates that there is an ommited variable -- namely,
+\(\varepsilon_{t-1}\) that we have just excluded from the model.
+
+Now, an ARMA(1,1):
+\[ y_t = c + \Phi_1 y_{t-1} +  + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma11 <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+		
+		\KeywordTok{summary}\NormalTok{(arma11)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: df$value 
+	## ARIMA(1,0,1) with non-zero mean 
+	## 
+	## Coefficients:
+	##          ar1     ma1    mean
+	##       0.4476  0.9244  3.6027
+	## s.e.  0.0831  0.0323  0.6234
+	## 
+	## sigma^2 estimated as 4.026:  log likelihood=-253.74
+	## AIC=515.48   AICc=515.82   BIC=526.63
+	## 
+	## Training set error measures:
+	##                       ME     RMSE      MAE      MPE     MAPE      MASE
+	## Training set 0.006283661 1.981184 1.621537 51.07775 142.3988 0.6377767
+	##                   ACF1
+	## Training set 0.2028683
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma11_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{3}\NormalTok{)}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{)) \{}
+		
+		\NormalTok{    arma11_t[i] <-}\StringTok{ }\NormalTok{arma11}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(arma11}\OperatorTok{$}\NormalTok{var.coef[i, i])}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{arma11_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(arma11_t)}
+		
+		\NormalTok{arma11_t}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##    arma11_t
+	## 1  5.387948
+	## 2 28.624391
+	## 3  5.779126
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{arma11_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(arma11}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ arma11}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{arma11}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{arma11_q}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	##  Box-Pierce test
+	## 
+	## data:  arma11$residuals
+	## X-squared = 12.668, df = 2, p-value = 0.001775
+\end{verbatim}
+
+Again, the Q-statistic indicates that there is an ommited variable --
+namely, \(y_{t-1}\) that we have just excluded from the model.
+
+Finally, let's compare the \(AIC\) and \(BIC\) values for all these
+models.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{criteria <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{5}\NormalTok{, }\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{)}
+		
+		\NormalTok{aa_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"ARMA(2,1)*"}\NormalTok{, aa_model}\OperatorTok{$}\NormalTok{aic, aa_model}\OperatorTok{$}\NormalTok{bic)}
+		
+		\KeywordTok{names}\NormalTok{(aa_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+		
+		\NormalTok{arma22_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"ARMA(2,2)"}\NormalTok{, arma22}\OperatorTok{$}\NormalTok{aic, arma22}\OperatorTok{$}\NormalTok{bic)}
+		
+		\KeywordTok{names}\NormalTok{(arma22_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+		
+		\NormalTok{arma31_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"ARMA(3,1)"}\NormalTok{, arma31}\OperatorTok{$}\NormalTok{aic, arma31}\OperatorTok{$}\NormalTok{bic)}
+		
+		\KeywordTok{names}\NormalTok{(arma31_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+		
+		\NormalTok{arma20_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"ARMA(2,0)"}\NormalTok{, arma20}\OperatorTok{$}\NormalTok{aic, arma20}\OperatorTok{$}\NormalTok{bic)}
+		
+		\KeywordTok{names}\NormalTok{(arma20_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+		
+		\NormalTok{arma11_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"ARMA(1,1)"}\NormalTok{, arma11}\OperatorTok{$}\NormalTok{aic, arma11}\OperatorTok{$}\NormalTok{bic)}
+		
+		\KeywordTok{names}\NormalTok{(arma11_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+		
+		
+		\NormalTok{criteria <-}\StringTok{ }\KeywordTok{rbind.data.frame}\NormalTok{(aa_criteria, arma22_criteria, arma31_criteria, }
+		\NormalTok{    arma20_criteria, arma11_criteria)}
+		
+		\NormalTok{criteria}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##        Model      AIC      BIC
+	## 1 ARMA(2,1)* 481.7460 495.6834
+	## 2  ARMA(2,2) 483.7376 500.4625
+	## 3  ARMA(3,1) 483.7369 500.4619
+	## 4  ARMA(2,0) 520.7381 531.8880
+	## 5  ARMA(1,1) 515.4753 526.6253
+\end{verbatim}
+
+As we can clearly see, the model chosen by \emph{auto.arima} is the
+optimal choice according both to AIC and BIC.
+
+
+
+
+\chapter{Forecasting}
+
+Suppose that you observe a time series up to period T, $Y_1, Y_2, ..., Y_T,$ and would like to forecast its value in $T+1$, or, more generically, up to a time horizon $h \geq 1$: $Y_{T+1}, ..., Y_{T+h}$.
+
+Let $g(Y_1, ..., Y_T)$ be a general predictor of $Y_{T+1}$ built with information up to period $T$. We can measure its utility with its \textit{mean squared error (MSE)}:
+$$ MSE[g(Y_1, ..., Y_T)] := \mathbb{E}[(Y_{T+1} - g(Y_1, ..., Y_T))^2] $$
+
+We know that the conditional mean is the predictor that minimizes MSE:
+$$\mathbb{E}\left(Y_{T+1} \mid Y_{T}, \ldots, Y_{1}\right)=\operatorname{argmin}_{g} \mathbb{E}\left[\left(Y_{t+1}-g\left(Y_{1}, Y_{2}, \ldots, Y_{T}\right)\right)^{2}\right]$$
+
+Unfortunately, we usually don't have the functional form of $\mathbb{E}\left(Y_{T+1} \mid Y_{T}, \ldots, Y_{1}\right)$, and postulate its best linear form:
+$$\pi\left(Y_{T+1} \mid Y_{T}, \ldots, Y_{1}\right)=\alpha+\beta_{0} Y_{T}+\beta_{1} Y_{T-1}+\ldots \beta_{T-1} Y_{1}$$
+
+Denote the best linear predictor with information up to T as $Y_{T+1|T} := \pi(Y_{T+1}|Y_t,..., Y_1)$, and its estimated version as $\hat{Y}_{T+1|T} := \hat{\pi}(Y_{T+1}|Y_t,..., Y_1) = \hat{\alpha}+\hat{\beta}_{0} Y_{T}+\hat{\beta}_{1} Y_{T-1}+\ldots \hat{\beta}_{T-1} Y_{1}$.
+
+\section{Forecasting with an AR(1) model}
+
+Remember from Definition \ref{ar1-def} that an AR(1) model has the following form:
+$$ Y_t = c + \phi Y_{t-1} + \varepsilon_{t}$$
+
+\subsection{Forecast}
+
+Given that $\mathbb{E}(\varepsilon_{t+1}|Y_T) = 0$ (as $\epsilon \sim wn(0, \sigma^2)$), we have: 
+
+$$
+Y_{T+1 \mid T}:=\pi\left(Y_{T+1} \mid Y_{T}, \ldots, Y_{1}\right)=c+\phi Y_{T}
+$$
+For $T+2$, we have:
+$$
+\begin{aligned}
+	Y_{T+2 \mid T} &:=\pi\left(Y_{T+2} \mid Y_{T}, \ldots, Y_{1}\right) \\
+	&=\pi\left(\pi\left(Y_{T+2} \mid Y_{T+1}, Y_{T}, \ldots, Y_{1}\right) \mid Y_{T}, \ldots, Y_{1}\right) \\
+	&=\pi\left(c+\phi Y_{T+1} \mid Y_{T}, \ldots, Y_{1}\right) \\
+	&=c+\phi\left(c+\phi Y_{T}\right)=(1+\phi) c+\phi^{2} Y_{T}
+\end{aligned}
+$$
+The clear pattern here yields, more generally:
+$$
+Y_{T+h \mid T}=\left(1+\phi+\phi^{2}+\cdots+\phi^{h-1}\right) c+\phi^{h} Y_{T}
+$$
+
+\subsection{Forecast error}
+
+It is also easy to verify that the \textit{forecast error} for $h=1$ is given by:
+$$ u_{T+1|T} := Y_{T+1} - Y_{T+1|T} = Y_{T+1} - c - \phi Y_T = \varepsilon_{T+1} $$
+ 
+For $h=2$, we have:
+$$
+\begin{aligned}
+ u_{T+2 \mid T} &:=Y_{T+2}-Y_{T+2 \mid T} \\
+ &=c+\phi Y_{T+1}+\epsilon_{T+2}-\left(c+\phi Y_{T+1 \mid T}\right) \\
+ &=\phi\left(Y_{T+1}-Y_{T+1 \mid T}\right)+\epsilon_{T+2} \\
+ &=\phi u_{T+1 \mid T}+\epsilon_{T+2}=\phi \epsilon_{T+1}+\epsilon_{T+2}
+\end{aligned}
+$$
+More generally, for a given time horizon $h$:
+$$
+u_{T+h \mid T}=\left(\epsilon_{T+h}+\phi \epsilon_{T+h-1}+\cdots+\phi^{h-1} \epsilon_{T+1}\right)$$
+
+\subsection{Mean reversion}
+
+Note that, as $h$ increases, the prediction \textit{reverts to the unconditional mean:}
+
+$$\lim _{h \rightarrow \infty} Y_{T+h \mid T}=c \lim _{h \rightarrow \infty} \sum_{i=0}^{h-1} \phi^{i}+Y_{T} \lim _{h \rightarrow \infty} \phi^{h}=\frac{c}{1-\phi}=: \mu$$
+
+The variance of the forecast error is given by:
+$$ Var(u_{T+h|T}) = (1 + \phi^{2} + \phi^4 + ... + \phi^{2(h-1)})\sigma^2 $$
+
+Taking the limit as $h \to \infty$, the variance of the forecast error \textit{also approaches the unconditional variance of the process:}
+$$\lim _{h \rightarrow \infty} \mathbb{V}\left(u_{T+h \mid T}\right)=\sigma^{2} \lim _{h \rightarrow \infty} \sum_{i=0}^{h-1} \phi^{2 i}=\frac{\sigma^{2}}{1-\phi^{2}}=: \gamma_{0}$$
+
+\section{Forecasting with an AR(p) model}
+
+\subsection{Forecast}
+
+The same procedure can be applied to an AR(p). For $h = 1$: 
+$$
+Y_{T+1 \mid T}=\pi\left(Y_{T+1} \mid Y_{T}, \ldots, Y_{1}\right)=c+\phi_{1} Y_{T}+\cdots+\phi_{p} Y_{T-p+1}
+$$
+For a given $h$, proceed recursively:
+$$\begin{aligned}
+	Y_{T+2 \mid T} &=c+\phi_{1} Y_{T+1 \mid T}+\phi_{2} Y_{T}+\phi_{3} Y_{T-1}+\cdots+\phi_{p} Y_{T+2-p} \\
+	Y_{T+3 \mid T} &=c+\phi_{1} Y_{T+2 \mid T}+\phi_{2} Y_{T+1 \mid T}+\phi_{3} Y_{T}+\cdots+\phi_{p} Y_{T+3-p} \\
+	Y_{T+4 \mid T} &=c+\phi_{1} Y_{T+3 \mid T}+\phi_{2} Y_{T+2 \mid T}+\phi_{3} Y_{T+1 \mid T}+\cdots+\phi_{p} Y_{T+4-p} \\
+	& \vdots \\
+	Y_{T+h \mid T} &=c+\phi_{1} Y_{T+h-1 \mid T}+\phi_{2} Y_{T+h-2 \mid T}+\cdots+\phi_{p} Y_{T+h-p \mid T}
+\end{aligned}$$
+
+\subsection{Forecast error}
+
+For $h=1$, the forecast error is given by:
+$$ u_{T+1|T} := Y_{T+1} - Y_{T+1|T} = \varepsilon_{T+1}$$
+
+As $h$ increases:
+$$\begin{aligned}
+	u_{T+2 \mid T} &=\phi_{1} u_{T+1 \mid T}+\epsilon_{T+2} \\
+	u_{T+3 \mid T} &=\phi_{1} u_{T+2 \mid T}+\phi_{2} u_{T+1 \mid T}+\epsilon_{T+3} \\
+	& \vdots \\
+	u_{T+h \mid T} &=\phi_{1} u_{T+h-1 \mid T}+\cdots+\phi_{h-1} u_{T+1 \mid T}+\epsilon_{T+h},
+\end{aligned}$$
+where $\phi_{h-1} = 0$ for $h-1>p$.
+
+\section{Forecasting with a MA(1) model}
+
+Remember from \ref{ma1-def} that a MA(1) model is given by
+$$ Y_t = c + \theta \varepsilon_{t-1} + \varepsilon_{t} $$
+$$ Y_{T+1|T} := \pi(Y_{T+1} | Y_T,..., Y_1) $$
+
+We have seen that, if the MA(1) is invertible, we can write it as an AR($\infty$). This would mean, however, that the forecast errors would depend on \textit{all past values} -- notwithstanding the decreasing dependence, due to ergodicity. Given a fixed $\varepsilon_{0}$, we can reconstruct the entire error series: 
+$$\begin{aligned}
+	\epsilon_{1} &=Y_{1}-c-\theta \epsilon_{0} \\
+	\epsilon_{2} &=Y_{2}-c-\theta \epsilon_{1} \\
+	& \vdots \\
+	\epsilon_{T} &=Y_{T}-c-\theta \epsilon_{T-1}
+\end{aligned}$$
+
+If we do not know $\varepsilon_{0}$, we can approximate it by its (known!) mean, $\tilde{\varepsilon}_0 = 0$. If $T$ is large enough and $|\theta| < 1$, this is a good approximation. That is the case because for large $T$, the influence of the assumption $\tilde{\varepsilon}_0 = 0$ is geometrically diminished over time, given $|\theta| < 1$. 
+
+
+\subsection{Forecast}
+
+We are now able to construct the forecast using the estimated $\tilde{\varepsilon}_T$.
+$$ Y_{T+1|T} := c + \theta \tilde{\varepsilon}_T $$
+
+Iteratively for larger horizons:
+$$Y_{T+2 \mid T}=c+\theta \widetilde{\epsilon}_{T+1}=c+\theta\left(Y_{T+1 \mid T}-c-\theta \widetilde{\epsilon}_{T}\right)=c$$
+
+Note that \textit{the MA(1) process is not predictable for $h > 1$.} The forecast immediately mean reverts at $h>1$.
+
+\subsection{Forecast error}
+
+The forecast error, assuming $\tilde{\varepsilon}_T \approx \varepsilon_{T}$, is given by: 
+$$ u_{T+1|T} := Y_{T+1} - Y_{T+1|T} = \varepsilon_{T+1}$$
+
+This means that the variance of the forecast error is $\sigma^2$. For larger horizons, the variance converges to the unconditional variance: 
+$$ u_{T+h|T} := Y_{T+h} - Y_{T+h|T} = \varepsilon_{T+h} + \theta \varepsilon_{T+h-1}, \forall h>1$$
+
+Thus, $ Var(u_{T+h|T}) = (1+\theta)^2 \sigma^2 = \gamma_0, \forall h > 1$.
+
+\section{Forecasting with a MA(q) model}
+
+We can proceed iteratively for the MA(q) model.
+
+$$\begin{aligned}
+	Y_{T+1 \mid T} &=c+\theta_{1} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+1-q} \\
+	Y_{T+2 \mid T} &=c+\theta_{2} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+2-q} \\
+	Y_{T+3 \mid T} &=c+\theta_{3} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+3-q} \\
+	& \vdots \\
+	Y_{T+q \mid T} &=c+\theta_{q} \widetilde{\epsilon}_{T}
+\end{aligned}$$
+
+Note that, after $q$ periods, the prediction is the unconditional mean $c$.
+
+\section{Forecast with an ARMA(p,q) model}
+
+Let's combine the procedures presented for AR(p) and MA(q). For $h=1$:
+$$Y_{T+1 \mid T}=c+\phi_{1} Y_{T}+\cdots+\phi_{p} Y_{T-p+1}+\theta_{1} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+1-q},$$
+where $\{\widetilde{\varepsilon}_{T}, ..., \widetilde{\varepsilon}_{T+1-q}\}$ were obtained from the reconstruction process explained in the MA(q) case. However, here we need, aside from the first $q$ innovation values, also the \textit{last $p$ observations before the first one}. That is the case because of the expression for $\widetilde{\varepsilon}_{1}$:
+
+$$\widetilde{\epsilon}_{1}=Y_{1}-c-\phi_{1} Y_{0}-\cdots-\phi_{p} Y_{p-1}-\theta_{1} \widetilde{\epsilon}_{0}-\theta_{2} \widetilde{\epsilon}_{-1}-\cdots-\theta_{q} \widetilde{\epsilon}_{1-q}$$
+
+Alternatively, we can start reconstructing the residuals from $p+1$. 
+
+\subsection{Forecast}
+
+From this, we can obtain the forecasts for any horizon $h \geq 1$, given $h>p>q$: 
+$$\begin{array}{l}
+	Y_{T+1 \mid T}=c+\phi_{1} Y_{T}+\cdots+\phi_{p} Y_{T+1-p}+\theta_{1} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+1-q} \\
+	Y_{T+2 \mid T}=c+\phi_{1} Y_{T+1 \mid T}+\cdots+\phi_{p} Y_{T+2-p}+\theta_{2} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+2-q} \\
+	Y_{T+3 \mid T}=c+\phi_{1} Y_{T+2 \mid T}+\cdots+\phi_{p} Y_{T+3-p}+\theta_{3} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+3-q}
+\end{array}$$
+
+$ \hspace{13em} \vdots$
+
+$$\begin{aligned}
+	Y_{T+q \mid T} &=c+\phi_{1} Y_{T+q-1 \mid T}+\cdots+\phi_{p} Y_{T+q-p}+\theta_{q} \widetilde{\epsilon}_{T} \\
+	Y_{T+q+1 \mid T} &=c+\phi_{1} Y_{T+q \mid T}+\cdots+\phi_{p} Y_{T+q+1-p} \\
+	& \vdots \\
+	Y_{T+h \mid T} &=c+\phi_{1} Y_{T+h-1 \mid T}+\cdots+\phi_{p} Y_{T+h-p \mid T}
+\end{aligned}$$
+
+\section{Confidence intervals for forecasts}
+
+Given a forecast $\hat{Y}_{T+h|T}$, we'd like to have a \textit{confidence interval} for it. In practice, forecasting involves two types of errors:
+\begin{itemize}
+	\item \textbf{Estimation error:} $Y_{T+h|T} - \hat{Y}_{T+h|T}$. This is due to the estimation of the ARMA model, as we are always working with a sample.
+	\item \textbf{Forecast error:} $u_{T+h|T} = Y_{T+h} - Y_{T+h|T}$. This is the portion of the error that would exist event if we knew the true population parameters.
+\end{itemize}
+
+From this, we have the \textit{aggregate error:}
+$$ Y_{T+h} - \hat{Y}_{T+h|T} = (Y_{T+h} - {Y}_{T+h|T}) + (Y_{T+h|T} - \hat{Y}_{T+h|T}) $$
+
+\subsection{Normally distributed errors}
+
+A first way to tackle the issue of confidence intervals for forecasts is to \textit{assume normality}: $\varepsilon_{t} \sim \mathcal{N}(0, \sigma^2)$. 
+
+In that case, we know that $Y_{T+h}, \hat{Y}_{T+h|T}$ will also be normally distributed, as the first term consists of a combination of past errors and past values of Y, and the second term is asymptotically normal given the properties of ARMA estimators. This means that the confidence interval is known to us, for $\alpha = 5\%$:
+$$\left[\widehat{Y}_{T+h \mid T} \pm 1,96 \sqrt{\mathbb{V}\left(u_{T+h \mid T}\right)}\right]$$
+
+We clearly do not observe $Var(u_{T+h|T})$, but we know its functional form and, thus, can consistently estimate it. For an AR(1), for example: 
+$$\widehat{\mathbb{V}}\left(u_{T+h \mid T}\right)=\widehat{\sigma}^{2} \sum_{i=0}^{h-1} \widehat{\phi}^{2 i}$$
+
+Note that, even if we assume that the innovation terms are normally distributed, we \textit{still need an asymptotic argument} to guarantee that $\widehat{Y}_{T+h \mid T} \stackrel{p}{\longrightarrow} Y_{T+h \mid T} \text { and } \widehat{\mathbb{V}}\left(u_{T+h \mid T}\right) \stackrel{p}{\longrightarrow} \mathbb{V}\left(u_{T+h \mid T}\right)$.
+
+\subsection{Bootstrapping}
+
+What if the errors \textit{are not normally distributed?} This makes the issue a lot more complicated. Note that, even if we apply the CLT to argue that $Y_{T+h|T} - \hat{Y}_{T+h|T} \sim \mathcal{N}(\cdot)$, what makes us believe that $(Y_{T+h} - {Y}_{T+h|T})$ is also normally distributed? In the last subsection, this condition was valid because of the distribution of the errors. There's no asymptotical argument to be made. 
+
+In practice, we don't know the distribution of the error terms. In fact, they are \textit{rarely normally distributed!} A procedure to construct confidence intervals in this setting is called \textit{bootstrap.} For ARMA models, it consists in generating simulated samples from the actual sample and repeat the estimations for each simulated sample. This yields an arbitrarily large number of estimates \textit{from the same data}. From this, we can use its \textit{empirical distribution} to find the confidence interval.
+
+Bootstrapping has a number of advantages over the traditional procedures for obtaining a confidence interval. In many cases, the convergence is faster than the usual $1/\sqrt{T}$, and it frequently performs better in small sample environments. It can also be applied in settings in which asymptotic theory is very intricate. In practice, we almost always use some sort of bootstrap method. 
+
+The essential idea behind bootstrapping is to assume that $\varepsilon_{t}$ is \textit{iid} with a cdf $F$. Suppose that you have $T$ residuals, $\hat{\varepsilon}_t$. Its empirical distribution is simply: 
+$$ \hat{F}_T(v) = \dfrac{\{ no. \, residuals \leq v \}}{T}, \hspace{1em} v \in \mathbb{R}$$
+
+The Law of Large Numbers guarantees that, as $T \to \infty$, 
+$$ \hat{F}_T(v) \to_{a.s.} F(v) $$
+This means that the empirical distribution of the residuals becomes arbitrarily close to the real distribution as $T$ grows.
+
+\subsubsection{Procedure}
+
+Bootstrapping for an ARMA(p,q) model involves the following steps:
+
+\begin{enumerate}
+	\item \begin{itemize}
+		\item Estimate ARMA(p,q)
+		$$ Y_t = c + \sum_{j=1}^p \phi_j Y_{t-j} + \sum_{j=1}^q \theta_j \varepsilon_{t-j} + \varepsilon_t$$
+		
+		\item Calculate the residuals of the regression:
+		$$ \hat{\varepsilon}_t := Y_t - (\hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j})$$
+		
+		\item If the residuals do not have mean 0, create the centered residuals:
+		$$ \tilde{\varepsilon}_t = \hat{\varepsilon}_t - \frac{1}{t} \sum_{t=1}^T \hat{\varepsilon}_t$$
+	\end{itemize}
+	
+	\item \begin{itemize}
+		\item Select at random, with replacement, a sample with $T + m$ elements, $m >> 0$:
+		$$\{\varepsilon^*_1, ..., \varepsilon^*_{T+m}\}$$
+		\item Create a series $\{Y^*_t\}_{t=1}^{T+m}$:
+		$$ Y_t^* = Y_t, 1 \leq t \leq max(p,q) $$
+		$$ Y_t^* = \hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j}^* + \varepsilon_t^*, max(p,q) < t \leq T + m $$
+	\end{itemize}
+	\item \begin{itemize}
+		\item Using the simulated sample $\{Y^*_t\}_{t=1}^{T+m}$, create a forecast for $h >0$ periods using the estimated coefficients \textit{obtained with the real sample}.
+		\item This yields a vector of dimension $h$ containing the forecasts in the form:
+		$$(\hat{Y}^*_{T+1}, ..., \hat{Y}^*_{T+h})$$ 
+		\item Repeat steps 2 and 3 for $S$ times. Create a matrix with the results.
+		\item This yields a S x h matrix where each row is equal to the aforementioned vector.
+	\end{itemize}
+\end{enumerate}
+
+\chapter{Problem 4: Cross-validation and bootstrap}
+
+In this problem, we'll be tackling the issue of \emph{forecasting} of an
+ARMA model. The problem is split in two parts: (i)
+\emph{cross-validation}; and (ii) \emph{bootstrapping}.
+
+\section{Identification and estimation}
+
+First, let's identify the best model for our time series.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(df)}
+		
+		\NormalTok{pplot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t, }\DataTypeTok{y =}\NormalTok{ value)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Time series plot"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{pplot}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/plots-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{acf_ts <-}\StringTok{ }\KeywordTok{Acf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/plots-2} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{acf_test_values <-}\StringTok{ }\NormalTok{acf_ts}\OperatorTok{$}\NormalTok{acf}\OperatorTok{/}\KeywordTok{sd}\NormalTok{(acf_ts}\OperatorTok{$}\NormalTok{acf)}
+		
+		\KeywordTok{head}\NormalTok{(}\KeywordTok{data.frame}\NormalTok{(acf_test_values))}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##   acf_test_values
+	## 1        6.176432
+	## 2        2.515951
+	## 3        3.335438
+	## 4        1.864909
+	## 5        1.112884
+	## 6        0.858639
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facst <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{20}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{faclt <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		
+		\NormalTok{facpst <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{100}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facplt <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facst}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/plots-3} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{faclt}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/plots-4} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facpst}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/plots-5} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facplt}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/plots-6} \end{center}
+
+We'll now use the function \emph{auto.arima} from the package
+\emph{forecast} to identify and estimate the model.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_model <-}\StringTok{ }\KeywordTok{auto.arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{num.cores =} \DecValTok{24}\NormalTok{, }\DataTypeTok{max.d =} \DecValTok{0}\NormalTok{, }\DataTypeTok{stepwise =}\NormalTok{ F)}
+		
+		\KeywordTok{summary}\NormalTok{(aa_model)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: df$value 
+	## ARIMA(0,0,3) with non-zero mean 
+	## 
+	## Coefficients:
+	##          ma1     ma2     ma3    mean
+	##       0.1814  0.6647  0.4001  5.8982
+	## s.e.  0.0852  0.0750  0.0949  0.0562
+	## 
+	## sigma^2 estimated as 0.0667:  log likelihood=-5.42
+	## AIC=20.85   AICc=21.49   BIC=33.88
+	## 
+	## Training set error measures:
+	##                        ME      RMSE       MAE        MPE     MAPE      MASE
+	## Training set -0.002315954 0.2530428 0.2131067 -0.2268814 3.612855 0.7314965
+	##                    ACF1
+	## Training set 0.03868106
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{print}\NormalTok{(}\StringTok{"t-values: "}\NormalTok{)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] "t-values: "
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{)) \{}
+		
+		\NormalTok{    aa_t[i] <-}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{var.coef[i, i])}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(aa_t)}
+		
+		\NormalTok{aa_t}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##         aa_t
+	## 1   2.128691
+	## 2   8.861580
+	## 3   4.216481
+	## 4 105.004537
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{aa_q}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	##  Box-Pierce test
+	## 
+	## data:  aa_model$residuals
+	## X-squared = 0.35002, df = 3, p-value = 0.9504
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{criteria <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{)}
+		
+		\NormalTok{aa_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"MA(3)*"}\NormalTok{, aa_model}\OperatorTok{$}\NormalTok{aic, aa_model}\OperatorTok{$}\NormalTok{bic)}
+		
+		\KeywordTok{names}\NormalTok{(aa_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+		
+		\NormalTok{aa_criteria}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##    Model      AIC      BIC
+	## 1 MA(3)* 20.84963 33.87549
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fac_e <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{20}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		
+		\NormalTok{facp_e <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{20}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fac_e}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/estimation autoarima-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facp_e}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/estimation autoarima-2} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{mean}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] -0.002315954
+\end{verbatim}
+
+The results of \emph{auto.arima} imply that the best model is an
+ARMA(0,3) -- i.e., a MA(3):
+\[ y_t = c +  + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2}+ \theta_3 \varepsilon_{t-3} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+Furthermore, the Q-statistic \emph{(Box.test)} seems to indicate that
+\(\varepsilon_t\) is truly white noise.
+
+\section{Cross-validation}
+
+Let's now cross-validate or model. This will now be done manually;
+afterwards, an automatized version from \emph{fpp} shall be presented.
+
+Let \(h := 5\); \(frac = 0.2\). \(T\) is the size of our sample; \(k\)
+is the \emph{training} database. The remainder shall be used for testing
+purposes.
+
+As we have discovered previously, \emph{auto.arima} yields a
+\textbf{MA(3)} model. It will now be used.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{h <-}\StringTok{ }\DecValTok{5}
+		
+		\NormalTok{frac <-}\StringTok{ }\FloatTok{0.2}
+		
+		\NormalTok{T <-}\StringTok{ }\KeywordTok{length}\NormalTok{(df}\OperatorTok{$}\NormalTok{value)}
+		
+		\NormalTok{k <-}\StringTok{ }\KeywordTok{floor}\NormalTok{((}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{frac) }\OperatorTok{*}\StringTok{ }\NormalTok{T)}
+		
+		\CommentTok{# Estimating MA(3) with k = 80}
+		\NormalTok{fit <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value[}\DecValTok{1}\OperatorTok{:}\NormalTok{k], }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+		
+		\CommentTok{# Generating predictions from the model}
+		\NormalTok{pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{n.ahead =}\NormalTok{ h)}
+		
+		\CommentTok{# Calculating errors between the predicted values of the}
+		\CommentTok{# model and the actual values of the testing database}
+		
+		\NormalTok{e <-}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{value[(k }\OperatorTok{+}\StringTok{ }\NormalTok{h)] }\OperatorTok{-}\StringTok{ }\NormalTok{pred}\OperatorTok{$}\NormalTok{pred[h]}
+		
+		\NormalTok{e}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] -0.1951299
+\end{verbatim}
+
+Let's now update our training database iteratively with a for loop.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{e <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{100}\NormalTok{)}
+		
+		\CommentTok{# Updating the model}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ k}\OperatorTok{:}\NormalTok{(T }\OperatorTok{-}\StringTok{ }\NormalTok{h)) \{}
+		
+		\NormalTok{    fit <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value[}\DecValTok{1}\OperatorTok{:}\NormalTok{i], }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+		
+		\NormalTok{    pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit, }\DataTypeTok{n.ahead =}\NormalTok{ h)}
+		
+		\NormalTok{    e[i, }\DecValTok{1}\NormalTok{] <-}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{value[(i }\OperatorTok{+}\StringTok{ }\NormalTok{h)] }\OperatorTok{-}\StringTok{ }\NormalTok{pred}\OperatorTok{$}\NormalTok{pred[h]}
+		
+		\NormalTok{\}}
+	\end{Highlighting}
+\end{Shaded}
+
+With the matrix \emph{e} in hands, we can now calculate MSE:
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{mse <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(e}\OperatorTok{^}\DecValTok{2}\NormalTok{, }\DataTypeTok{na.rm =}\NormalTok{ T)}
+	\end{Highlighting}
+\end{Shaded}
+
+This procedure can now be used to compare other models against the model
+from \emph{auto.arima}.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{max_p <-}\StringTok{ }\DecValTok{5}
+		
+		\NormalTok{max_q <-}\StringTok{ }\DecValTok{5}
+		
+		\NormalTok{e <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{100}\NormalTok{, }\DataTypeTok{ncol =}\NormalTok{ (max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+		
+		\NormalTok{pred <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, (max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+		
+		\NormalTok{fit <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, (max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+		
+		\CommentTok{# Updating the model}
+		\ControlFlowTok{for}\NormalTok{ (u }\ControlFlowTok{in} \DecValTok{0}\OperatorTok{:}\NormalTok{max_q) \{}
+		
+		\ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in} \DecValTok{0}\OperatorTok{:}\NormalTok{max_p) \{}
+		
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ k}\OperatorTok{:}\NormalTok{(T }\OperatorTok{-}\StringTok{ }\NormalTok{h)) \{}
+		
+		\NormalTok{            fit[[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]] <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(df}\OperatorTok{$}\NormalTok{value[}\DecValTok{1}\OperatorTok{:}\NormalTok{i], }
+		\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(j, }\DecValTok{0}\NormalTok{, u))}
+		
+		\CommentTok{# fit <- append(fit, Arima(df$value[1:i], order = c(j,0,u)))}
+		
+		\CommentTok{# pred <- append(pred, predict(fit[[(j+u)]], n.ahead = h))}
+		
+		\NormalTok{            pred[[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]] <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit[[(((max_p }\OperatorTok{+}\StringTok{ }
+		\StringTok{                }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]], }\DataTypeTok{n.ahead =}\NormalTok{ h)}
+		
+		\NormalTok{            e[i, (((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)] <-}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{value[(i }\OperatorTok{+}\StringTok{ }
+		\StringTok{                }\NormalTok{h)] }\OperatorTok{-}\StringTok{ }\NormalTok{pred[[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]]}\OperatorTok{$}\NormalTok{pred[h]}
+		
+		\NormalTok{        \}}
+		
+		\NormalTok{    \}}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{mse <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ ((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)), }\DataTypeTok{ncol =} \DecValTok{1}\NormalTok{)}
+		
+		
+		
+		
+		\NormalTok{mse <-}\StringTok{ }\KeywordTok{colMeans}\NormalTok{(e}\OperatorTok{^}\DecValTok{2}\NormalTok{, }\DataTypeTok{na.rm =}\NormalTok{ T)}
+		
+		\NormalTok{mse}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##  [1] 0.1357466 0.1354001 0.1368083 0.1374243 0.1376508 0.1441940 0.1347115
+	##  [8] 0.1269779 0.1347789 0.1373465 0.1398588 0.1436175 0.1313779 0.1315448
+	## [15] 0.1435805 0.1355649 0.1421277 0.1335153 0.1316765 0.1333955 0.1400838
+	## [22] 0.1427467 0.1473227 0.1347447 0.1320856 0.1333025 0.1354734 0.1341742
+	## [29] 0.1380676 0.1357880 0.1346228 0.1382810 0.1319484 0.1308446 0.1382417
+	## [36] 0.1327046
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{optimal_index <-}\StringTok{ }\KeywordTok{which.min}\NormalTok{(mse)}
+		
+		\NormalTok{cv_model <-}\StringTok{ }\NormalTok{fit[[optimal_index]]}
+		
+		\KeywordTok{summary}\NormalTok{(cv_model)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: df$value[1:i] 
+	## ARIMA(1,0,1) with non-zero mean 
+	## 
+	## Coefficients:
+	##          ar1      ma1    mean
+	##       0.8253  -0.4888  5.9125
+	## s.e.  0.0814   0.1118  0.0815
+	## 
+	## sigma^2 estimated as 0.08209:  log likelihood=-14.72
+	## AIC=37.43   AICc=37.88   BIC=47.65
+	## 
+	## Training set error measures:
+	##                        ME      RMSE       MAE        MPE     MAPE      MASE
+	## Training set -0.002725722 0.2819456 0.2228183 -0.2756862 3.787114 0.7600473
+	##                    ACF1
+	## Training set -0.1279409
+\end{verbatim}
+
+The cross-validation method constructed above yielded an ARMA(1,1):
+\[ y_t = c + \phi_1 y_{t-1} +  + \theta_1 \varepsilon_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{cv_fc <-}\StringTok{ }\KeywordTok{forecast}\NormalTok{(cv_model, }\DataTypeTok{h =}\NormalTok{ h)}
+		
+		\KeywordTok{autoplot}\NormalTok{(cv_fc)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/forecast cv plot-1} \end{center}
+
+\section{Bootstrapping}
+
+Now, let's proceed to \emph{bootstrapping}. It envolves the following
+steps:
+
+\begin{enumerate}
+	\item \begin{itemize}
+		\item Estimate ARMA(p,q)
+		$$ Y_t = c + \sum_{j=1}^p \phi_j Y_{t-j} + \sum_{j=1}^q \theta_j \varepsilon_{t-j} + \varepsilon_t$$
+		
+		\item Calculate the residuals of the regression:
+		$$ \hat{\varepsilon}_t := Y_t - (\hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j})$$
+		
+		\item If the residuals do not have mean 0, create the centered residuals:
+		$$ \tilde{\varepsilon}_t = \hat{\varepsilon}_t - \frac{1}{t} \sum_{t=1}^T \hat{\varepsilon}_t$$
+	\end{itemize}
+	
+	\item \begin{itemize}
+		\item Select at random, with replacement, a sample with $T + m$ elements, $m >> 0$:
+		$$\{\varepsilon^*_1, ..., \varepsilon^*_{T+m}\}$$
+		\item Create a series $\{Y^*_t\}_{t=1}^{T+m}$:
+		$$ Y_t^* = Y_t, 1 \leq t \leq max(p,q) $$
+		$$ Y_t^* = \hat{c} + \sum_{j=1}^p \hat{\phi}_j Y_{t-j} + \sum_{j=1}^q \hat{\theta}_j \varepsilon_{t-j}^* + \varepsilon_t^*, max(p,q) < t \leq T + m $$
+	\end{itemize}
+	\item \begin{itemize}
+		\item Using the simulated sample $\{Y^*_t\}_{t=1}^{T+m}$, create a forecast for $h >0$ periods using the estimated coefficients \textit{obtained with the real sample}.
+		\item This yields a vector of dimension $h$ containing the forecasts in the form:
+		$$(\hat{Y}^*_{T+1}, ..., \hat{Y}^*_{T+h})$$ 
+		\item Repeat steps 2 and 3 for $S$ times. Create a matrix with the results.
+		\item This yields a S x h matrix where each row is equal to the aforementioned vector.
+	\end{itemize}
+\end{enumerate}
+
+We'll use, again, the optimal model from \emph{auto.arima}, MA(3):
+
+\[ y_t = c +  + \theta_1 \varepsilon_{t-1} + \theta_2 \varepsilon_{t-2}+ \theta_3 \varepsilon_{t-3} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{S <-}\StringTok{ }\DecValTok{1000}
+		
+		\NormalTok{m <-}\StringTok{ }\DecValTok{100}
+		
+		
+		
+		\NormalTok{optimal_p <-}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{]}
+		
+		\NormalTok{optimal_q <-}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{]}
+		
+		\NormalTok{e_sample <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ S, }\DataTypeTok{ncol =}\NormalTok{ (}\KeywordTok{length}\NormalTok{(df}\OperatorTok{$}\NormalTok{value) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{m)))}
+		
+		\NormalTok{y_star <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ S, }\DataTypeTok{ncol =}\NormalTok{ (}\KeywordTok{length}\NormalTok{(df}\OperatorTok{$}\NormalTok{value) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{m }\OperatorTok{+}\StringTok{ }\KeywordTok{max}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{], aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{]))))}
+		
+		\NormalTok{arima_star <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ S, }\DataTypeTok{ncol =}\NormalTok{ (}\KeywordTok{length}\NormalTok{(df}\OperatorTok{$}\NormalTok{value) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{m }\OperatorTok{+}\StringTok{ }\KeywordTok{max}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{], aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{]))))}
+		
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+		
+		\NormalTok{    e_sample[i] <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{replace =}\NormalTok{ T, }\DataTypeTok{size =}\NormalTok{ (}\KeywordTok{length}\NormalTok{(df}\OperatorTok{$}\NormalTok{value) }\OperatorTok{+}\StringTok{ }
+		\StringTok{        }\NormalTok{m))}
+		
+		\NormalTok{\}}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+		
+		\ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in}\NormalTok{ ((aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)}\OperatorTok{:}\NormalTok{(}\KeywordTok{length}\NormalTok{(df}\OperatorTok{$}\NormalTok{value) }\OperatorTok{+}\StringTok{ }
+		\StringTok{        }\NormalTok{m))) \{}
+		
+		\NormalTok{        arima_star[i, j] <-}\StringTok{ }\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{coef[}\DecValTok{4}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{coef[}\DecValTok{1}\NormalTok{] }\OperatorTok{*}\StringTok{ }
+		\StringTok{            }\NormalTok{e_sample[i, j }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{]) }\OperatorTok{+}\StringTok{ }\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{coef[}\DecValTok{2}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{e_sample[i, }
+		\NormalTok{            j }\OperatorTok{-}\StringTok{ }\DecValTok{2}\NormalTok{]) }\OperatorTok{+}\StringTok{ }\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{coef[}\DecValTok{3}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{e_sample[i, j }\OperatorTok{-}\StringTok{ }\DecValTok{3}\NormalTok{]) }\OperatorTok{+}\StringTok{ }
+		\StringTok{            }\NormalTok{e_sample[i, j])}
+		
+		\NormalTok{    \}}
+		
+		\NormalTok{\}}
+		
+		
+		\NormalTok{y_fixed <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ S, }\DataTypeTok{ncol =}\NormalTok{ (aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])))}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+		\NormalTok{    y_fixed[i, }\DecValTok{1}\NormalTok{] <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(df}\OperatorTok{$}\NormalTok{value[}\DecValTok{1}\NormalTok{])}
+		\NormalTok{    y_fixed[i, }\DecValTok{2}\NormalTok{] <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(df}\OperatorTok{$}\NormalTok{value[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{    y_fixed[i, }\DecValTok{3}\NormalTok{] <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(df}\OperatorTok{$}\NormalTok{value[}\DecValTok{3}\NormalTok{])}
+		\NormalTok{\}}
+		
+		
+		\NormalTok{y_star <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(y_fixed, arima_star[, }\OperatorTok{-}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{3}\NormalTok{)])}
+		
+		\NormalTok{y_m <-}\StringTok{ }\NormalTok{y_star[, }\OperatorTok{-}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{100}\NormalTok{)]}
+		
+		\NormalTok{y_m <-}\StringTok{ }\NormalTok{y_m[, }\OperatorTok{-}\NormalTok{(}\DecValTok{101}\OperatorTok{:}\DecValTok{103}\NormalTok{)]}
+		
+		\NormalTok{y_mt <-}\StringTok{ }\KeywordTok{t}\NormalTok{(y_m)}
+		
+		\NormalTok{y_matrix <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(y_m)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fc_list <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, S)}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+		
+		\NormalTok{    fc_list[[i]] <-}\StringTok{ }\KeywordTok{forecast}\NormalTok{(}\KeywordTok{ts}\NormalTok{(y_matrix[i, ]), }\DataTypeTok{model =}\NormalTok{ aa_model, }
+		\DataTypeTok{h =} \DecValTok{5}\NormalTok{)}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{fc_list[[}\DecValTok{1}\NormalTok{]]}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##     Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+	## 101       5.880900 5.549926 6.211875 5.374719 6.387082
+	## 102       5.869038 5.532663 6.205413 5.354597 6.383479
+	## 103       5.841494 5.439567 6.243421 5.226800 6.456189
+	## 104       5.898184 5.475000 6.321368 5.250980 6.545387
+	## 105       5.898184 5.475000 6.321368 5.250980 6.545387
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fc_mean <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ S, }\DataTypeTok{ncol =} \DecValTok{5}\NormalTok{))}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+		
+		\NormalTok{    fc_mean[i, ] <-}\StringTok{ }\NormalTok{fc_list[[i]]}\OperatorTok{$}\NormalTok{mean}
+		
+		\NormalTok{\}}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{head}\NormalTok{(fc_mean)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##         X1       X2       X3       X4       X5
+	## 1 5.880900 5.869038 5.841494 5.898184 5.898184
+	## 2 5.734428 5.543250 5.786803 5.898184 5.898184
+	## 3 5.728049 5.722659 5.832225 5.898184 5.898184
+	## 4 5.844103 5.943213 5.958997 5.898184 5.898184
+	## 5 5.550780 5.518844 5.732659 5.898184 5.898184
+	## 6 5.742853 5.863462 5.848949 5.898184 5.898184
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{hist_x1 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ fc_mean, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X1)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{40}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{hist_x1}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{qq_x1 <-}\StringTok{ }\KeywordTok{qqnorm}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X1)}
+		\KeywordTok{qqline}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X1)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-2} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{hist_x2 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ fc_mean, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X2)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{40}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{hist_x2}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-3} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{qq_x2 <-}\StringTok{ }\KeywordTok{qqnorm}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X2)}
+		\KeywordTok{qqline}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X2)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-4} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{hist_x3 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ fc_mean, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X3)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{40}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{hist_x3}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-5} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{qq_x3 <-}\StringTok{ }\KeywordTok{qqnorm}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X3)}
+		\KeywordTok{qqline}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X3)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-6} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{hist_x4 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ fc_mean, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X4)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{40}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{hist_x4}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-7} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{qq_x4 <-}\StringTok{ }\KeywordTok{qqnorm}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X4)}
+		\KeywordTok{qqline}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X4)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-8} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{hist_x5 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ fc_mean, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X5)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{bins =} \DecValTok{100}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{hist_x5}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-9} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{qq_x5 <-}\StringTok{ }\KeywordTok{qqnorm}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X5)}
+		\KeywordTok{qqline}\NormalTok{(fc_mean}\OperatorTok{$}\NormalTok{X5)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/mean ic-10} \end{center}
+
+The results show that, from \(h \geq 4\), the predicted value is the
+mean of the series.
+
+Now, some forecasting plots:
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fc <-}\StringTok{ }\KeywordTok{forecast}\NormalTok{(df}\OperatorTok{$}\NormalTok{value, }\DataTypeTok{model =}\NormalTok{ aa_model, }\DataTypeTok{h =}\NormalTok{ h)}
+		
+		\KeywordTok{autoplot}\NormalTok{(fc) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/forecast arima plots-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{autoplot}\NormalTok{(fc_list[[}\DecValTok{1}\NormalTok{]]) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/forecast arima plots-2} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{autoplot}\NormalTok{(fc_list[[}\DecValTok{66}\NormalTok{]]) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/forecast arima plots-3} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{autoplot}\NormalTok{(fc_list[[}\DecValTok{796}\NormalTok{]]) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P4_files/figure-latex/forecast arima plots-4} \end{center}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \end{document}

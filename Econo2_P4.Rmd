@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
 library(ggplot2)
 library(forecast)
 library(AER)
@@ -25,6 +25,26 @@ library(ggthemes)
 library(mdscore)
 library(readxl)
 library(fpp)
+
+
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+
+library(formatR)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+
 ```
 
 

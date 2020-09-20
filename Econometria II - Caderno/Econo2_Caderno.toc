@@ -38,4 +38,30 @@
 \contentsline {subsection}{\numberline {2.9.2}Moments of an ARMA(p,q) process}{18}{subsection.2.9.2}%
 \contentsline {subsection}{\numberline {2.9.3}ACF of an ARMA(p,q) process}{18}{subsection.2.9.3}%
 \contentsline {section}{\numberline {2.10}Testing for time dependence}{18}{section.2.10}%
-\contentsline {chapter}{\numberline {3}Problem 1: Modelling exchange rates}{19}{chapter.3}%
+\contentsline {subsection}{\numberline {2.10.1}Hypothesis testing}{19}{subsection.2.10.1}%
+\contentsline {subsection}{\numberline {2.10.2}Testing autocorrelations or regressions?}{20}{subsection.2.10.2}%
+\contentsline {chapter}{\numberline {3}Problem 1: Modelling exchange rates}{21}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Problem 2: Estimating ARMA models}{38}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Problem 3: Identification of ARMA models}{39}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Forecasting}{51}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Forecasting with an AR(1) model}{51}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Forecast}{51}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Forecast error}{52}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Mean reversion}{52}{subsection.6.1.3}%
+\contentsline {section}{\numberline {6.2}Forecasting with an AR(p) model}{53}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Forecast}{53}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Forecast error}{53}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Forecasting with a MA(1) model}{53}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Forecast}{54}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Forecast error}{54}{subsection.6.3.2}%
+\contentsline {section}{\numberline {6.4}Forecasting with a MA(q) model}{54}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Forecast with an ARMA(p,q) model}{54}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Forecast}{55}{subsection.6.5.1}%
+\contentsline {section}{\numberline {6.6}Confidence intervals for forecasts}{55}{section.6.6}%
+\contentsline {subsection}{\numberline {6.6.1}Normally distributed errors}{55}{subsection.6.6.1}%
+\contentsline {subsection}{\numberline {6.6.2}Bootstrapping}{56}{subsection.6.6.2}%
+\contentsline {subsubsection}{Procedure}{56}{section*.2}%
+\contentsline {chapter}{\numberline {7}Problem 4: Cross-validation and bootstrap}{58}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Identification and estimation}{58}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Cross-validation}{63}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Bootstrapping}{66}{section.7.3}%

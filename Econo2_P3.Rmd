@@ -3,12 +3,13 @@ title: "Econometrics II - Problem 3"
 author: "William Radaic Peron"
 date: \today
 output:
-  pdf_document: default
+  pdf_document: 
+    keep_tex: yes
   html_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
 library(ggplot2)
 library(forecast)
 library(AER)
@@ -22,6 +23,27 @@ library(gtsummary)
 library(readxl)
 library(ggthemes)
 library(mdscore)
+library(readxl)
+library(fpp)
+
+
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+
+library(formatR)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
 ```
 
 
@@ -73,10 +95,6 @@ faclt <- ggAcf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme
 
 facpst <- ggPacf(df$value, type = "correlation", lag.max = 100, plot = T) + theme_few()
 facplt <- ggPacf(df$value, type = "correlation", lag.max = 5000, plot = T) + theme_few()
-
-fac_e <- ggAcf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
-
-facp_e <- ggPacf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
 
 facst
 faclt
@@ -136,6 +154,10 @@ aa_t
 
 aa_q <- Box.test(aa_model$residuals, lag = aa_model$arma[1] + aa_model$arma[2])
 aa_q
+
+ggAcf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
+
+ggPacf(aa_model$residuals, type = "correlation", lag.max = 20, plot = T) + theme_few()
 
 ```
 
