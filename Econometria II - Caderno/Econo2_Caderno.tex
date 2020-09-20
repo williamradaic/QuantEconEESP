@@ -3170,22 +3170,822 @@ Now, some forecasting plots:
 \begin{center}\includegraphics{Econo2_P4_files/figure-latex/forecast arima plots-4} \end{center}
 
 
+\chapter{Time series decomposition}
+
+In this chapter, we'll begin classifying time series according to some criteria:
+\begin{itemize}
+	\item Does the time series gravitates around a certain mean?
+	\item Does it present some sort of tendency or seasonality?
+	\item Does it have some sort of structrual break?
+	\item Does it have constant variance?
+	\item How much ``memory'' does the ts have?
+\end{itemize}
+
+\section{Decomposing a time series}
+
+We can decompose a time series in the following way:
+$$ X_t \equiv f_t + Y_t,$$
+where $f_t$ is \textit{deterministic} and $Y_t$ is \textit{stochastic.}
+
+It is comprised of two steps:
+\begin{enumerate}
+	\item Split the deterministic component $f_t$
+	\item Model the statistical properties of the stochastic component $Y_t$
+\end{enumerate}
+
+The intuition behind this procedure is to transform a time series into a stationary and ergodic process -- after all, this is a necessary condition to ``apply Econometrics''!
+
+\subsection{Seasonality and tendency}
+
+In general, the deterministic component $f_t$ of a process can be decomposed between:
+\begin{enumerate}
+	\item \textbf{Deterministic tendency} $(f_t)$. It is usually some function of time, e.g., $t, t^2, log \, t, exp \{t\}$.
+	\item \textbf{Seasonality} ($s_t$). Usually a \textit{periodic function of time}.
+\end{enumerate}
+$$ X_t \equiv f_t + s_t + Y_t $$
+
+The additive tendency and seasonality model is the most common in practice:
+$$ X_t = f_t + s_t + Y_t $$
+But, in some cases, it makes sense to postulate a multiplicative model:
+$$ X_t = f_t s_t Y_t $$
+Or even a mixed form:
+$$ X_t = f_t + s_t Y_t $$
+
+Note that, if the model is multiplicative, it is additive in $log$. Here is a graphical example of a decomposition:
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{"decomposition multiplicative ts"}
+	\label{fig:decomposition-multiplicative-ts}
+\end{figure}
+
+\subsection{Parametric deterministic tendency}
+
+The most straightforward way to model a deterministic tendency is with a \textit{parametric specification} -- i.e., a known function of time with a finite number of unknown parameters:
+$$ f_t = f(t, \gamma), \hspace{1em} \gamma \in \mathbb{R}^k $$
+Here are some frequently used examples: $\gamma, \hspace{1em} \gamma t, \hspace{1em} \gamma_0 + \gamma t, \hspace{1em} \gamma_0 exp \{ \gamma t \}$.
+
+When we \textit{take first differences} (or log first differences), \textit{we are removing stochastic tendencies} (more on that on Chapter \ref{Integrated-Processes}).
+
+\subsection{De-Trending}
+
+The function $f_t$ may be a polynomial or another more complex known function with unknown parameters. We \textit{regress $X_t$ on the function $f_t$} and find the estimator $\hat{\gamma},$ which we use to find the residuals:
+$$ \hat{Y}_t + s_t = X_t - f(t, \hat{\gamma}) $$
+
+We now have a \textit{consistent estimator} for the stochastic and seasonality components\footnote{This is not an obvious conclusion. More on that on Chapter \ref{Problem-5}.}:
+$$ \hat{Y}_t \to_p Y_t, \, \text{given that} \, \hat{\gamma} \to_p \gamma $$ 
+
+\subsection{Seasonality}
+
+\begin{defn}
+	Regular and periodic movements in a process are called \textbf{seasonal movements} or \textbf{seasonality.}
+\end{defn}
+
+Economic time series usually present some sort of seasonality -- for example, during Holidays or weekends. Retail sales are usually higher at the end of the year, higher volatility in the stock market at the beginning of the week.
+
+A simple way to estimate the seasonality component of the process is by constructing a \textit{dummy}. Remember that a dummy for an event $A$ is:
+$$d_{A, t}=\left\{\begin{array}{ll}
+	1 & , \text { if } A \text { happened in period } t \\
+	0 & , \text { otherwise }
+\end{array}\right.$$
+
+With this, we can estimate the seasonality of the time series via the following parametric model:
+$$\hat{s}_{t}=\hat{c}+\sum_{i=1}^{j-1} \hat{\delta}_{i} d_{A_{i} t},$$
+where $j$ represents the \textit{size of the seasonality cycle} (e.g., for monthly data, $j = 12$). 
+
+Our estimate of the \textit{stochastic} component of the series can now be obtained by: $$ \hat{Y}_t = X_t - f(t, \hat{\gamma}) - \hat{s}_t $$
+
+\subsection{Non-parametric decomposition}
+
+There are a number of \textit{non-parametric} ways to detrend or remove seasonality of a process -- i.e., that do not involve adjusting and estimating a model with given parameters.
+
+Some examples are:
+\begin{itemize}
+	\item HP filter
+	\item Holt-Winters
+	\item Baxter-King
+	\item Christiano and Fitzgerald
+	\item Butterworth (allows for structural breaks)
+	\item Moving averages
+	\item Exponential smoothing
+\end{itemize}
+
+\subsection{Hodrick Prescott (HP) filter}
+
+The idea behind the HP filter is to find a tendency that is well adjusted to the observed time series. It is constructed by \textit{weighting deviations from a purely linear tendency:}
+$$\min \left\{\sum_{t=1}^{T}\left(X_{t}-f_{t}\right)^{2}+\lambda \sum_{t=2}^{T-1}\left[\left(f_{t+1}-f_{t}\right)-\left(f_{t}-f_{t-1}\right)\right]^{2}\right\}$$
+In other words, we're looking for $f_1,..., f_T$ that solves the expression above for some $\lambda \geq 0$. 
+\begin{itemize}
+	\item If $\lambda = 0$, we have $f_t = X_t, \forall t$.
+	\item If $\lambda = \infty$, $f_t$ is a straight line.
+	\item We usually solve the expression with $\lambda \in (0, \infty)$. For quarterly data, authors usually suggest $\lambda = 1600$.
+\end{itemize}
+
+Here's an example of a fitted HP filter with $\lambda = 1600$: 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{"hp filter 1600"}
+	\label{fig:hp-filter-1600}
+\end{figure}
+
+\subsection{The \textit{other} moving average}
+
+This is one of the first non-parametric methods of time series decomposition. 
+
+\begin{defn}
+	A \textbf{simple symmetric moving average of order $m$} is given by:
+	$$ f_t = \dfrac{1}{m} \sum_{i = -k}^{k} Y_{t+i},$$
+	where $m = 2k + 1.$
+\end{defn}
+
+The tendency is, then, the mean of $m$ periods centered around $Y_t$, hence the name \textit{moving average.}
+
+Here's an example of a tendency estimated by a moving average: 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{"moving average"}
+	\label{fig:moving-average}
+\end{figure}
+
+The moving average does not need to weigh all observations uniformally evenly. We can calculate, for example, a \textit{weighted moving average:}
+$$f_{t}=\frac{1}{\sum_{i=-k}^{k} \omega_{i}} \sum_{i=-k}^{k} \omega_{i} Y_{t+i},$$
+where $m = 2k + 1$.
+
+It doesn't even have to be symmetric in regards to period $t$ -- i.e., it can be non-centered:
+$$f_{t}=\frac{1}{\sum_{i=a}^{b} \omega_{i}} \sum_{i=a}^{b} \omega_{i} Y_{t+i},$$
+where $a \leq b, (a,b) \in \mathbb{Z}$.
+
+\subsection{Parametric \textit{vs.} Non-parametric functions}
+
+Non-parametric estimates and deterministic functions that depend on other variables $z_t$ \textit{cannot be easily extrapolated}. For example, with an HP filter, future observations review the most recent previous ones. 
+
+For a simple forecast, it is usual to postulate a parametric deterministic function \textit{that allows for extrapolation.} To estimate sensibility to shocks, the non-parametric estimators are very common -- e.g. potential GDP, NAIRU.
+
+\subsubsection{A protocol}
+
+To analyze a time series, we'll proceed in three steps:
+\begin{enumerate}
+	\item Split the deterministic from the stochastic component -- more art than science! \begin{itemize}
+		\item Clean the time series of ``NA'', tendency over time and seasonality.
+	\end{itemize}
+	\item Look for structural breaks (More on that on Chapter \ref{Structural-Breaks}). \begin{itemize}
+		\item When there are structural breaks, we will split the time series in two and jointly estimate two different models.
+	\end{itemize}
+	\item After cleaning up the time series, we shall check if the stochastic is stochastic or not by inspecting the ACF and the PACF. 
+	\begin{itemize}
+		\item If the ACF swiftly decreases, the stochastic component is probably stationary and ergodic -- which means we can estimate it properly.
+		\item If the ACF decreases slowly, the stochastic component probably \textit{won't be ergodic.} In that case, ARMA models won't work so well. More on that on Chapter \ref{Integrated-Processes}.
+	\end{itemize}
+\end{enumerate}
+
+
+\section{Estimation of non-ergodic processes} % HAMILTON
+
+
+\section{Inference with linear dependence} % MATERIAL COMPLEMENTAR
 
 
 
+\chapter{Problem 5: Forecasting GDP}
+
+In this problem, we'll be forecasting GDP in the short term and creating
+some models of GDP growth in the long run. This presents some
+challenges, namely those related to \emph{ergodicity} and
+\emph{stationarity}.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{pplot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ pib, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t, }\DataTypeTok{y =}\NormalTok{ v)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Time series plot"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{pplot}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/plots-1} \end{center}
+
+As we have downloaded the \emph{pure} quarterly data, it presents
+\emph{seasonality} and an upwards tendency. This implies that the
+\emph{time series will not be stationary}. Therefore, we need to employ
+methods that circumvent this issue and assure us that we can continue
+modelling the series as an ARMA(p,q).
+
+\section{Decomposing the time series}
+
+We will now assume that we can decompose the time series in three
+distinct elements in an additive model: \[ X_t = f_t+ s_t + Y_t \],
+where \(f_t\) denotes the tendency of the ts, \(s_t\) denotes
+seasonality, \(Y_t\) is stochastic. We also assume that \(f_t, s_t\) are
+\emph{deterministic}.
+
+\subsection{Trend}
+
+First, we'll construct a \emph{parametric} model of the trend. Let's
+assume that \(f_t\) can be modelled by a linear form:
+\[ f_t = \gamma_0 + \gamma *t \]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{linear_trend <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(v }\OperatorTok{~}\StringTok{ }\NormalTok{t, }\DataTypeTok{data =}\NormalTok{ pib)}
+		
+		\KeywordTok{summary}\NormalTok{(linear_trend)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	## Call:
+	## lm(formula = v ~ t, data = pib)
+	## 
+	## Residuals:
+	##    Min     1Q Median     3Q    Max 
+	## -59917 -10577  -2046  11571  33717 
+	## 
+	## Coefficients:
+	##               Estimate Std. Error t value Pr(>|t|)    
+	## (Intercept) -1.194e+07  4.644e+05  -25.71   <2e-16 ***
+	## t            6.070e+01  2.313e+00   26.25   <2e-16 ***
+	## ---
+	## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+	## 
+	## Residual standard error: 16200 on 96 degrees of freedom
+	## Multiple R-squared:  0.8777, Adjusted R-squared:  0.8764 
+	## F-statistic: 688.8 on 1 and 96 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ pib, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t, }\DataTypeTok{y =}\NormalTok{ v)) }\OperatorTok{+}\StringTok{ }\KeywordTok{stat_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{"lm"}\NormalTok{, }
+		\DataTypeTok{se =}\NormalTok{ F) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Linear trend, GDP"}\NormalTok{)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## `geom_smooth()` using formula 'y ~ x'
+\end{verbatim}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/parametric linear-1} \end{center}
+
+Another way to find \(f_t\) is via a \emph{non-parametric} process. For
+this, we'll use an HP filter and a moving average.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{pib_ts <-}\StringTok{ }\KeywordTok{ts}\NormalTok{(pib}\OperatorTok{$}\NormalTok{v)}
+		
+		\NormalTok{hp_trend <-}\StringTok{ }\KeywordTok{hpfilter}\NormalTok{(pib_ts, }\DataTypeTok{freq =} \DecValTok{1600}\NormalTok{, }\DataTypeTok{type =} \StringTok{"lambda"}\NormalTok{)}
+		
+		\KeywordTok{plot}\NormalTok{(hp_trend)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/hp filter-1} \end{center}
+
+Now, a moving average.
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{pib_ma <-}\StringTok{ }\KeywordTok{ma}\NormalTok{(pib}\OperatorTok{$}\NormalTok{v, }\DataTypeTok{order =} \DecValTok{4}\NormalTok{)}
+		
+		\KeywordTok{autoplot}\NormalTok{(pib_ma, }\DataTypeTok{color =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ pib, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(pib}\OperatorTok{$}\NormalTok{t), }
+		\DataTypeTok{y =}\NormalTok{ v), }\DataTypeTok{color =} \StringTok{"red"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Use of `pib$t` is discouraged. Use `t` instead.
+\end{verbatim}
+
+\begin{verbatim}
+	## Warning: Removed 4 row(s) containing missing values (geom_path).
+\end{verbatim}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/moving average-1} \end{center}
+
+\subsection{Seasonality}
+
+We can now create a function for \(s_t\). This will be done with
+dummies: \[ D_i = 1, i = t \] \[ D_i = 0 \, otherwise\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{tri <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+		
+		\NormalTok{tri1 <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{)}
+		
+		\NormalTok{i =}\StringTok{ }\DecValTok{1}
+		
+		\ControlFlowTok{while}\NormalTok{ (i }\OperatorTok{<}\StringTok{ }\DecValTok{25}\NormalTok{) \{}
+		
+		\NormalTok{    tri <-}\StringTok{ }\KeywordTok{append}\NormalTok{(tri, tri1)}
+		
+		\NormalTok{    i =}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{tri <-}\StringTok{ }\NormalTok{tri[}\OperatorTok{-}\DecValTok{1}\NormalTok{]}
+		\NormalTok{tri <-}\StringTok{ }\KeywordTok{c}\NormalTok{(tri, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{)}
+		
+		\KeywordTok{length}\NormalTok{(tri)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] 98
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{pib <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(pib, tri)}
+		
+		\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{1}\NormalTok{] <-}\StringTok{ "t"}
+		\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{2}\NormalTok{] <-}\StringTok{ "v"}
+		\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{3}\NormalTok{] <-}\StringTok{ "tri"}
+		
+		\NormalTok{dummies <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \KeywordTok{length}\NormalTok{(pib}\OperatorTok{$}\NormalTok{t), }\DataTypeTok{ncol =} \DecValTok{4}\NormalTok{))}
+		
+		\ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{) \{}
+		
+		\NormalTok{    dummies[j] <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(pib}\OperatorTok{$}\NormalTok{tri }\OperatorTok{==}\StringTok{ }\NormalTok{j)}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{hp_fitted <-}\StringTok{ }\NormalTok{hp_trend[}\DecValTok{2}\NormalTok{]}
+		
+		\NormalTok{hp_fitted <-}\StringTok{ }\NormalTok{hp_fitted}\OperatorTok{$}\NormalTok{trend}
+		
+		\NormalTok{detrend <-}\StringTok{ }\NormalTok{pib}\OperatorTok{$}\NormalTok{v }\OperatorTok{-}\StringTok{ }\NormalTok{hp_fitted}
+		
+		\NormalTok{pib <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(pib, dummies, detrend)}
+		
+		\KeywordTok{names}\NormalTok{(pib) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"v"}\NormalTok{, }\StringTok{"tri"}\NormalTok{, }\StringTok{"X1"}\NormalTok{, }\StringTok{"X2"}\NormalTok{, }\StringTok{"X3"}\NormalTok{, }\StringTok{"X4"}\NormalTok{, }\StringTok{"detrend"}\NormalTok{)}
+		
+		\KeywordTok{head}\NormalTok{(pib)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##          t        v tri X1 X2 X3 X4   detrend
+	## 18  199601 170920.0   1  1  0  0  0 -7639.363
+	## 40  199602 176708.8   2  0  1  0  0 -2784.369
+	## 62  199603 189844.3   3  0  0  1  0  9422.159
+	## 84  199604 184112.9   4  0  0  0  1  2773.147
+	## 106 199701 176732.2   1  1  0  0  0 -5513.319
+	## 128 199702 185109.5   2  0  1  0  0  1968.942
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{dummy_lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(detrend }\OperatorTok{~}\StringTok{ }\NormalTok{X2 }\OperatorTok{+}\StringTok{ }\NormalTok{X3 }\OperatorTok{+}\StringTok{ }\NormalTok{X4, }\DataTypeTok{data =}\NormalTok{ pib)}
+		
+		\KeywordTok{summary}\NormalTok{(dummy_lm)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	## Call:
+	## lm(formula = detrend ~ X2 + X3 + X4, data = pib)
+	## 
+	## Residuals:
+	##      Min       1Q   Median       3Q      Max 
+	## -24604.3  -2770.1    904.6   2781.6   9672.2 
+	## 
+	## Coefficients:
+	##             Estimate Std. Error t value Pr(>|t|)    
+	## (Intercept)    -5885       1079  -5.454 3.97e-07 ***
+	## X2              4775       1526   3.129  0.00234 ** 
+	## X3             11476       1542   7.443 4.63e-11 ***
+	## X4              7580       1542   4.916 3.73e-06 ***
+	## ---
+	## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+	## 
+	## Residual standard error: 5396 on 94 degrees of freedom
+	## Multiple R-squared:  0.3854, Adjusted R-squared:  0.3658 
+	## F-statistic: 19.65 on 3 and 94 DF,  p-value: 5.704e-10
+\end{verbatim}
+
+\subsection{$Y_t$}
+
+We'll now use the HP-fitered version of \(f_t\) and the dummy approach
+to \(s_t\).
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{yt <-}\StringTok{ }\KeywordTok{as.vector}\NormalTok{(pib}\OperatorTok{$}\NormalTok{v) }\OperatorTok{-}\StringTok{ }\NormalTok{(hp_fitted }\OperatorTok{+}\StringTok{ }\NormalTok{dummy_lm}\OperatorTok{$}\NormalTok{fitted.values)}
+		
+		\KeywordTok{mean}\NormalTok{(yt)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] 2.970866e-13
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{autoplot}\NormalTok{(yt) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/stochastic yt-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{y <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{98}\NormalTok{, yt)}
+		
+		\KeywordTok{names}\NormalTok{(y) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"yt"}\NormalTok{)}
+		
+		\NormalTok{y}
+	\end{Highlighting}
+\end{Shaded}
+
+\section{Identifying and estimating ARMA(p,q) for $Y_t$}
+
+We are now in a position to identify and estimate the best model for our
+time series \(Y_t\).
+
+Applying the function \emph{auto.arima} from the package \emph{forecast}
+to identify and estimate the model:
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_model <-}\StringTok{ }\KeywordTok{auto.arima}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{num.cores =} \DecValTok{24}\NormalTok{, }\DataTypeTok{max.d =} \DecValTok{0}\NormalTok{, }\DataTypeTok{stepwise =}\NormalTok{ F)}
+		
+		\KeywordTok{summary}\NormalTok{(aa_model)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Series: y$yt 
+	## ARIMA(2,0,2) with zero mean 
+	## 
+	## Coefficients:
+	##           ar1     ar2     ma1     ma2
+	##       -0.5799  0.3799  1.6394  0.7070
+	## s.e.   0.1463  0.1453  0.1191  0.1165
+	## 
+	## sigma^2 estimated as 16014834:  log likelihood=-951.01
+	## AIC=1912.01   AICc=1912.66   BIC=1924.94
+	## 
+	## Training set error measures:
+	##                     ME     RMSE      MAE      MPE     MAPE      MASE
+	## Training set -166.6391 3919.333 2469.197 32.42135 93.29931 0.9554301
+	##                      ACF1
+	## Training set -0.001381943
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{print}\NormalTok{(}\StringTok{"t-values: "}\NormalTok{)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] "t-values: "
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		
+		\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{]))) \{}
+		
+		\NormalTok{    aa_t[i] <-}\StringTok{ }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{coef[i]}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{var.coef[i, i])}
+		
+		\NormalTok{\}}
+		
+		\NormalTok{aa_t <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(aa_t)}
+		
+		\NormalTok{aa_t}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##        aa_t
+	## 1 -3.965137
+	## 2  2.614792
+	## 3 13.768478
+	## 4  6.067555
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{aa_q <-}\StringTok{ }\KeywordTok{Box.test}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{lag =}\NormalTok{ aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\NormalTok{aa_model}\OperatorTok{$}\NormalTok{arma[}\DecValTok{2}\NormalTok{])}
+		\NormalTok{aa_q}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## 
+	##  Box-Pierce test
+	## 
+	## data:  aa_model$residuals
+	## X-squared = 0.22, df = 4, p-value = 0.9944
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{criteria <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{)}
+		
+		\NormalTok{aa_criteria <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\StringTok{"AR(2)*"}\NormalTok{, aa_model}\OperatorTok{$}\NormalTok{aic, aa_model}\OperatorTok{$}\NormalTok{bic)}
+		
+		\KeywordTok{names}\NormalTok{(aa_criteria) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{)}
+		
+		\NormalTok{aa_criteria}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	##    Model      AIC      BIC
+	## 1 AR(2)* 1912.011 1924.936
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fac_e <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+		
+		\NormalTok{facp_e <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fac_e}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/estimation autoarima-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facp_e}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/estimation autoarima-2} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{mean}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## [1] -166.6391
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{plot}\NormalTok{(aa_model}\OperatorTok{$}\NormalTok{residuals)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/estimation autoarima-3} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facst <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+		\NormalTok{faclt <-}\StringTok{ }\KeywordTok{ggAcf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+		
+		\NormalTok{facpst <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{30}\NormalTok{, }\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }
+		\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facplt <-}\StringTok{ }\KeywordTok{ggPacf}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{type =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{lag.max =} \DecValTok{5000}\NormalTok{, }
+		\DataTypeTok{plot =}\NormalTok{ T) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: type
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facst}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{faclt}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-2} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facpst}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-3} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{facplt}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/plots fac facp-4} \end{center}
+
+The results of \emph{auto.arima} imply that the best model is an
+ARMA(2,0) -- i.e., an AR(2):
+\[ y_t = c + \phi_1 y_{t-1} + \phi_2 y_{t-2} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2)\]
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{fc <-}\StringTok{ }\KeywordTok{forecast}\NormalTok{(y}\OperatorTok{$}\NormalTok{yt, }\DataTypeTok{model =}\NormalTok{ aa_model, }\DataTypeTok{h =} \DecValTok{4}\NormalTok{)}
+		
+		\KeywordTok{autoplot}\NormalTok{(fc) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
 
 
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/forecast plot-1} \end{center}
+
+\section{Long term GDP growth}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{unemp <-}\StringTok{ }\KeywordTok{read_excel}\NormalTok{(}\StringTok{"C:/Users/William/Downloads/tabela2176.xlsx"}\NormalTok{)}
+	\end{Highlighting}
+\end{Shaded}
 
 
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{unemp1 <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(unemp[}\DecValTok{11}\NormalTok{, ])}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+	## Warning: NAs introduced by coercion
+\end{verbatim}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{unemp2 <-}\StringTok{ }\NormalTok{unemp1[}\DecValTok{2}\OperatorTok{:}\NormalTok{(}\KeywordTok{length}\NormalTok{(unemp1) }\OperatorTok{-}\StringTok{ }\DecValTok{2}\NormalTok{)]}
+		
+		\NormalTok{unemp <-}\StringTok{ }\NormalTok{unemp2}
+		
+		\NormalTok{df_unemp <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(unemp), unemp)}
+		
+		\KeywordTok{names}\NormalTok{(df_unemp) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"t"}\NormalTok{, }\StringTok{"r"}\NormalTok{)}
+		
+		\NormalTok{df_unemp}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{hp_unemp <-}\StringTok{ }\KeywordTok{hpfilter}\NormalTok{(df_unemp}\OperatorTok{$}\NormalTok{r, }\DataTypeTok{freq =} \DecValTok{1600}\NormalTok{, }\DataTypeTok{type =} \StringTok{"lambda"}\NormalTok{)}
+		
+		\KeywordTok{plot}\NormalTok{(hp_unemp)}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/loading data pme-1} \end{center}
+
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{nairu <-}\StringTok{ }\NormalTok{hp_unemp}\OperatorTok{$}\NormalTok{trend}
+		
+		\NormalTok{nairu}
+	\end{Highlighting}
+\end{Shaded}
 
 
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\NormalTok{t6162 <-}\StringTok{ }\KeywordTok{get_sidra}\NormalTok{(}\DecValTok{6612}\NormalTok{, }\DataTypeTok{variable =} \DecValTok{9318}\NormalTok{, }\DataTypeTok{category =} \DecValTok{90707}\NormalTok{, }\DataTypeTok{period =} \KeywordTok{c}\NormalTok{(}\StringTok{"200202"}\NormalTok{, }
+		\StringTok{"200203"}\NormalTok{, }\StringTok{"200204"}\NormalTok{, }\StringTok{"200301"}\NormalTok{, }\StringTok{"200302"}\NormalTok{, }\StringTok{"200303"}\NormalTok{, }\StringTok{"200304"}\NormalTok{, }
+		\StringTok{"200401"}\NormalTok{, }\StringTok{"200402"}\NormalTok{, }\StringTok{"200403"}\NormalTok{, }\StringTok{"200404"}\NormalTok{, }\StringTok{"200501"}\NormalTok{, }\StringTok{"200502"}\NormalTok{, }
+		\StringTok{"200503"}\NormalTok{, }\StringTok{"200504"}\NormalTok{, }\StringTok{"200601"}\NormalTok{, }\StringTok{"200602"}\NormalTok{, }\StringTok{"200603"}\NormalTok{, }\StringTok{"200604"}\NormalTok{, }
+		\StringTok{"200701"}\NormalTok{, }\StringTok{"200702"}\NormalTok{, }\StringTok{"200703"}\NormalTok{, }\StringTok{"200704"}\NormalTok{, }\StringTok{"200801"}\NormalTok{, }\StringTok{"200802"}\NormalTok{, }
+		\StringTok{"200803"}\NormalTok{, }\StringTok{"200804"}\NormalTok{, }\StringTok{"200901"}\NormalTok{, }\StringTok{"200902"}\NormalTok{, }\StringTok{"200903"}\NormalTok{, }\StringTok{"200904"}\NormalTok{, }
+		\StringTok{"201001"}\NormalTok{, }\StringTok{"201002"}\NormalTok{, }\StringTok{"201003"}\NormalTok{, }\StringTok{"201004"}\NormalTok{, }\StringTok{"201101"}\NormalTok{, }\StringTok{"201102"}\NormalTok{, }
+		\StringTok{"201103"}\NormalTok{, }\StringTok{"201104"}\NormalTok{, }\StringTok{"201201"}\NormalTok{, }\StringTok{"201202"}\NormalTok{, }\StringTok{"201203"}\NormalTok{, }\StringTok{"201204"}\NormalTok{, }
+		\StringTok{"201301"}\NormalTok{, }\StringTok{"201302"}\NormalTok{, }\StringTok{"201303"}\NormalTok{, }\StringTok{"201304"}\NormalTok{, }\StringTok{"201401"}\NormalTok{, }\StringTok{"201402"}\NormalTok{, }
+		\StringTok{"201403"}\NormalTok{, }\StringTok{"201404"}\NormalTok{, }\StringTok{"201501"}\NormalTok{, }\StringTok{"201502"}\NormalTok{, }\StringTok{"201503"}\NormalTok{, }\StringTok{"201504"}\NormalTok{))}
+	\end{Highlighting}
+\end{Shaded}
 
+\begin{verbatim}
+	## Considering all categories once 'classific' was set to 'all' (default)
+\end{verbatim}
 
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{View}\NormalTok{(t6162)}
+		
+		\NormalTok{tax <-}\StringTok{ }\NormalTok{t6162[(t6162}\OperatorTok{$}\StringTok{`}\DataTypeTok{Setores e subsetores (Código)}\StringTok{`} \OperatorTok{==}\StringTok{ }\DecValTok{90706}\NormalTok{), }
+		\NormalTok{    ]}
+		
+		\NormalTok{tax2 <-}\StringTok{ }\NormalTok{tax[, }\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{13}\NormalTok{)]}
+		
+		\KeywordTok{names}\NormalTok{(tax2)[}\DecValTok{1}\NormalTok{] <-}\StringTok{ "t"}
+		\KeywordTok{names}\NormalTok{(tax2)[}\DecValTok{2}\NormalTok{] <-}\StringTok{ "r"}
+		
+		\NormalTok{tax <-}\StringTok{ }\NormalTok{tax2}
+		
+		\NormalTok{trimestra <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+		
+		\NormalTok{i <-}\StringTok{ }\DecValTok{0}
+		\ControlFlowTok{while}\NormalTok{ (i }\OperatorTok{<}\StringTok{ }\KeywordTok{length}\NormalTok{(unemp)) \{}
+		
+		\NormalTok{    media <-}\StringTok{ }\NormalTok{(unemp[i] }\OperatorTok{+}\StringTok{ }\NormalTok{unemp[i }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\NormalTok{unemp[i }\OperatorTok{+}\StringTok{ }\DecValTok{2}\NormalTok{])}\OperatorTok{/}\DecValTok{3}
+		\NormalTok{    trimestra <-}\StringTok{ }\KeywordTok{append}\NormalTok{(trimestra, media)}
+		
+		\NormalTok{    i <-}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{3}
+		\NormalTok{\}}
+		
+		\NormalTok{nairu_3m <-}\StringTok{ }\NormalTok{trimestra}
+		
+		\NormalTok{df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(nairu_3m[}\OperatorTok{-}\DecValTok{1}\NormalTok{], tax)}
+		
+		\NormalTok{df}
+	\end{Highlighting}
+\end{Shaded}
 
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{names}\NormalTok{(df) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"NAIRU"}\NormalTok{, }\StringTok{"t"}\NormalTok{, }\StringTok{"tax"}\NormalTok{)}
+		
+		\NormalTok{growth_lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(NAIRU }\OperatorTok{~}\StringTok{ }\NormalTok{tax, }\DataTypeTok{data =}\NormalTok{ df)}
+		
+		\KeywordTok{summary}\NormalTok{(growth_lm)}
+	\end{Highlighting}
+\end{Shaded}
 
+\begin{verbatim}
+	## 
+	## Call:
+	## lm(formula = NAIRU ~ tax, data = df)
+	## 
+	## Residuals:
+	##     Min      1Q  Median      3Q     Max 
+	## -1.1801 -0.3400 -0.0709  0.3167  1.6633 
+	## 
+	## Coefficients:
+	##               Estimate Std. Error t value Pr(>|t|)    
+	## (Intercept)  2.110e+01  4.471e-01   47.19   <2e-16 ***
+	## tax         -3.479e-04  1.184e-05  -29.37   <2e-16 ***
+	## ---
+	## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+	## 
+	## Residual standard error: 0.5991 on 52 degrees of freedom
+	##   (1 observation deleted due to missingness)
+	## Multiple R-squared:  0.9431, Adjusted R-squared:  0.942 
+	## F-statistic: 862.5 on 1 and 52 DF,  p-value: < 2.2e-16
+\end{verbatim}
 
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tax, }\DataTypeTok{y =}\NormalTok{ NAIRU)) }\OperatorTok{+}\StringTok{ }\KeywordTok{stat_smooth}\NormalTok{(}\DataTypeTok{nethod =} \StringTok{"lm"}\NormalTok{, }
+		\DataTypeTok{se =}\NormalTok{ F) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+	\end{Highlighting}
+\end{Shaded}
 
+\begin{verbatim}
+	## Warning: Ignoring unknown parameters: nethod
+\end{verbatim}
 
+\begin{verbatim}
+	## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+	## Warning: Removed 1 rows containing non-finite values (stat_smooth).
+\end{verbatim}
+
+\begin{center}\includegraphics{Econo2_P5_files/figure-latex/loading data pme-2} \end{center}
+
+\chapter{Integrated Processes}
+
+\subsection{Motivation}
+
+Up to this point, we have focused exclusively on stationary processes. Henceforth, we'll deal with some classes of non-stationary processes. Informally, we can say that the class of non-stationary processes is much more extensive 
 
 
 

@@ -1,6 +1,6 @@
 ---
-title: "Econometrics II - Problem 4"
-author: "William Radaic Peron, Vinícius Marcial"
+title: "Econometrics II - Problem 5"
+author: "William Radaic Peron"
 date: \today
 output:
   pdf_document: 
@@ -11,7 +11,6 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-Sys.setenv(RSTUDIO_PANDOC="C:/Users/William/anaconda3/envs/py_r/Library/Scripts/pandoc")
 
 library(ggplot2)
 library(forecast)
@@ -31,6 +30,63 @@ library(fpp)
 library(sidrar)
 library(mFilter)
 library(detrendr)
+
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+library(readxl)
+library(fpp)
+library(sidrar) 
+library(mFilter)
+library(detrendr)
+library(dynlm)
+library(ggfortify)
+library(tseries)
+# install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.com/')
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+library(readxl)
+library(fpp)
+
+
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+
+library(formatR)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
 
 ```
 
@@ -148,9 +204,9 @@ while (i < 25) {
   }
 
 tri <- tri[-1]
-tri <- c(tri, 1)
+tri <- c(tri, 1, 2)
 
-tri
+length(tri)
 
 pib <- data.frame(pib, tri)
 
@@ -197,7 +253,7 @@ mean(yt)
 
 autoplot(yt) + theme_few()
 
-y <- data.frame(1:97, yt)
+y <- data.frame(1:98, yt)
 
 names(y) <- c("t", "yt")
 

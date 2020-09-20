@@ -1,16 +1,17 @@
 ---
 title: "Econometrics II - Problem 6"
 author: "William Radaic Peron"
-date: "September 3, 2020"
-output: pdf_document
+date: \today
+output:
+  pdf_document: 
+    keep_tex: yes
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(tidy = FALSE)
-
-Sys.setenv(RSTUDIO_PANDOC="C:/Users/William/anaconda3/envs/py_r/Library/Scripts/pandoc")
 
 library(ggplot2)
 library(forecast)
@@ -33,6 +34,41 @@ library(dynlm)
 library(ggfortify)
 library(tseries)
 # install.packages(c('dynlm','ggfortify','tseries'), repos='http://cran.rstudio.com/')
+knitr::opts_chunk$set(echo = TRUE, fig.align="center")
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+library(readxl)
+library(fpp)
+
+
+library(ggplot2)
+library(forecast)
+library(AER)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(ggthemes)
+library(gridExtra)
+library(gtsummary)
+library(readxl)
+library(ggthemes)
+library(mdscore)
+
+library(formatR)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
 
 ```
 
