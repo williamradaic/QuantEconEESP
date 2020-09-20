@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/W32TeX) (preloaded format=pdflatex 2020.3.23)  20 SEP 2020 03:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/W32TeX) (preloaded format=pdflatex 2020.3.23)  20 SEP 2020 03:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1264,6 +1264,8 @@ y)
 Package grffile Info: This package is an empty stub for compatibility on input 
 line 40.
 )
+Package hyperref Info: Option `colorlinks' set `true' on input line 126.
+Package hyperref Info: Option `breaklinks' set `true' on input line 126.
 \c@thm=\count351
 \c@defn=\count352
 \c@conj=\count353
@@ -1345,7 +1347,7 @@ LaTeX Font Info:    ... okay on input line 163.
 ABD: EverySelectfont initializing macros
 LaTeX Info: Redefining \selectfont on input line 163.
 \AtBeginShipoutBox=\box71
-Package hyperref Info: Link coloring OFF on input line 163.
+Package hyperref Info: Link coloring ON on input line 163.
 
 (c:/texlive/2019/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -1452,7 +1454,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.40 ...: Modelling exchange rates}{19}{chapter.3}
+l.40 ...ing for time dependence}{18}{section.2.10}
                                                   % [1
 
 ])
@@ -1468,7 +1470,7 @@ File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [3
 
 ] [4]
-<acf example.png, id=145, 540.51938pt x 341.02406pt>
+<acf example.png, id=147, 540.51938pt x 341.02406pt>
 File: acf example.png Graphic file (type png)
 <use acf example.png>
 Package pdftex.def Info: acf example.png  used on input line 257.
@@ -1478,12 +1480,12 @@ Chapter 2.
 [8
 
 ]
-<ma1.png, id=180, 703.87968pt x 642.90187pt>
+<ma1.png, id=182, 703.87968pt x 642.90187pt>
 File: ma1.png Graphic file (type png)
 <use ma1.png>
 Package pdftex.def Info: ma1.png  used on input line 421.
 (pdftex.def)             Requested size: 273.14795pt x 249.48486pt.
-<fac facp.png, id=181, 521.69907pt x 482.55281pt>
+<fac facp.png, id=183, 521.69907pt x 482.55281pt>
 File: fac facp.png Graphic file (type png)
 <use fac facp.png>
 Package pdftex.def Info: fac facp.png  used on input line 441.
@@ -1517,7 +1519,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 507.
 [11]
-<ar1.png, id=204, 601.4972pt x 542.77782pt>
+<ar1.png, id=206, 601.4972pt x 542.77782pt>
 File: ar1.png Graphic file (type png)
 <use ar1.png>
 Package pdftex.def Info: ar1.png  used on input line 550.
@@ -1527,7 +1529,7 @@ Package pdftex.def Info: ar1.png  used on input line 550.
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [12]
-<fac facp ar1.png, id=212, 593.21625pt x 550.30594pt>
+<fac facp ar1.png, id=214, 593.21625pt x 550.30594pt>
 File: fac facp ar1.png Graphic file (type png)
 <use fac facp ar1.png>
 Package pdftex.def Info: fac facp ar1.png  used on input line 586.
@@ -1553,7 +1555,7 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <8> not available
 (Font)              Font shape `T1/lmtt/b/n' tried instead on input line 821.
-<Econo2_P1_files/figure-latex/plots-1.pdf, id=248, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-1.pdf, id=249, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-1.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-1.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-1.pdf  used on inpu
@@ -1562,19 +1564,19 @@ t line 851.
  [19
 
  <./Econo2_P1_files/figure-latex/plots-1.pdf>]
-<Econo2_P1_files/figure-latex/plots-2.pdf, id=260, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-2.pdf, id=261, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-2.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-2.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-2.pdf  used on inpu
 t line 861.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/plots-3.pdf, id=261, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-3.pdf, id=262, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-3.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-3.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-3.pdf  used on inpu
 t line 875.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/plots-4.pdf, id=262, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-4.pdf, id=263, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-4.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-4.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-4.pdf  used on inpu
@@ -1582,26 +1584,26 @@ t line 885.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
  [20 <./Econo2_P1_files/figure-latex/plots-2.pdf> <./Econo2_P1_files/figure-lat
 ex/plots-3.pdf>]
-<Econo2_P1_files/figure-latex/plots-5.pdf, id=279, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-5.pdf, id=280, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-5.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-5.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-5.pdf  used on inpu
 t line 938.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
  [21 <./Econo2_P1_files/figure-latex/plots-4.pdf>]
-<Econo2_P1_files/figure-latex/plots-6.pdf, id=290, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-6.pdf, id=291, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-6.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-6.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-6.pdf  used on inpu
 t line 946.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/plots-7.pdf, id=291, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-7.pdf, id=292, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-7.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-7.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-7.pdf  used on inpu
 t line 954.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/plots-8.pdf, id=292, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-8.pdf, id=293, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-8.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-8.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-8.pdf  used on inpu
@@ -1609,7 +1611,7 @@ t line 962.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
  [22 <./Econo2_P1_files/figure-latex/plots-5.pdf> <./Econo2_P1_files/figure-lat
 ex/plots-6.pdf> <./Econo2_P1_files/figure-latex/plots-7.pdf>]
-<Econo2_P1_files/figure-latex/plots-9.pdf, id=313, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/plots-9.pdf, id=314, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/plots-9.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/plots-9.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/plots-9.pdf  used on inpu
@@ -1628,13 +1630,13 @@ Overfull \hbox (10.4033pt too wide) in paragraph at lines 1004--1004
  1.027755 -0.0006313563[] 
  []
 
-<Econo2_P1_files/figure-latex/AR(1)-1.pdf, id=328, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/AR(1)-1.pdf, id=329, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/AR(1)-1.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/AR(1)-1.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/AR(1)-1.pdf  used on inpu
 t line 1012.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/AR(1)-2.pdf, id=329, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/AR(1)-2.pdf, id=330, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/AR(1)-2.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/AR(1)-2.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/AR(1)-2.pdf  used on inpu
@@ -1647,14 +1649,14 @@ LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line
  (c:/texlive/2019/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-<Econo2_P1_files/figure-latex/lm signt-1.pdf, id=350, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/lm signt-1.pdf, id=351, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/lm signt-1.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/lm signt-1.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/lm signt-1.pdf  used on i
 nput line 1091.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
  [25]
-<Econo2_P1_files/figure-latex/delta 1-1.pdf, id=356, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/delta 1-1.pdf, id=357, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/delta 1-1.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/delta 1-1.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/delta 1-1.pdf  used on in
@@ -1662,7 +1664,7 @@ put line 1137.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
 
 [26 <./Econo2_P1_files/figure-latex/lm signt-1.pdf>]
-<Econo2_P1_files/figure-latex/delta 1-2.pdf, id=369, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/delta 1-2.pdf, id=370, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/delta 1-2.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/delta 1-2.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/delta 1-2.pdf  used on in
@@ -1681,13 +1683,13 @@ Overfull \hbox (4.65457pt too wide) in paragraph at lines 1174--1174
  0.8595655 -0.01320252[] 
  []
 
-<Econo2_P1_files/figure-latex/var1-1.pdf, id=386, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/var1-1.pdf, id=387, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/var1-1.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/var1-1.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/var1-1.pdf  used on input
  line 1193.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/var1-2.pdf, id=387, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/var1-2.pdf, id=388, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/var1-2.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/var1-2.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/var1-2.pdf  used on input
@@ -1695,13 +1697,13 @@ Package pdftex.def Info: Econo2_P1_files/figure-latex/var1-2.pdf  used on input
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
 [28 <./Econo2_P1_files/figure-latex/var1-1.pdf> <./Econo2_P1_files/figure-latex
 /var1-2.pdf>]
-<Econo2_P1_files/figure-latex/auto arima-1.pdf, id=404, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-1.pdf, id=405, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-1.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-1.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-1.pdf  used on
  input line 1235.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/auto arima-2.pdf, id=405, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-2.pdf, id=406, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-2.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-2.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-2.pdf  used on
@@ -1709,13 +1711,13 @@ Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-2.pdf  used on
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
  [29 <./Econo2_P1_files/figure-latex/auto arima-1.pdf> <./Econo2_P1_files/figur
 e-latex/auto arima-2.pdf>]
-<Econo2_P1_files/figure-latex/auto arima-3.pdf, id=422, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-3.pdf, id=423, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-3.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-3.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-3.pdf  used on
  input line 1279.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/auto arima-4.pdf, id=423, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-4.pdf, id=424, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-4.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-4.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-4.pdf  used on
@@ -1723,13 +1725,13 @@ Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-4.pdf  used on
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
  [30 <./Econo2_P1_files/figure-latex/auto arima-3.pdf> <./Econo2_P1_files/figur
 e-latex/auto arima-4.pdf>]
-<Econo2_P1_files/figure-latex/auto arima-5.pdf, id=442, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-5.pdf, id=443, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-5.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-5.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-5.pdf  used on
  input line 1319.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/auto arima-6.pdf, id=443, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-6.pdf, id=444, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-6.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-6.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-6.pdf  used on
@@ -1748,13 +1750,13 @@ Overfull \hbox (10.4033pt too wide) in paragraph at lines 1351--1351
  0.7252813 0.0004805619[] 
  []
 
-<Econo2_P1_files/figure-latex/auto arima-7.pdf, id=460, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-7.pdf, id=461, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-7.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-7.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-7.pdf  used on
  input line 1359.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/auto arima-8.pdf, id=461, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-8.pdf, id=462, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-8.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-8.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-8.pdf  used on
@@ -1762,13 +1764,13 @@ Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-8.pdf  used on
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
 [32 <./Econo2_P1_files/figure-latex/auto arima-7.pdf> <./Econo2_P1_files/figure
 -latex/auto arima-8.pdf>]
-<Econo2_P1_files/figure-latex/auto arima-9.pdf, id=478, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-9.pdf, id=479, 469.755pt x 325.215pt>
 File: Econo2_P1_files/figure-latex/auto arima-9.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-9.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-9.pdf  used on
  input line 1403.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/auto arima-10.pdf, id=479, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-10.pdf, id=480, 469.755pt x 325.215pt>
 
 File: Econo2_P1_files/figure-latex/auto arima-10.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-10.pdf>
@@ -1777,14 +1779,14 @@ n input line 1411.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
  [33 <./Econo2_P1_files/figure-latex/auto arima-9.pdf> <./Econo2_P1_files/figur
 e-latex/auto arima-10.pdf>]
-<Econo2_P1_files/figure-latex/auto arima-11.pdf, id=496, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-11.pdf, id=497, 469.755pt x 325.215pt>
 
 File: Econo2_P1_files/figure-latex/auto arima-11.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-11.pdf>
 Package pdftex.def Info: Econo2_P1_files/figure-latex/auto arima-11.pdf  used o
 n input line 1443.
 (pdftex.def)             Requested size: 273.14621pt x 189.10121pt.
-<Econo2_P1_files/figure-latex/auto arima-12.pdf, id=497, 469.755pt x 325.215pt>
+<Econo2_P1_files/figure-latex/auto arima-12.pdf, id=498, 469.755pt x 325.215pt>
 
 File: Econo2_P1_files/figure-latex/auto arima-12.pdf Graphic file (type pdf)
 <use Econo2_P1_files/figure-latex/auto arima-12.pdf>
@@ -1818,7 +1820,7 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1492.
 Here is how much of TeX's memory you used:
  41725 strings out of 480994
  920889 string characters out of 5916032
- 1311481 words of memory out of 5000000
+ 1311536 words of memory out of 5000000
  56117 multiletter control sequences out of 15000+600000
  627438 words of font info for 149 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1846,10 +1848,10 @@ b><c:/texlive/2019/texmf-dist/fonts/type1/public/lm/lmtt10.pfb><c:/texlive/2019
 /texmf-dist/fonts/type1/public/lm/lmtt8.pfb><c:/texlive/2019/texmf-dist/fonts/t
 ype1/public/lm/lmtti10.pfb><c:/texlive/2019/texmf-dist/fonts/type1/public/amsfo
 nts/symbols/msbm10.pfb>
-Output written on Econo2_Caderno.pdf (36 pages, 1983852 bytes).
+Output written on Econo2_Caderno.pdf (36 pages, 1984075 bytes).
 PDF statistics:
- 743 PDF objects out of 1000 (max. 8388607)
- 594 compressed objects within 6 object streams
+ 744 PDF objects out of 1000 (max. 8388607)
+ 595 compressed objects within 6 object streams
  100 named destinations out of 1000 (max. 500000)
  16970 words of extra memory for PDF output out of 17280 (max. 10000000)
 
