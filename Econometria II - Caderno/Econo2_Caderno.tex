@@ -223,7 +223,7 @@ Note the $Y_t$ subscript on the probability density function $f_{Y_t}$. This mea
 
 \subsection{Statistical dependence}
 
-For any random variables $X, Y$, we can define multiple measures of dependency:
+For any random variables $X, Y$, we can define multiple measures of dependence:
 \begin{itemize}
 	\item \textbf{Linear:} $Cov(X,Y) \equiv \mathbb{E}(XY) - \mathbb{E}(X)\mathbb{E}(Y) $
 	\item \textbf{Quadratic:} $Cov(X^2, Y^2)$
@@ -3417,8 +3417,61 @@ To analyze a time series, we'll proceed in three steps:
 
 \section{Estimation of non-ergodic processes} % HAMILTON
 
+Consider this model:
+$$ Y_t = \alpha + \delta t + \varepsilon_t, \hspace{1em} \varepsilon_t \sim \mathcal{N}(0, \sigma^2)$$
+
+$Y_t$ satisfies all classical hypothesis of OLS regression, with usual $F, t$ statistics. In case $\varepsilon_t$ is not Gaussian, we need another technique to find the OLS distributions of $\hat{\alpha}, \hat{\delta}$.
+$$ \sqrt(T)(\hat{\beta} - \beta) = [(1/T) \sum X_t X_t']^{-1} [(1/\sqrt{T}) \sum X_t \varepsilon_t] $$
+The second term converges in distribution to $\mathcal{N}(0, \sigma^2)$. However, we cannot say that the first term converges in probability to a positive definite matrix $Q^{-1}$! The OLS estimators $\hat{\alpha}, \hat{\delta}$ \textit{have different rates of convergence.} We can account for this by multiplying $\hat{\alpha}$ by $\sqrt{T}$ and $\hat{\delta}$ by $T^{3/2}$. This will be the idea behind the following proposition, presented without proof\footnote{See Hamilton (1994), 16.1-2.}
+
+\begin{prop}
+Let $Y_{t}$ be generated according to a simple trend process $Y_{t}=\alpha+\delta t+\varepsilon_{t},$ where $\varepsilon_{t}$ is \textit{iid} white noise, $\mathbb{E}\left(\varepsilon_{t}^{2}\right)=\sigma^{2}$ and $\mathbb{E}\left(\varepsilon_{t}^{4}\right)<\infty .$ Then
+$$
+\left[\begin{array}{c}
+\sqrt{T}\left(\hat{\alpha}_{T}-\alpha\right) \\
+T^{3 / 2}\left(\hat{\delta}_{T}-\delta\right)
+\end{array}\right] \stackrel{L}{\rightarrow} \mathcal{N}\left(\left[\begin{array}{c}
+0 \\
+0
+\end{array}\right], \sigma^{2}\left[\begin{array}{cc}
+1 & \frac{1}{2} \\
+\frac{1}{2} & \frac{1}{3}
+\end{array}\right]^{-1}\right)
+$$
+\end{prop}
+
+Furthermore, we call $\hat{\delta}_t$ \textit{superconsistent}: 
+$$ \hat{\delta}_t \to_p \delta, \hspace{1em} T(\hat{\delta}_t - \delta) \to_p 0 $$
+
+Given this proposition, we can use the usual $t, F$ tests. This can be achieved by multiplying the statistic by the smallest rate of convergence among estimators\footnote{More on that on Hamilton (1994), 16.2.}.
+
 
 \section{Inference with linear dependence} % MATERIAL COMPLEMENTAR
+
+As we have shown in the previous section, OLS estimation with deterministic parameters is convergent (or superconvergent) even with the series at hand is not ergodic. $F, t$ tests are valid, given a good estimate of the errors of the model. We will now present a theorem that postulates a LLN for series with dependence without proof\footnote{Prova no Material Complementar do Problema 5.}.
+
+\begin{thm}{\textbf{Law of Large Numbers for Time Series with Dependence.}}
+Let $Y_{t}$ be a second order stationary time series where  $\mathbb{E}\left(Y_{t}\right):=\mu \mathrm{and}$ $\mathbb{E}\left(Y_{t}-\mu\right)\left(Y_{t-j}-\mu\right):=\gamma_{j} .$ Assume that $\sum_{j=0}^{\infty}\left|\gamma_{j}\right|<\infty .$ Then, the sample mean $\bar{Y}_{T}:=\frac{1}{T} \sum_{t=1}^{T} Y_{t}$ meets the following conditions:
+\begin{enumerate}
+\item $\bar{Y}_{t} \rightarrow \mu$
+\item $\lim _{T \rightarrow \infty} T\mathbb{E}\left(\bar{Y}_{t}-\mu\right)^{2}=\sum_{j=-\infty}^{\infty} \gamma_{j}$
+\end{enumerate}
+\end{thm}
+
+This means, essentially, that when a time series satisfies our condition for ergodicity (absolute sum of autocorrelations is finite), the sample mean is consistent for the population mean. Furthermore, (2) implies that, if we want the asymptotic variance to converge to a non-zero real number, we can multiply it by $T$ -- which suggests the estimator $\frac{1}{T} \sum_{t = -\infty}^{\infty} \hat{\gamma}_j$.
+
+Some issues arise. First, this estimator is very different from OLS, and it is not feasible -- after all, we have only so many (finite) observations. We now have two alternatives: \begin{enumerate}
+\item Model the ergodic series of the errors as an ARMA to isolate a white noise.
+\item Modify our estimate of the variance of the erros in such a way to enable us to account for its dependence. 
+\end{enumerate}
+
+The second option is enabled by the \textit{Newey-West estimator.} Approximating $\frac{1}{T} \sum_{t = -\infty}^{\infty} \hat{\gamma}_j$ by $\frac{1}{T} \sum_{t = -q}^{q} \hat{\gamma}_j$, we can arrive at the estimator. If we define $q := T^{1/4}$:
+$$\tilde{s} := \gamma_0 + 2\sum_{v=1}^q \left[1 - \dfrac{v}{q+1}\right]\hat{\gamma}_v$$
+
+This is a consistent estimator that is robust to heteroskedasticity and dependence.
+
+
+
 
 
 
@@ -4953,7 +5006,8 @@ $$Y_{t}=\left\{\begin{array}{ll}
 
 We can merge this model in a single expression.
 
-\begin{defn}
+\begin{defn} 
+\label{def-structural-break}
 A \textbf{linear parametric model of known structural break} follows the following form: 
 $$
 Y_t = Z_t'\beta_0 + (W_t'\beta_1 + u_{1t})\mathbbm{1}_{\{t \leq T_1\}} + (W_t'\beta_2 + u_{2t})\mathbbm{1}_{\{t \geq T_1\}} 
@@ -5099,6 +5153,7 @@ Here, we can consider one- or two-sided tests. In other words, at a given level 
 where $\mathbb{P}\left(Z>c_{\alpha}\right)=\alpha$ and $Z \sim \mathcal{N}(0,1).$
 
 \section{Unknown break}
+\label{supremum-test}
 
 The biggest limitation of the method presented in the previous section is its dependence on the knowledge of the \textit{exact moment $T_1$ of the break.} It is possible that we do not know $T_1$, but know that it is in roughly in the middle of the sample (e.g., between 20\% and 80\%):
  $$
@@ -5124,6 +5179,27 @@ $$W_{T}^{*}>c\left(\alpha, k, \pi_{1}, \pi_{2}\right).$$
 
 
 \chapter{Problem 7: Testing for structural breaks}
+
+
+\section{Testing for structural breaks}
+
+If we know the date of the suspected break, we can apply a Chow test. It is implemented by fitting the same ARMA model for $t \leq T_1$, $t > T_1$. If both models are sufficiently similar, we cannot reject the null of no structural break. This was discussed in the last Chapter.
+
+$$ F = \dfrac{(SSR - SSR_1 - SSR_2)/n}{(SSR_1 + SSR_2)/(T-2n)} $$
+If the coefficients are equal, $SSR_1 + SSR_2 = SSR \implies F = 0$.
+
+The model can also be constructed using dummies (See \ref{def-structural-break}). For endogenous structural breaks, we can perform a supremum test (See \ref{supremum-test}).
+
+\subsection{Parameter instability}
+
+It is possible that there is no single date of break, but rather a gradual change which renders the parameters unstable. e.g., climate change. 
+
+In this case, it is best to estimate the model recursively and plot the coefficients over time. If the coefficients present significant trends and deviations, then we can suspect that there's a structural break. It is possible to, at each step, forecast the error $e_t(1) = y_{t+1} - \mathbb{E}_t y_{t+1}$. If the model is well specified and fitted, then the sum of these errors should not differ significantly from zero. This is the intuition behind the $CUSUM_N$ test.
+$$ CUSUM_N = \sum_{i=n}^{N} \dfrac{e_i(1)}{\sigma_e}, \hspace{1em} N = n, ..., T-1 $$
+where $T$ denotes the date of the last observation and $\sigma_e$ is the \textit{estimated standard deviation of the forecast errors.} Note that $\sigma_e$ is created using all $T-n$ forecast errors (Enders, p. 106).
+
+\section{Implementing the tests}
+
 
 \begin{Shaded}
 \begin{Highlighting}[]
