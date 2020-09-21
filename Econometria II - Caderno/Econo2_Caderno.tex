@@ -307,7 +307,7 @@ We need some condition that guarantees that the dependence structure of the time
 
 \begin{defn}
 	A strictly stationary process $\{Y_t, t \in \mathbb{Z} \}$ is called \textbf{ergodic} if
-	$$ \lim_{J \rightarrow \infty} \dfrac{1}{J} \sum_{j=1}^J Cov[f(X_1), g(X,j)] = 0, $$
+	$$ \lim_{J \rightarrow \infty} \dfrac{1}{J} \sum_{j=1}^J Cov[f(X_1), g(X_j)] = 0, $$
 	for all pairs of bounded functions $f, g$.
 \end{defn}
 
@@ -356,7 +356,7 @@ This theorem is the generalization of the strong LLN. However, it presupposes \t
 The conditions that guarantee the existence of a CLT for stationary and ergodic processes are much more envolving than in the \textit{iid} environment. However, we have a relatively simple result that will be useful to us in time series analysis. It will now be presented without proof.
 
 \begin{thm}
-	Let $\{Y_t, t \in \mathbb{Z} \}$ be a \textbf{linear} stationary process, i.e., that can be written in the form $Y_t = \mu + \sum_{j=0}^{\infty} \psi_j \epsilon_{t-j}$, where $\varepsilon \sim_{iid} (0, \sigma^2)$ and $\sum_{j = -\infty}^{\infty} | \psi_j | < \infty$. Then,
+	Let $\{Y_t, t \in \mathbb{Z} \}$ be a \textbf{linear} stationary process, i.e., that can be written in the form $Y_t = \mu + \sum_{j=0}^{\infty} \psi_j \varepsilon_{t-j}$, where $\varepsilon \sim_{iid} (0, \sigma^2)$ and $\sum_{j = -\infty}^{\infty} | \psi_j | < \infty$. Then,
 	$$ \sqrt{T}(\bar{Y_t}-\mu) \to_d \mathcal{N}(0, \omega^2), $$ 
 	where $\omega^2 := \sum_{j = -\infty}^{\infty} \gamma_{j} < \infty $	
 \end{thm}
@@ -403,8 +403,8 @@ $$
 Multiplying both sides by $\left(Y_{t-j}-\mu\right)$ yields:
 $$
 \begin{aligned}
-	\left(Y_{t}-\mu\right)\left(Y_{t-j}-\mu\right) &=\left(\epsilon_{t}+\theta \epsilon_{t-1}\right)\left(\epsilon_{t-j}+\theta \epsilon_{t-j-1}\right) \\
-	&=\epsilon_{t} \epsilon_{t-j}+\theta \epsilon_{t} \epsilon_{t-j-1}+\theta \epsilon_{t-1} \epsilon_{t-j}+\theta^{2} \epsilon_{t-1} \epsilon_{t-j-1}
+	\left(Y_{t}-\mu\right)\left(Y_{t-j}-\mu\right) &=\left(\varepsilon_{t}+\theta \varepsilon_{t-1}\right)\left(\varepsilon_{t-j}+\theta \varepsilon_{t-j-1}\right) \\
+	&=\varepsilon_{t} \varepsilon_{t-j}+\theta \varepsilon_{t} \varepsilon_{t-j-1}+\theta \varepsilon_{t-1} \varepsilon_{t-j}+\theta^{2} \varepsilon_{t-1} \varepsilon_{t-j-1}
 \end{aligned}
 $$
 
@@ -467,7 +467,7 @@ $$
 \left(Y_{t}-\mu\right)=\varepsilon_{t}+\theta_{1} \varepsilon_{t-1}+\cdots+\theta_{q} \varepsilon_{t-q}
 $$
 
-Multiplicando ambos os lados por $\left(Y_{t-j}-\mu\right),$ temos
+Multiplying both sides by $\left(Y_{t-j}-\mu\right),$ we have
 $$
 \begin{aligned}
 	\left(Y_{t}-\mu\right)\left(Y_{t-j}-\mu\right) &=\left(\sum_{k=0}^{q} \theta_{k} \varepsilon_{t-k}\right)\left(\sum_{k=0}^{q} \theta_{k} \varepsilon_{t-j-k}\right) \\
@@ -529,7 +529,7 @@ Again, we'll begin with its simplest form, AR(1).
 \begin{defn} \label{ar1-def}
 	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is called \textbf{AR(1)}, or an \textbf{autoregressive process of order 1}, if it follows the following form:
 	$$ Y_t = c + \phi Y_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2), $$
-	where $c, \theta$ are constant.
+	where $c, \phi$ are constant.
 \end{defn}
 
 \subsection{Moments of an AR(1) process}
@@ -544,7 +544,7 @@ Using the first result, we can rewrite the model as:
 $$ (Y_t - \mu) = \phi (Y_{t-1} - \mu) + \varepsilon_{t} $$
 
 Multiplying both sides by $(Y_{t-j} - \mu)$ and taking expectations yields:
-$$ \gamma_{j} = \phi \gamma_{t-j}, \hspace{1em} = 1,2,... $$
+$$ \gamma_{j} = \phi \gamma_{t-j}, \hspace{1em} j = 1,2,... $$
 
 \subsection{Some examples of AR(1) series}
 
@@ -617,7 +617,7 @@ The first term follows from the sum of an infinite geometric sequence. This mean
 \begin{defn}
 	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is called \textbf{AR(p)}, or an \textbf{autoregressive process of order p}, if it follows the following form:
 	$$ Y_t = c + \phi Y_{t-1} + ... + \phi_p Y_{t-p} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2), $$
-	where $c, \theta_1, ..., \theta_p$ are constant.
+	where $c, \phi_1, ..., \phi_p$ are constant.
 \end{defn}
 
 \subsection{Moments of an AR(p) process}
@@ -629,7 +629,7 @@ $$
 
 Using this result, we can rewrite the model as:
 $$
-\left(Y_{t}-\mu\right)=\phi_{1}\left(Y_{t-1}-\mu\right)+\cdots+\phi_{p}\left(Y_{t-p}-\mu\right)+\epsilon_{t}
+\left(Y_{t}-\mu\right)=\phi_{1}\left(Y_{t-1}-\mu\right)+\cdots+\phi_{p}\left(Y_{t-p}-\mu\right)+\varepsilon_{t}
 $$
 
 Multiplying both sides by $\left(Y_{t-j}-\mu\right)$ and taking expectations, we have:
@@ -639,7 +639,7 @@ $$
 	\phi_{1} \gamma_{1}+\cdots+\phi_{p} \gamma_{p}+\sigma^{2} & j=0
 \end{array}\right.
 $$
-Note that the last term in $\gamma_{0}$ is implied by $\mathbb{E}\left(\epsilon_{t}\right)\left(Y_{t}-\mu\right)=\sigma^{2}$.
+Note that the last term in $\gamma_{0}$ is implied by $\mathbb{E}\left(\varepsilon_{t}\right)\left(Y_{t}-\mu\right)=\sigma^{2}$.
 
 \subsection{ACF of an AR(p) process}
 
@@ -682,9 +682,9 @@ $$ \Phi_p (L) Y_t = \varepsilon_{t} $$
 
 Analogously, we can rewrite an MA(q) process as:
 $$\begin{aligned}
-	Y_{t} &=\epsilon_{t}+\theta_{1} \epsilon_{t-1}+\theta_{2} \epsilon_{t-2}+\cdots+\theta_{q} \epsilon_{t-q} \\
-	&=\left(1+\theta_{1} L+\theta_{2} L^{2}+\cdots+\theta_{q} L^{q}\right) \epsilon_{t} \\
-	& \equiv \Theta_{q}(L) \epsilon_{t}
+	Y_{t} &=\varepsilon_{t}+\theta_{1} \varepsilon_{t-1}+\theta_{2} \varepsilon_{t-2}+\cdots+\theta_{q} \varepsilon_{t-q} \\
+	&=\left(1+\theta_{1} L+\theta_{2} L^{2}+\cdots+\theta_{q} L^{q}\right) \varepsilon_{t} \\
+	& \equiv \Theta_{q}(L) \varepsilon_{t}
 \end{aligned}$$
 
 We would also like to define an operator $(1 - \phi L)^{-1}$ such that:
@@ -704,13 +704,13 @@ The $(1 - \phi L)^{-1}$ operator will be very useful to translate models between
 We can factor out the polynomial of an AR(p) process as:
 $$ 1 - \phi_1 L - ... - \phi_{p} L^p = (1 - \lambda_1 L)...(1 - \lambda_p L), $$
 where $\lambda_j = \frac{1}{a_j} \forall j = 1,..., p$ and $a_1, ..., a_p$ are the $p$ roots of a polynomial of $p$-th degree. This means that we can rewrite the AR(p) process as:
-$$ (1 - \lambda_1 L)...(1 - \lambda_p L) = \varepsilon_{t} $$
+$$ (1 - \lambda_1 L)...(1 - \lambda_p L) Y_t = \varepsilon_{t} $$
 
 If $|\lambda_p | < 1$ (or, equivalently, $|a_j > 1$) $\forall j = 1, ..., p$, then \textit{the inverse polynomial exists} and we can write the AR(p) process as a MA($\infty$) -- which \textit{we know to be stationary}:
 $$\begin{aligned}
-	Y_{t} &=\left(1-\lambda_{1} L\right)^{-1} \ldots\left(1-\lambda_{p} L\right)^{-1} \epsilon_{t} \\
-	&=:\left(1+\psi_{1} L+\psi_{2} L^{2}+\ldots\right) \epsilon_{t} \\
-	&=: \Psi_{\infty}(L) \epsilon_{t}
+	Y_{t} &=\left(1-\lambda_{1} L\right)^{-1} \ldots\left(1-\lambda_{p} L\right)^{-1} \varepsilon_{t} \\
+	&=:\left(1+\psi_{1} L+\psi_{2} L^{2}+\ldots\right) \varepsilon_{t} \\
+	&=: \Psi_{\infty}(L) \varepsilon_{t}
 \end{aligned}$$
 
 \section{Finally, the ARMA(p,q) process}
@@ -725,8 +725,8 @@ An ARMA(p,q) model is created by combining an AR(p) with a MA(q).
 
 Using the lag operator yields an alternate form for the ARMA(p,q) process:
 $$\begin{aligned}
-	\left(1-\phi_{1} L-\cdots-\phi_{p} L^{p}\right) Y_{t} &=c+\left(1+\theta_{1} L+\cdots+\theta_{q} L^{q}\right) \epsilon_{t} \\
-	\Phi_{p}(L) Y_{t} &=c+\Theta_{q}(L) \epsilon_{t}
+	\left(1-\phi_{1} L-\cdots-\phi_{p} L^{p}\right) Y_{t} &=c+\left(1+\theta_{1} L+\cdots+\theta_{q} L^{q}\right) \varepsilon_{t} \\
+	\Phi_{p}(L) Y_{t} &=c+\Theta_{q}(L) \varepsilon_{t}
 \end{aligned}$$
 
 \subsection{Stationarity and invertibility of an ARMA(p,q) process}
@@ -774,9 +774,9 @@ In other words, because AR($\cdot$) models \textit{with roots of the polynomial 
 
 If the process is stationary, $\Phi_{p}^{-1}(L)$ exists and we can rewrite ARMA $(\mathrm{p}, \mathrm{q})$ as $\mathrm{MA}(\infty)$
 $$
-Y_{t}=\mu+\Psi_{\infty}(L) \epsilon_{t}
+Y_{t}=\mu+\Psi_{\infty}(L) \varepsilon_{t}
 $$
-onde
+where
 $$
 \mu \equiv \frac{c}{\Phi(1)} ; \quad \Phi(1)=1-\sum_{j=1}^{p} \phi_{j} ; \quad \Psi_{\infty}(L) \equiv \Phi_{p}(L)^{-1} \Theta_{q}(L)
 $$
@@ -2302,7 +2302,7 @@ $$ Y_t = c + \phi Y_{t-1} + \varepsilon_{t}$$
 
 \subsection{Forecast}
 
-Given that $\mathbb{E}(\varepsilon_{t+1}|Y_T) = 0$ (as $\epsilon \sim wn(0, \sigma^2)$), we have: 
+Given that $\mathbb{E}(\varepsilon_{t+1}|Y_T) = 0$ (as $\varepsilon \sim wn(0, \sigma^2)$), we have: 
 
 $$
 Y_{T+1 \mid T}:=\pi\left(Y_{T+1} \mid Y_{T}, \ldots, Y_{1}\right)=c+\phi Y_{T}
@@ -2330,14 +2330,14 @@ For $h=2$, we have:
 $$
 \begin{aligned}
  u_{T+2 \mid T} &:=Y_{T+2}-Y_{T+2 \mid T} \\
- &=c+\phi Y_{T+1}+\epsilon_{T+2}-\left(c+\phi Y_{T+1 \mid T}\right) \\
- &=\phi\left(Y_{T+1}-Y_{T+1 \mid T}\right)+\epsilon_{T+2} \\
- &=\phi u_{T+1 \mid T}+\epsilon_{T+2}=\phi \epsilon_{T+1}+\epsilon_{T+2}
+ &=c+\phi Y_{T+1}+\varepsilon_{T+2}-\left(c+\phi Y_{T+1 \mid T}\right) \\
+ &=\phi\left(Y_{T+1}-Y_{T+1 \mid T}\right)+\varepsilon_{T+2} \\
+ &=\phi u_{T+1 \mid T}+\varepsilon_{T+2}=\phi \varepsilon_{T+1}+\varepsilon_{T+2}
 \end{aligned}
 $$
 More generally, for a given time horizon $h$:
 $$
-u_{T+h \mid T}=\left(\epsilon_{T+h}+\phi \epsilon_{T+h-1}+\cdots+\phi^{h-1} \epsilon_{T+1}\right)$$
+u_{T+h \mid T}=\left(\varepsilon_{T+h}+\phi \varepsilon_{T+h-1}+\cdots+\phi^{h-1} \varepsilon_{T+1}\right)$$
 
 \subsection{Mean reversion}
 
@@ -2375,10 +2375,10 @@ $$ u_{T+1|T} := Y_{T+1} - Y_{T+1|T} = \varepsilon_{T+1}$$
 
 As $h$ increases:
 $$\begin{aligned}
-	u_{T+2 \mid T} &=\phi_{1} u_{T+1 \mid T}+\epsilon_{T+2} \\
-	u_{T+3 \mid T} &=\phi_{1} u_{T+2 \mid T}+\phi_{2} u_{T+1 \mid T}+\epsilon_{T+3} \\
+	u_{T+2 \mid T} &=\phi_{1} u_{T+1 \mid T}+\varepsilon_{T+2} \\
+	u_{T+3 \mid T} &=\phi_{1} u_{T+2 \mid T}+\phi_{2} u_{T+1 \mid T}+\varepsilon_{T+3} \\
 	& \vdots \\
-	u_{T+h \mid T} &=\phi_{1} u_{T+h-1 \mid T}+\cdots+\phi_{h-1} u_{T+1 \mid T}+\epsilon_{T+h},
+	u_{T+h \mid T} &=\phi_{1} u_{T+h-1 \mid T}+\cdots+\phi_{h-1} u_{T+1 \mid T}+\varepsilon_{T+h},
 \end{aligned}$$
 where $\phi_{h-1} = 0$ for $h-1>p$.
 
@@ -2390,10 +2390,10 @@ $$ Y_{T+1|T} := \pi(Y_{T+1} | Y_T,..., Y_1) $$
 
 We have seen that, if the MA(1) is invertible, we can write it as an AR($\infty$). This would mean, however, that the forecast errors would depend on \textit{all past values} -- notwithstanding the decreasing dependence, due to ergodicity. Given a fixed $\varepsilon_{0}$, we can reconstruct the entire error series: 
 $$\begin{aligned}
-	\epsilon_{1} &=Y_{1}-c-\theta \epsilon_{0} \\
-	\epsilon_{2} &=Y_{2}-c-\theta \epsilon_{1} \\
+	\varepsilon_{1} &=Y_{1}-c-\theta \varepsilon_{0} \\
+	\varepsilon_{2} &=Y_{2}-c-\theta \varepsilon_{1} \\
 	& \vdots \\
-	\epsilon_{T} &=Y_{T}-c-\theta \epsilon_{T-1}
+	\varepsilon_{T} &=Y_{T}-c-\theta \varepsilon_{T-1}
 \end{aligned}$$
 
 If we do not know $\varepsilon_{0}$, we can approximate it by its (known!) mean, $\tilde{\varepsilon}_0 = 0$. If $T$ is large enough and $|\theta| < 1$, this is a good approximation. That is the case because for large $T$, the influence of the assumption $\tilde{\varepsilon}_0 = 0$ is geometrically diminished over time, given $|\theta| < 1$. 
@@ -2405,7 +2405,7 @@ We are now able to construct the forecast using the estimated $\tilde{\varepsilo
 $$ Y_{T+1|T} := c + \theta \tilde{\varepsilon}_T $$
 
 Iteratively for larger horizons:
-$$Y_{T+2 \mid T}=c+\theta \widetilde{\epsilon}_{T+1}=c+\theta\left(Y_{T+1 \mid T}-c-\theta \widetilde{\epsilon}_{T}\right)=c$$
+$$Y_{T+2 \mid T}=c+\theta \widetilde{\varepsilon}_{T+1}=c+\theta\left(Y_{T+1 \mid T}-c-\theta \widetilde{\varepsilon}_{T}\right)=c$$
 
 Note that \textit{the MA(1) process is not predictable for $h > 1$.} The forecast immediately mean reverts at $h>1$.
 
@@ -2424,11 +2424,11 @@ Thus, $ Var(u_{T+h|T}) = (1+\theta)^2 \sigma^2 = \gamma_0, \forall h > 1$.
 We can proceed iteratively for the MA(q) model.
 
 $$\begin{aligned}
-	Y_{T+1 \mid T} &=c+\theta_{1} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+1-q} \\
-	Y_{T+2 \mid T} &=c+\theta_{2} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+2-q} \\
-	Y_{T+3 \mid T} &=c+\theta_{3} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+3-q} \\
+	Y_{T+1 \mid T} &=c+\theta_{1} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+1-q} \\
+	Y_{T+2 \mid T} &=c+\theta_{2} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+2-q} \\
+	Y_{T+3 \mid T} &=c+\theta_{3} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+3-q} \\
 	& \vdots \\
-	Y_{T+q \mid T} &=c+\theta_{q} \widetilde{\epsilon}_{T}
+	Y_{T+q \mid T} &=c+\theta_{q} \widetilde{\varepsilon}_{T}
 \end{aligned}$$
 
 Note that, after $q$ periods, the prediction is the unconditional mean $c$.
@@ -2439,7 +2439,7 @@ Let's combine the procedures presented for AR(p) and MA(q). For $h=1$:
 $$Y_{T+1 \mid T}=c+\phi_{1} Y_{T}+\cdots+\phi_{p} Y_{T-p+1}+\theta_{1} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+1-q},$$
 where $\{\widetilde{\varepsilon}_{T}, ..., \widetilde{\varepsilon}_{T+1-q}\}$ were obtained from the reconstruction process explained in the MA(q) case. However, here we need, aside from the first $q$ innovation values, also the \textit{last $p$ observations before the first one}. That is the case because of the expression for $\widetilde{\varepsilon}_{1}$:
 
-$$\widetilde{\epsilon}_{1}=Y_{1}-c-\phi_{1} Y_{0}-\cdots-\phi_{p} Y_{p-1}-\theta_{1} \widetilde{\epsilon}_{0}-\theta_{2} \widetilde{\epsilon}_{-1}-\cdots-\theta_{q} \widetilde{\epsilon}_{1-q}$$
+$$\widetilde{\varepsilon}_{1}=Y_{1}-c-\phi_{1} Y_{0}-\cdots-\phi_{p} Y_{p-1}-\theta_{1} \widetilde{\varepsilon}_{0}-\theta_{2} \widetilde{\varepsilon}_{-1}-\cdots-\theta_{q} \widetilde{\varepsilon}_{1-q}$$
 
 Alternatively, we can start reconstructing the residuals from $p+1$. 
 
@@ -2447,15 +2447,15 @@ Alternatively, we can start reconstructing the residuals from $p+1$.
 
 From this, we can obtain the forecasts for any horizon $h \geq 1$, given $h>p>q$: 
 $$\begin{array}{l}
-	Y_{T+1 \mid T}=c+\phi_{1} Y_{T}+\cdots+\phi_{p} Y_{T+1-p}+\theta_{1} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+1-q} \\
-	Y_{T+2 \mid T}=c+\phi_{1} Y_{T+1 \mid T}+\cdots+\phi_{p} Y_{T+2-p}+\theta_{2} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+2-q} \\
-	Y_{T+3 \mid T}=c+\phi_{1} Y_{T+2 \mid T}+\cdots+\phi_{p} Y_{T+3-p}+\theta_{3} \widetilde{\epsilon}_{T}+\cdots+\theta_{q} \widetilde{\epsilon}_{T+3-q}
+	Y_{T+1 \mid T}=c+\phi_{1} Y_{T}+\cdots+\phi_{p} Y_{T+1-p}+\theta_{1} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+1-q} \\
+	Y_{T+2 \mid T}=c+\phi_{1} Y_{T+1 \mid T}+\cdots+\phi_{p} Y_{T+2-p}+\theta_{2} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+2-q} \\
+	Y_{T+3 \mid T}=c+\phi_{1} Y_{T+2 \mid T}+\cdots+\phi_{p} Y_{T+3-p}+\theta_{3} \widetilde{\varepsilon}_{T}+\cdots+\theta_{q} \widetilde{\varepsilon}_{T+3-q}
 \end{array}$$
 
 $ \hspace{13em} \vdots$
 
 $$\begin{aligned}
-	Y_{T+q \mid T} &=c+\phi_{1} Y_{T+q-1 \mid T}+\cdots+\phi_{p} Y_{T+q-p}+\theta_{q} \widetilde{\epsilon}_{T} \\
+	Y_{T+q \mid T} &=c+\phi_{1} Y_{T+q-1 \mid T}+\cdots+\phi_{p} Y_{T+q-p}+\theta_{q} \widetilde{\varepsilon}_{T} \\
 	Y_{T+q+1 \mid T} &=c+\phi_{1} Y_{T+q \mid T}+\cdots+\phi_{p} Y_{T+q+1-p} \\
 	& \vdots \\
 	Y_{T+h \mid T} &=c+\phi_{1} Y_{T+h-1 \mid T}+\cdots+\phi_{p} Y_{T+h-p \mid T}
@@ -4142,11 +4142,11 @@ The other case defined earlier is a pure random walk ($\delta = 0$). Furthermore
 
 Beginning at an arbitrary period $t$, we can recursively substitute until $t=0$:
 $$\begin{aligned}
-	Y_{t} &=\delta+Y_{t-1}+\epsilon_{t} \\
-	&=\delta+\delta+Y_{t-2}+\epsilon_{t-1}+\epsilon_{t} \\
-	&=\delta+\delta+\delta+Y_{t-3}+\epsilon_{t-2}+\epsilon_{t-1}+\epsilon_{t} \\
+	Y_{t} &=\delta+Y_{t-1}+\varepsilon_{t} \\
+	&=\delta+\delta+Y_{t-2}+\varepsilon_{t-1}+\varepsilon_{t} \\
+	&=\delta+\delta+\delta+Y_{t-3}+\varepsilon_{t-2}+\varepsilon_{t-1}+\varepsilon_{t} \\
 	&=\\
-	&=\delta+\delta+\cdots+\delta+Y_{0}+\epsilon_{1}+\cdots+\epsilon_{t-1}+\epsilon_{t},
+	&=\delta+\delta+\cdots+\delta+Y_{0}+\varepsilon_{1}+\cdots+\varepsilon_{t-1}+\varepsilon_{t},
 \end{aligned}$$
 which gives us an alternate representation of the random walk:
 \begin{equation} 
@@ -4235,7 +4235,7 @@ We now combine this concept with the ARMA(p,q) class.
 
 \begin{defn}
 	An \textbf{integrated autoregressive moving average model of (p,d,q) order, or ARIMA(p,d,q),} is a process that, after taking $d$ differences, becomes a stationary ARMA(p,q):
-	$$\Phi_{p}(L)(1-L)^{d} Y_{t}=c+\Theta_{q}(L) \epsilon_{t} ; \quad \epsilon_{t} \sim\left(0, \sigma^{2}\right),$$
+	$$\Phi_{p}(L)(1-L)^{d} Y_{t}=c+\Theta_{q}(L) \varepsilon_{t} ; \quad \varepsilon_{t} \sim\left(0, \sigma^{2}\right),$$
 	where $p$ is the autoregressive order (aside from the unit roots), $q$ is the order of the moving average and the roots of $\Phi_{p}(L)$ are outside the unit circle.
 \end{defn}
 
