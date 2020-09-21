@@ -1561,7 +1561,7 @@ Now, let's run \emph{auto.arima}.
 \end{verbatim}
 
 
-\chapter{Problem 2: Estimating ARMA models}
+\chapter{Problem 2: Estimating ARMA models} \label{Problem-2}
 
 \{HAMILTON 5.1-5.6\}
 
@@ -3175,7 +3175,7 @@ Now, some forecasting plots:
 In this chapter, we'll begin classifying time series according to some criteria:
 \begin{itemize}
 	\item Does the time series gravitates around a certain mean?
-	\item Does it present some sort of tendency or seasonality?
+	\item Does it present some sort of trend or seasonality?
 	\item Does it have some sort of structrual break?
 	\item Does it have constant variance?
 	\item How much ``memory'' does the ts have?
@@ -3195,16 +3195,16 @@ It is comprised of two steps:
 
 The intuition behind this procedure is to transform a time series into a stationary and ergodic process -- after all, this is a necessary condition to ``apply Econometrics''!
 
-\subsection{Seasonality and tendency}
+\subsection{Seasonality and trend}
 
 In general, the deterministic component $f_t$ of a process can be decomposed between:
 \begin{enumerate}
-	\item \textbf{Deterministic tendency} $(f_t)$. It is usually some function of time, e.g., $t, t^2, log \, t, exp \{t\}$.
+	\item \textbf{Deterministic trend} $(f_t)$. It is usually some function of time, e.g., $t, t^2, log \, t, exp \{t\}$.
 	\item \textbf{Seasonality} ($s_t$). Usually a \textit{periodic function of time}.
 \end{enumerate}
 $$ X_t \equiv f_t + s_t + Y_t $$
 
-The additive tendency and seasonality model is the most common in practice:
+The additive trend and seasonality model is the most common in practice:
 $$ X_t = f_t + s_t + Y_t $$
 But, in some cases, it makes sense to postulate a multiplicative model:
 $$ X_t = f_t s_t Y_t $$
@@ -3219,9 +3219,9 @@ Note that, if the model is multiplicative, it is additive in $log$. Here is a gr
 	\label{fig:decomposition-multiplicative-ts}
 \end{figure}
 
-\subsection{Parametric deterministic tendency}
+\subsection{Parametric deterministic trend}
 
-The most straightforward way to model a deterministic tendency is with a \textit{parametric specification} -- i.e., a known function of time with a finite number of unknown parameters:
+The most straightforward way to model a deterministic trend is with a \textit{parametric specification} -- i.e., a known function of time with a finite number of unknown parameters:
 $$ f_t = f(t, \gamma), \hspace{1em} \gamma \in \mathbb{R}^k $$
 Here are some frequently used examples: $\gamma, \hspace{1em} \gamma t, \hspace{1em} \gamma_0 + \gamma t, \hspace{1em} \gamma_0 exp \{ \gamma t \}$.
 
@@ -3272,7 +3272,7 @@ Some examples are:
 
 \subsection{Hodrick Prescott (HP) filter}
 
-The idea behind the HP filter is to find a tendency that is well adjusted to the observed time series. It is constructed by \textit{weighting deviations from a purely linear tendency:}
+The idea behind the HP filter is to find a trend that is well adjusted to the observed time series. It is constructed by \textit{weighting deviations from a purely linear trend:}
 $$\min \left\{\sum_{t=1}^{T}\left(X_{t}-f_{t}\right)^{2}+\lambda \sum_{t=2}^{T-1}\left[\left(f_{t+1}-f_{t}\right)-\left(f_{t}-f_{t-1}\right)\right]^{2}\right\}$$
 In other words, we're looking for $f_1,..., f_T$ that solves the expression above for some $\lambda \geq 0$. 
 \begin{itemize}
@@ -3299,9 +3299,9 @@ This is one of the first non-parametric methods of time series decomposition.
 	where $m = 2k + 1.$
 \end{defn}
 
-The tendency is, then, the mean of $m$ periods centered around $Y_t$, hence the name \textit{moving average.}
+The trend is, then, the mean of $m$ periods centered around $Y_t$, hence the name \textit{moving average.}
 
-Here's an example of a tendency estimated by a moving average: 
+Here's an example of a trend estimated by a moving average: 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.6\linewidth]{"moving average"}
@@ -3327,7 +3327,7 @@ For a simple forecast, it is usual to postulate a parametric deterministic funct
 To analyze a time series, we'll proceed in three steps:
 \begin{enumerate}
 	\item Split the deterministic from the stochastic component -- more art than science! \begin{itemize}
-		\item Clean the time series of ``NA'', tendency over time and seasonality.
+		\item Clean the time series of ``NA'', trend over time and seasonality.
 	\end{itemize}
 	\item Look for structural breaks (More on that on Chapter \ref{Structural-Breaks}). \begin{itemize}
 		\item When there are structural breaks, we will split the time series in two and jointly estimate two different models.
@@ -3365,7 +3365,7 @@ challenges, namely those related to \emph{ergodicity} and
 \begin{center}\includegraphics{Econo2_P5_files/figure-latex/plots-1} \end{center}
 
 As we have downloaded the \emph{pure} quarterly data, it presents
-\emph{seasonality} and an upwards tendency. This implies that the
+\emph{seasonality} and an upwards trend. This implies that the
 \emph{time series will not be stationary}. Therefore, we need to employ
 methods that circumvent this issue and assure us that we can continue
 modelling the series as an ARMA(p,q).
@@ -3374,7 +3374,7 @@ modelling the series as an ARMA(p,q).
 
 We will now assume that we can decompose the time series in three
 distinct elements in an additive model: \[ X_t = f_t+ s_t + Y_t \],
-where \(f_t\) denotes the tendency of the ts, \(s_t\) denotes
+where \(f_t\) denotes the trend of the ts, \(s_t\) denotes
 seasonality, \(Y_t\) is stochastic. We also assume that \(f_t, s_t\) are
 \emph{deterministic}.
 
@@ -3983,30 +3983,865 @@ ARMA(2,0) -- i.e., an AR(2):
 
 \chapter{Integrated Processes}
 
-\subsection{Motivation}
+\section{Motivation}
 
-Up to this point, we have focused exclusively on stationary processes. Henceforth, we'll deal with some classes of non-stationary processes. Informally, we can say that the class of non-stationary processes is much more extensive 
+Up to this point, we have focused exclusively on stationary processes. Henceforth, we'll deal with some classes of non-stationary processes. Informally, we can say that the class of non-stationary processes is much more extensive than the class of stationary ones -- in particular, ARMA processes. Most of the time, we will try to ``stationarize'' a non-stationary process.
+
+\section{Non-stationary processes}
+
+\begin{defn}
+	A \textbf{random walk process} is given by:
+	$$ Y_t = Y_{t-1} + \varepsilon_{t}, \hspace{1em} \varepsilon_{t} \sim (0, \sigma^2),$$
+	with $Y_0 = 0.$
+\end{defn}
+
+Note that a random walk is \textit{an AR(1) with $\phi = 1$}, which implies that \textit{it is not stationary.}
+
+\begin{defn}
+	A \textbf{random walk process with drift} is given by:
+	$$ Y_t = \delta + Y_{t-1} + \varepsilon_{t}, \hspace{1em} \varepsilon_{t} \sim (0, \sigma^2)$$
+\end{defn}
+
+The other case defined earlier is a pure random walk ($\delta = 0$). Furthermore, the initial condition can be $Y_0 = c \neq 0$. Defining a generic random walk:
+
+\begin{defn}
+	A \textbf{generic random walk process} is given by:
+	$$ Y_t = \delta + Y_{t-1} + \varepsilon_{t}, \hspace{1em} \varepsilon_{t} \sim (0, \sigma^2),$$
+	with $Y_0 = x$, which can be \textit{deterministic} ($c$) or \textit{random} ($f_x$).
+\end{defn}
+
+\subsection{Recursive representation of a random walk}
+
+Beginning at an arbitrary period $t$, we can recursively substitute until $t=0$:
+$$\begin{aligned}
+	Y_{t} &=\delta+Y_{t-1}+\epsilon_{t} \\
+	&=\delta+\delta+Y_{t-2}+\epsilon_{t-1}+\epsilon_{t} \\
+	&=\delta+\delta+\delta+Y_{t-3}+\epsilon_{t-2}+\epsilon_{t-1}+\epsilon_{t} \\
+	&=\\
+	&=\delta+\delta+\cdots+\delta+Y_{0}+\epsilon_{1}+\cdots+\epsilon_{t-1}+\epsilon_{t},
+\end{aligned}$$
+which gives us an alternate representation of the random walk:
+\begin{equation} 
+	\label{random-walk-sum}
+	Y_t = c + \delta t + \sum_{i=1}^{t} \varepsilon_{t}
+\end{equation}
+
+It is now evident that the process \textit{is not stationary} -- the influence of previous innovations is \textit{permanent!}
+
+\subsection{Moments of a random walk}
+
+Using the alternate representation of \ref{random-walk-sum}, it is simple to derive the moments of the random walk:
+$$\begin{aligned}
+	\mu_{t} &:=\mathbb{E}\left(Y_{t}\right)=c+\delta t \\
+	\gamma_{j, t} &:=Cov\left(Y_{t}, Y_{t-j}\right)=(t-j) \sigma^{2}, \quad j \geq 0 \\
+	\rho_{j, t} &:=\frac{\gamma_{j, t}}{\sqrt{\gamma_{0, t} \gamma_{0, t-j}}}=\frac{t-j}{\sqrt{t(t-j)}}=\sqrt{\frac{t-j}{t}}=\sqrt{1-\frac{j}{t}}
+\end{aligned}$$
+
+This means that, as $t$ grows, $\rho_{j,t}$ gets closer to 1 for fixed $j$. For fixed $t$, the correlation falls approximately linearly with $j$.
+
+Here's a typical random walk ACF:
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{"fac random walk"}
+	\label{fig:fac-random-walk}
+\end{figure}
+
+\section{Unit root processes}
+
+The random walk is an example of the more general class of \textit{unit root processes.}
+
+\begin{defn}
+	An \textbf{unit root process} follows the following form:
+	$$ Y = c + \delta t + u_t,$$
+	where $c, \delta, u_t$ have an ARMA(p,q) representation:
+	$$\Phi_p (L) u_t = \Theta_{q} (L) \varepsilon_{t}, \hspace{1em} \varepsilon_{t} \sim (0, \sigma^2) $$
+\end{defn}
+
+If all roots of $\Theta_p (L)$ are outside of the unit circle, then $u_t$ is weakly stationary. 
+
+\subsection{Integrated processes of order 1}
+
+Now, suppose that one of these roots is \textit{unity}, and the rest is outside of the unit circle:
+$$\Phi_{p}(L)=(1-L)\left(1-\lambda_{2} L\right)\left(1-\lambda_{3} L\right) \ldots\left(1-\lambda_{p} L\right),$$
+where $\lambda_i$ is the inverse of the root.
+
+Then, we have: 
+$$
+(1-L) u_{t}=\left(1-\lambda_{2} L\right)^{-1} \ldots\left(1-\lambda_{p} L\right)^{-1} \Theta_{q}(L) \varepsilon_{t}=: \Psi(L) \varepsilon_{t}
+$$
+This yields:
+$$
+\begin{aligned}
+	(1-L) Y_{t} &=(1-L) c+(1-L) \delta t+(1-L) u_{t} \\
+	&=0+\delta+(1-L) u_{t} \\
+	&=\delta+\Psi(L) \varepsilon_{t}
+\end{aligned}
+$$
+Equivalently, we can define:
+$$
+\Delta Y_{t}:=(1-L) Y_{t}=Y_{t}-Y_{t-1}=\delta+\Psi(L) \varepsilon_{t}
+$$
+
+This form highlights a very important result. If the process has \textit{one} unit root, by \textit{taking differences} we arrive at a stationary process! This process is called integrated of order 1.
+
+\begin{defn}
+	An \textbf{integrated process of order 1, or I(1),} is a stochastic process whose difference is stationary.
+\end{defn}
+
+Using this nomenclature, stationary processes are called integrated of order zero, or I(0).
+
+\subsection{Integrated process of order d}
+
+A process may have \textit{more than one unit root.} 
+
+\begin{defn}
+	An \textbf{integrated process of order d, or I(d),} is a stochastic process whose d-th difference is stationary:
+	$$ \Delta^d Y_t = (1-L)^d Y_t = u_t, \hspace{1em} u_t \sim I(0) $$
+	$$ Y_t \sim I(d) \implies \Delta^d Y_t \sim I(0) $$
+\end{defn}
+
+\subsection{ARIMA(p,d,q) processes}
+
+We now combine this concept with the ARMA(p,q) class.
+
+\begin{defn}
+	An \textbf{integrated autoregressive moving average model of (p,d,q) order, or ARIMA(p,d,q),} is a process that, after taking $d$ differences, becomes a stationary ARMA(p,q):
+	$$\Phi_{p}(L)(1-L)^{d} Y_{t}=c+\Theta_{q}(L) \epsilon_{t} ; \quad \epsilon_{t} \sim\left(0, \sigma^{2}\right),$$
+	where $p$ is the autoregressive order (aside from the unit roots), $q$ is the order of the moving average and the roots of $\Phi_{p}(L)$ are outside the unit circle.
+\end{defn}
+
+\section{Stochastic or deterministic trend?}
+
+Let's compare two non-stationary processes:
+$$ Y_t = c + \delta_{t} + u_t, \hspace{1em} u_t \sim I(0) $$
+$$ Z_t = \delta + Z_{t-1} + u_t, \hspace{1em} t \geq 1, Z_0 = c$$
+
+The first model has a deterministic linear trend. The second one has a linear \textit{stochastic} trend. Both processes clearly have \textit{linear} trends:
+$$ \mathbb{E}(Y_t) = \mathbb{Z_t} = c + \delta t $$
+
+However, the variances of these processes are very different:
+$$ Var(Y_t) = \sigma^2, \hspace{1em} Var(Z_t) = t \sigma^2 $$
+
+Clearly, the first one is stationary (constant variance), while the second has an ever increasing variance. From an economic point of view, this has a fundamental implication: is the impact of the shock \textit{permanent} or \textit{temporary?} e.g. Is the impact of a recession on GDP temporary or permanent?
+
+\subsection{Detrending by taking first differences}
+
+If the trend is stochastic, the correct procedure is to take first differences of the series to obtain a stationary process:
+$$
+\Delta Z_{t}=Z_{t}-Z_{t-1}=\delta+u_{t}
+$$
+However, if we take first differences of a process with a \textit{deterministic trend}:
+$$
+\Delta Y_{t}=\delta+u_{t}-u_{t-1}=\delta+(1-L) u_{t}
+$$
+The result, while still stationary, induces a unit root in the MA portion of the process. This implies that the MA($\cdot$) will no longer be invertible -- which hinders estimation! (See Chapter \ref{Problem-2}).
+
+\subsection{Detrending by parametric decomposition}
+
+If the trend is deterministic, the correct procedure is to adjust a parametric linear tendency, given that $Y_t - c - \delta t = u_t $. However, if we adjust a linar trend in a process with stochastic trend, \textit{we do not obtain stationarity}:
+$$ Z_t - c - \delta t = \sum_{i=1}^{t} u_t, $$
+which is a process whose variance grows with $t$.
+
+\subsection{How to distinguish between trends?}
+
+This is a major practical issue. In practice, it is very hard to distinguish a pure random walk and an AR(1) with $\phi = 0.99$! Most tests for unit root detection are low-powered, have unconventional distributions and vary wildly according to the formulation of the null hypothesis (non-pivotal). More on this on Chapter \ref{Problem-6}.
+
+\chapter{Problem 6: Spurious regressions and estimating unit root processes}
+
+\section{Spurious regressions}
+
+\{ Trecho do livro sobre isso. é curto. \}
+
+\section{Unit roots}
+
+As has been discussed during the lecture, when the population model is a
+\emph{random walk}:
+\[ Y_t = 1*Y_{t-1} + \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2), \]
+
+it happens that the series \emph{is not ergodic} (nor is it stationary).
+Therefore, the usual asymptotic properties \emph{do not hold}, as all
+innovations have \emph{permanent effects}.
+\[ Y_t = c + \delta t + \sum_{i=1}^t \varepsilon_i \]
+
+The random walk, defined above, is an example of the more general class
+of \emph{unit root processes}: \[ Y_t = c + \delta t + u_t,\]
+
+\(u_t\) has an ARMA(p,q) representation:
+
+\[ \Phi_p (L) u_t = \Theta_q (L) \varepsilon_t, \hspace{1em} \varepsilon \sim wn(0, \sigma^2)\]
+
+Suppose that one of the roots of \(\Theta_p (L)\) is equal to 1:
+
+\[ \Theta_p (L) = (1 - [1]L)(1 - \lambda_2 L)...(1 - \lambda_p L)\]
+
+\[ (1 - L)u_t = (1 - \lambda_2 L)^{-1} ... (1 - \lambda_p L)^{-1} \Theta_q (L) \varepsilon_t =: \Psi(L) \varepsilon_t \]
+
+We can now rewrite this as:
+\[ (1- L)Y_t = (1-L)c + (1-L)\delta t + (1-L)u_t \]
+
+\[ (1 - L)Y_t = \delta + \Psi (L) \varepsilon_t \]
+
+Defining \(\Delta Y_t\), we have:
+\[ \Delta Y_t := (1 - L)Y_t = Y_t - Y_{t-1} = \delta + \Psi (L) \varepsilon_t \]
+
+With this concept, we can define ARIMA(p,d,q) processes:
+\[ \Phi_p (L) (1-L)^d Y_t = c + \Theta_q (L) \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2) \]
+
+\subsection{Hypothesis testing}
+
+It turns out that testing for unit root presence presents some
+challenges. Under the null (\(a_1 = 1\)), its distribution \emph{is not
+standard} and does not present the usual asymptotic properties. We can
+circumvent this issue with the use of numeric methods, such as the
+\emph{Monte Carlo simulation}. It will now be employed, following Dickey
+and Fuller (1979).
+
+First, some notation:
+
+We begin with a simple model: \[ Y_t = a_1 y_{t-1} + \varepsilon_t \]
+\[ \Delta Y_t = \gamma y_{t-1} + \varepsilon_t, \hspace{1em} \gamma := a_1 - 1 \]
+Dickey and Fuller constructed the following regression equations:
+\begin{equation}
+ \Delta y_t = \gamma y_{t-1} + \varepsilon_t
+\end{equation}
+
+\begin{equation}
+\Delta y_t = a_0 + \gamma y_{t-1} + \varepsilon_t
+\end{equation}
+
+\begin{equation}
+\Delta y_t = a_0 + \gamma y_{t-1} + a_2t + \varepsilon_t
+\end{equation}
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\tightlist
+\item
+  has no intercept and represents a simple random walk. (2) includes an
+  intercept. (3) also adds a deterministic time trend.
+\end{enumerate}
+
+Note that the critical values of the t-statistics are \emph{different}
+between these regressions. This will now be shown with our Monte Carlo
+simulation.
+
+For equation (1):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{76345}\NormalTok{)}
+
+\CommentTok{# length of ts}
+\NormalTok{T <-}\StringTok{ }\DecValTok{100}
+
+\CommentTok{# Loops}
+\NormalTok{S <-}\StringTok{ }\DecValTok{10000}
+
+\NormalTok{e <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(T, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+
+\CommentTok{# As y_\{t+1\} = y_t + \textbackslash{}varepsilon_t, we can write this as an MA(\textbackslash{}infty) model. y_t = \textbackslash{}sum \textbackslash{}varepsilon_i. This is now done with the cumsum function.}
+
+\NormalTok{y <-}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(e)}
+
+\NormalTok{y <-}\StringTok{ }\KeywordTok{vector}\NormalTok{()}
+
+\NormalTok{y[}\DecValTok{1}\NormalTok{] =}\StringTok{ }\NormalTok{e[}\DecValTok{1}\NormalTok{]}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ (}\DecValTok{2}\OperatorTok{:}\NormalTok{T)) \{}
+
+\NormalTok{    y[i] <-}\StringTok{ }\NormalTok{y[(i}\DecValTok{-1}\NormalTok{)] }\OperatorTok{+}\StringTok{ }\NormalTok{e[i]}
+
+\NormalTok{\}}
+
+\NormalTok{y <-}\StringTok{ }\KeywordTok{as.ts}\NormalTok{(y)}
+
+\KeywordTok{autoplot}\NormalTok{(y) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_bw}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P6_files/figure-latex/monte carlo 1-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Taking the first difference}
+
+\NormalTok{y_diff <-}\StringTok{ }\KeywordTok{diff}\NormalTok{(y)}
+
+\CommentTok{# Regression of I(1) model}
+
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{dynlm}\NormalTok{(y_diff }\OperatorTok{~}\StringTok{ }\DecValTok{0} \OperatorTok{+}\StringTok{ }\KeywordTok{L}\NormalTok{(y,}\DecValTok{1}\NormalTok{)) }\CommentTok{# no lag (x1 = 0)}
+
+\NormalTok{reg <-}\KeywordTok{summary}\NormalTok{(reg)}
+
+\NormalTok{reg}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{] }\CommentTok{# t value}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.110447
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Loop}
+
+\NormalTok{tau <-}\StringTok{ }\KeywordTok{vector}\NormalTok{()}
+
+\NormalTok{k <-}\StringTok{ }\DecValTok{1}
+
+\NormalTok{delta <-}\StringTok{ }\DecValTok{0}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+  
+\NormalTok{  e <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(T,}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)}
+\NormalTok{  y =}\StringTok{ }\NormalTok{k }\OperatorTok{+}\StringTok{ }\NormalTok{delta}\OperatorTok{*}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{T) }\OperatorTok{+}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(e)}
+\NormalTok{  y <-}\StringTok{ }\KeywordTok{as.ts}\NormalTok{(y)}
+  
+\NormalTok{  y_diff <-}\StringTok{ }\KeywordTok{diff}\NormalTok{(y)}
+  
+\NormalTok{  reg <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(}\KeywordTok{dynlm}\NormalTok{(y_diff }\OperatorTok{~}\StringTok{ }\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{L}\NormalTok{(y, }\DecValTok{1}\NormalTok{)))}
+  
+\NormalTok{  tau[i] <-}\StringTok{ }\NormalTok{reg}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{]}
+  
+\NormalTok{\}}
+
+\NormalTok{tau.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(tau)}
+
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ tau.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tau)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{color =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{stat_function}\NormalTok{(}\DataTypeTok{fun =}\NormalTok{ dnorm, }\DataTypeTok{n =} \DecValTok{101}\NormalTok{, }\DataTypeTok{args =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{mean =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{1}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P6_files/figure-latex/monte carlo 1-2} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.bera.test}\NormalTok{(tau) }\CommentTok{# We reject H0 at the 1% significance level.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque Bera Test
+## 
+## data:  tau
+## X-squared = 86.138, df = 2, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tau.ci <-}\StringTok{ }\KeywordTok{quantile}\NormalTok{(tau, }\KeywordTok{c}\NormalTok{(}\FloatTok{0.01}\NormalTok{, }\FloatTok{0.05}\NormalTok{, }\FloatTok{0.1}\NormalTok{))}
+
+\NormalTok{tau.ci}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        1%        5%       10% 
+## -3.494124 -2.880240 -2.567557
+\end{verbatim}
+
+For equation (2) -- with an intercept:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Loop}
+
+\NormalTok{tau_mu <-}\StringTok{ }\KeywordTok{vector}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+    
+\NormalTok{    e <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(T, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    y <-}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(e)}
+\NormalTok{    y <-}\StringTok{ }\KeywordTok{as.ts}\NormalTok{(y)}
+    
+\NormalTok{    y_diff <-}\StringTok{ }\KeywordTok{diff}\NormalTok{(y)}
+    
+\NormalTok{    reg <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(}\KeywordTok{dynlm}\NormalTok{(y_diff }\OperatorTok{~}\StringTok{ }\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{L}\NormalTok{(y, }\DecValTok{1}\NormalTok{)))}
+    
+\NormalTok{    tau_mu[i] <-}\StringTok{ }\NormalTok{reg}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{]}
+    
+\NormalTok{\}}
+
+\NormalTok{tau_mu.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(tau_mu)}
+
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ tau_mu.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tau_mu)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{color =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{stat_function}\NormalTok{(}\DataTypeTok{fun =}\NormalTok{ dnorm, }\DataTypeTok{n =} \DecValTok{101}\NormalTok{, }\DataTypeTok{args =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{mean =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{1}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P6_files/figure-latex/monte carlo 2-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.bera.test}\NormalTok{(tau_mu)  }\CommentTok{# We reject H0 at the 1% significance level.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque Bera Test
+## 
+## data:  tau_mu
+## X-squared = 96.894, df = 2, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tau_mu.ci <-}\StringTok{ }\KeywordTok{quantile}\NormalTok{(tau_mu, }\KeywordTok{c}\NormalTok{(}\FloatTok{0.01}\NormalTok{, }\FloatTok{0.05}\NormalTok{, }\FloatTok{0.1}\NormalTok{))}
+
+\NormalTok{tau_mu.ci}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        1%        5%       10% 
+## -3.494281 -2.895757 -2.577903
+\end{verbatim}
+
+And finally, for equation (3) -- with an intercept and a deterministic
+time trend:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Loop}
+
+\NormalTok{tau_t <-}\StringTok{ }\KeywordTok{vector}\NormalTok{()}
+\NormalTok{time <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{T)}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+    
+\NormalTok{    e <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(T, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    y <-}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(e)}
+\NormalTok{    y <-}\StringTok{ }\KeywordTok{as.ts}\NormalTok{(y)}
+    
+\NormalTok{    y_diff <-}\StringTok{ }\KeywordTok{diff}\NormalTok{(y)}
+    
+\NormalTok{    reg <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(}\KeywordTok{dynlm}\NormalTok{(y_diff }\OperatorTok{~}\StringTok{ }\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{L}\NormalTok{(y, }\DecValTok{1}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{time[}\OperatorTok{-}\DecValTok{1}\NormalTok{]))  }\CommentTok{# removed 1 dimension for no. of obs. }
+    
+\NormalTok{    tau_t[i] <-}\StringTok{ }\NormalTok{reg}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{]}
+    
+\NormalTok{\}}
+
+\NormalTok{tau_t.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(tau_t)}
+
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ tau_t.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tau_t)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{color =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{stat_function}\NormalTok{(}\DataTypeTok{fun =}\NormalTok{ dnorm, }\DataTypeTok{n =} \DecValTok{101}\NormalTok{, }\DataTypeTok{args =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{mean =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{1}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P6_files/figure-latex/monte carlo 3-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.bera.test}\NormalTok{(tau_t)  }\CommentTok{# We reject H0 at the 1% significance level.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque Bera Test
+## 
+## data:  tau_t
+## X-squared = 58.223, df = 2, p-value = 2.275e-13
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tau_t.ci <-}\StringTok{ }\KeywordTok{quantile}\NormalTok{(tau_t, }\KeywordTok{c}\NormalTok{(}\FloatTok{0.01}\NormalTok{, }\FloatTok{0.05}\NormalTok{, }\FloatTok{0.1}\NormalTok{))}
+
+\NormalTok{tau_t.ci}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        1%        5%       10% 
+## -4.065067 -3.462447 -3.158227
+\end{verbatim}
+
+Let's now change the distributions of the errors for equation (3):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Loop}
+
+\NormalTok{tau_t_pois <-}\StringTok{ }\KeywordTok{vector}\NormalTok{()}
+\NormalTok{time <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{T)}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{S) \{}
+    
+\NormalTok{    e <-}\StringTok{ }\KeywordTok{rpois}\NormalTok{(T, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    y <-}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(e)}
+\NormalTok{    y <-}\StringTok{ }\KeywordTok{as.ts}\NormalTok{(y)}
+    
+\NormalTok{    y_diff <-}\StringTok{ }\KeywordTok{diff}\NormalTok{(y)}
+    
+\NormalTok{    reg <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(}\KeywordTok{dynlm}\NormalTok{(y_diff }\OperatorTok{~}\StringTok{ }\DecValTok{1} \OperatorTok{+}\StringTok{ }\KeywordTok{L}\NormalTok{(y, }\DecValTok{1}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{time[}\OperatorTok{-}\DecValTok{1}\NormalTok{]))  }\CommentTok{# removed 1 dimension for no. of obs. }
+    
+\NormalTok{    tau_t_pois[i] <-}\StringTok{ }\NormalTok{reg}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{]}
+    
+\NormalTok{\}}
+
+\NormalTok{tau_t_pois.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(tau_t_pois)}
+
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ tau_t_pois.df, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tau_t_pois)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{color =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{stat_function}\NormalTok{(}\DataTypeTok{fun =}\NormalTok{ dnorm, }\DataTypeTok{n =} \DecValTok{101}\NormalTok{, }\DataTypeTok{args =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{mean =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{1}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P6_files/figure-latex/monte carlo poisson-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.bera.test}\NormalTok{(tau_t_pois)  }\CommentTok{# We reject H0 at the 1% significance level.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque Bera Test
+## 
+## data:  tau_t_pois
+## X-squared = 120.61, df = 2, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tau_t_pois.ci <-}\StringTok{ }\KeywordTok{quantile}\NormalTok{(tau_t_pois, }\KeywordTok{c}\NormalTok{(}\FloatTok{0.01}\NormalTok{, }\FloatTok{0.05}\NormalTok{, }\FloatTok{0.1}\NormalTok{))}
+
+\NormalTok{tau_t_pois.ci}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        1%        5%       10% 
+## -4.085753 -3.436365 -3.127525
+\end{verbatim}
+
+\section{Applying the Dickey-Fuller test for GDP}
+
+Loading the data from the previous problem:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pib <-}\StringTok{ }\KeywordTok{get_sidra}\NormalTok{(}\DecValTok{6612}\NormalTok{, }\DataTypeTok{variable =} \DecValTok{9318}\NormalTok{, }\DataTypeTok{category =} \DecValTok{90707}\NormalTok{, }\DataTypeTok{period =} \StringTok{"all"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Considering all categories once 'classific' was set to 'all' (default)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pib_limpo <-}\StringTok{ }\NormalTok{pib[(pib}\OperatorTok{$}\StringTok{`}\DataTypeTok{Setores e subsetores (Código)}\StringTok{`} \OperatorTok{==}\StringTok{ }\DecValTok{90707}\NormalTok{), }
+\NormalTok{    ]}
+
+\NormalTok{pib <-}\StringTok{ }\NormalTok{pib_limpo}
+
+\NormalTok{pib_limpo2 <-}\StringTok{ }\NormalTok{pib[, }\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{13}\NormalTok{)]}
+
+\NormalTok{pib <-}\StringTok{ }\NormalTok{pib_limpo2}
+
+\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{1}\NormalTok{] <-}\StringTok{ "t"}
+\KeywordTok{names}\NormalTok{(pib)[}\DecValTok{2}\NormalTok{] <-}\StringTok{ "v"}
+
+\NormalTok{pib}\OperatorTok{$}\NormalTok{t <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(pib}\OperatorTok{$}\NormalTok{t)}
+
+\KeywordTok{names}\NormalTok{(pib)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "t" "v"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(pib)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          t        v
+## 18  199601 170920.0
+## 40  199602 176708.8
+## 62  199603 189844.3
+## 84  199604 184112.9
+## 106 199701 176732.2
+## 128 199702 185109.5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tail}\NormalTok{(pib)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           t        v
+## 2042 201901 292647.6
+## 2064 201902 297748.9
+## 2086 201903 305150.9
+## 2108 201904 302108.7
+## 2130 202001 291912.5
+## 2152 202002 263699.7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pib <-}\StringTok{ }\KeywordTok{ts}\NormalTok{(pib}\OperatorTok{$}\NormalTok{v)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Choosing the correct model with auto.arima}
+
+\NormalTok{aa_pib <-}\StringTok{ }\KeywordTok{auto.arima}\NormalTok{(pib, }\DataTypeTok{stepwise =}\NormalTok{ F)}
+
+\KeywordTok{summary}\NormalTok{(aa_pib)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: pib 
+## ARIMA(2,1,2) with drift 
+## 
+## Coefficients:
+##           ar1      ar2     ma1    ma2     drift
+##       -0.0092  -0.9764  0.2721  0.956  864.9855
+## s.e.   0.0233   0.0171  0.0455  0.117  537.6284
+## 
+## sigma^2 estimated as 23455415:  log likelihood=-961.03
+## AIC=1934.06   AICc=1934.99   BIC=1949.51
+## 
+## Training set error measures:
+##                    ME    RMSE      MAE        MPE     MAPE      MASE       ACF1
+## Training set 64.56963 4692.48 3219.806 0.05416274 1.322955 0.5203698 0.01746157
+\end{verbatim}
+
+\emph{auto.arima} yields an ARIMA(2,1,2) model with a drift parameter:
+\[ \Delta y_t = a_0 + a_1 \Delta y_{t-1} + a_2 \Delta y_{t-2} + a_3 \Delta \varepsilon_{t-1} + a_4 \Delta \varepsilon_{t-2} +\varepsilon_t \]
+
+Let's decompose this process. First, we'll perform the Dickey-Fuller
+test on the GDP ts.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{adf.test}\NormalTok{(pib)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in adf.test(pib): p-value greater than printed p-value
+\end{verbatim}
+
+\begin{verbatim}
+## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  pib
+## Dickey-Fuller = 0.12028, Lag order = 4, p-value = 0.99
+## alternative hypothesis: stationary
+\end{verbatim}
+
+As we have not been able to reject \(H_0\), it follows that the ts
+includes (at least one) unit root. Now, let's find the optimal model for
+the regression.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{max_p <-}\StringTok{ }\DecValTok{5}
+
+\NormalTok{max_q <-}\StringTok{ }\DecValTok{5}
+
+\NormalTok{max_d <-}\StringTok{ }\DecValTok{2}
+
+\NormalTok{models1 <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, (max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+
+\NormalTok{models2 <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, (max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+
+\CommentTok{# Updating the model}
+
+\NormalTok{fit1 <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, (max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+
+\NormalTok{fit2 <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\StringTok{"list"}\NormalTok{, (max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{))}
+
+\NormalTok{model_info1 <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ ((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\DecValTok{1}\NormalTok{)), }\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{))}
 
 
 
 
+\CommentTok{# Updating the model}
+
+\ControlFlowTok{for}\NormalTok{ (u }\ControlFlowTok{in} \DecValTok{0}\OperatorTok{:}\NormalTok{max_q) \{}
+    
+    \ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in} \DecValTok{0}\OperatorTok{:}\NormalTok{max_p) \{}
+        
+        
+\NormalTok{        fit1[[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]] <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(pib, }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(j, }
+            \DecValTok{1}\NormalTok{, u))}
+        
+\NormalTok{        model_info1[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{), }\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{] <-}\StringTok{ }\KeywordTok{c}\NormalTok{(fit1[[(((max_p }\OperatorTok{+}\StringTok{ }
+\StringTok{            }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]]}\OperatorTok{$}\NormalTok{aic, fit1[[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }
+\StringTok{            }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]]}\OperatorTok{$}\NormalTok{bic)}
+        
+        
+        
+        
+\NormalTok{    \}}
+\NormalTok{\}}
+
+\KeywordTok{names}\NormalTok{(model_info1) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{, }\StringTok{"void"}\NormalTok{)}
 
 
 
+\KeywordTok{which.min}\NormalTok{(model_info1}\OperatorTok{$}\NormalTok{AIC)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 23
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{which.min}\NormalTok{(model_info1}\OperatorTok{$}\NormalTok{BIC)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 15
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit1[[}\KeywordTok{which.min}\NormalTok{(model_info1}\OperatorTok{$}\NormalTok{AIC)]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: pib 
+## ARIMA(3,1,4) 
+## 
+## Coefficients:
+##           ar1      ar2      ar3     ma1     ma2     ma3     ma4
+##       -0.9688  -0.9834  -0.9685  1.4659  1.3755  1.2705  0.5008
+## s.e.   0.0305   0.0210   0.0270  0.1344  0.1682  0.1821  0.1484
+## 
+## sigma^2 estimated as 21987482:  log likelihood=-956.26
+## AIC=1928.53   AICc=1930.17   BIC=1949.13
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit1[[}\KeywordTok{which.min}\NormalTok{(model_info1}\OperatorTok{$}\NormalTok{BIC)]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: pib 
+## ARIMA(2,1,2) 
+## 
+## Coefficients:
+##           ar1      ar2     ma1     ma2
+##       -0.0084  -0.9757  0.2769  0.9673
+## s.e.   0.0236   0.0175  0.0408  0.1130
+## 
+## sigma^2 estimated as 23692560:  log likelihood=-962.3
+## AIC=1934.6   AICc=1935.26   BIC=1947.47
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# For I(2)}
+
+\NormalTok{model_info2 <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ max_d }\OperatorTok{*}\StringTok{ }\NormalTok{((max_p }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(max_q }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)), }\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{))}
+
+\ControlFlowTok{for}\NormalTok{ (u }\ControlFlowTok{in} \DecValTok{0}\OperatorTok{:}\NormalTok{max_q) \{}
+    
+    \ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in} \DecValTok{0}\OperatorTok{:}\NormalTok{max_p) \{}
+        
+        
+\NormalTok{        fit2[[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]] <-}\StringTok{ }\KeywordTok{Arima}\NormalTok{(pib, }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(j, }
+            \DecValTok{2}\NormalTok{, u))}
+        
+\NormalTok{        model_info2[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{), }\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{] <-}\StringTok{ }\KeywordTok{c}\NormalTok{(fit2[[(((max_p }\OperatorTok{+}\StringTok{ }
+\StringTok{            }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]]}\OperatorTok{$}\NormalTok{aic, fit2[[(((max_p }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{j) }\OperatorTok{+}\StringTok{ }
+\StringTok{            }\NormalTok{u }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]]}\OperatorTok{$}\NormalTok{bic)}
+        
+\NormalTok{    \}}
+\NormalTok{\}}
+
+\KeywordTok{names}\NormalTok{(model_info2) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"AIC"}\NormalTok{, }\StringTok{"BIC"}\NormalTok{, }\StringTok{"void"}\NormalTok{)}
+
+\KeywordTok{which.min}\NormalTok{(model_info2}\OperatorTok{$}\NormalTok{AIC)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 24
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{which.min}\NormalTok{(model_info2}\OperatorTok{$}\NormalTok{BIC)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit2[[}\KeywordTok{which.min}\NormalTok{(model_info2}\OperatorTok{$}\NormalTok{AIC)]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: pib 
+## ARIMA(3,2,5) 
+## 
+## Coefficients:
+##           ar1      ar2      ar3     ma1     ma2      ma3      ma4      ma5
+##       -0.9700  -0.9835  -0.9674  0.4748  0.0162  -0.0121  -0.6534  -0.3766
+## s.e.   0.0315   0.0218   0.0277  0.1511  0.1211   0.1508   0.1090   0.1793
+## 
+## sigma^2 estimated as 22148502:  log likelihood=-946.73
+## AIC=1911.47   AICc=1913.56   BIC=1934.55
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fit2[[}\KeywordTok{which.min}\NormalTok{(model_info2}\OperatorTok{$}\NormalTok{BIC)]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Series: pib 
+## ARIMA(2,2,3) 
+## 
+## Coefficients:
+##           ar1      ar2      ma1     ma2      ma3
+##       -0.0054  -0.9795  -0.6754  0.6720  -0.7903
+## s.e.   0.0248   0.0162   0.1121  0.0786   0.1482
+## 
+## sigma^2 estimated as 23858414:  log likelihood=-951.82
+## AIC=1915.63   AICc=1916.58   BIC=1931.02
+\end{verbatim}
 
 
+\chapter{Structural breaks}
 
 
-
-
-
-
-
-
-
-
-
-
+Informally, a structural break is a kink, or literally a break, in the time series that is observable by plotting the time series. Most of the time we have a vague idea of what happened there by visually inspecting; other times, we know \textit{exactly} what happened.
 
 
 
