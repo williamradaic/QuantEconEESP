@@ -24,6 +24,7 @@
 \usepackage{dirtytalk}
 \usepackage{pgfplots}
 \usepackage{tikz}
+\usepackage{bbm}
 
 % KnitR
 
@@ -328,7 +329,7 @@ This theorem is the generalization of the strong LLN. However, it presupposes \t
 
 \begin{defn}
 	A stationary process $\{Y_t, t \in \mathbb{Z} \}$ is said to be \textbf{ergodic for the second moment} if, for every $j,$
-	$$ \dfrac{1}{T-j} \sum_{t=j+1}^T Y_t Y_{t-j} \to_p \mathbb{E}(Y_t), \hspace{1em} T \to \infty $$
+	$$ \dfrac{1}{T-j} \sum_{t=j+1}^T Y_t Y_{t-j} \to_p \mathbb{E}(Y_t Y_{t-j}), \hspace{1em} T \to \infty $$
 \end{defn}
 
 \begin{prop} \label{sum-ergodicity}
@@ -337,7 +338,9 @@ This theorem is the generalization of the strong LLN. However, it presupposes \t
 
 \begin{proof}
 	Let $Z_t := Y_t - \mu$ and $\bar{Z_t} := \frac{1}{T} \sum_{t=1}^T Z_t$, where $\{Y_t, t \in \mathbb{Z} \}$ is a stationary process. We will show that $\bar{Z_t}$ converges to 0 in mean square.
-	
+	\begin{center}
+
+
 	\begin{math}
 		\begin{aligned}
 			\mathbb{E}\left(\bar{Z}_{T}^{2}\right) &=\mathbb{E}\left[\left(\frac{1}{T} \sum_{t=1}^{T} Z_{t}\right)\left(\frac{1}{T} \sum_{t=1}^{T} Z_{t}\right)\right]=\frac{1}{T^{2}} \mathbb{E}\left(\sum_{s=1}^{T} \sum_{t=1}^{T} Z_{s} Z_{t}\right) \\
@@ -345,7 +348,7 @@ This theorem is the generalization of the strong LLN. However, it presupposes \t
 			& \leq \frac{1}{T} \sum_{j=-T+1}^{T-1} \frac{T-|j|}{T}\left|\gamma_{j}\right| \leq \frac{1}{T} \sum_{j=-T+1}^{T-1}\left|\gamma_{j}\right| \rightarrow 0
 		\end{aligned}
 	\end{math} 
-
+\end{center}
 \end{proof}
 
 \subsection{A Central Limit Theorem for time series}
@@ -675,7 +678,7 @@ Note that we can use the lag operator as a \textit{polynomial.} We can now rewri
 $$ (1 - \phi_1 L - \phi_2 L^2 - ... - \phi_p L^p)Y_t = \varepsilon_{t} $$
 
 Note that the term multiplying $Y_t$ \textit{is a polynomial in L.} We denote this by:
-$$ (L) Y_t = \varepsilon_{t} $$
+$$ \Phi_p (L) Y_t = \varepsilon_{t} $$
 
 Analogously, we can rewrite an MA(q) process as:
 $$\begin{aligned}
@@ -1563,7 +1566,79 @@ Now, let's run \emph{auto.arima}.
 
 \chapter{Problem 2: Estimating ARMA models} \label{Problem-2}
 
-\{HAMILTON 5.1-5.6\}
+Consider an ARMA($\cdot$) model of the form:
+$$
+\begin{aligned}
+Y_{t}=& C+\phi_{1} Y_{t-1}+\phi Y_{t-2}+\cdots+\phi_{P} Y_{t-p}+\varepsilon_{t} \\
+&+\theta_{1} \varepsilon_{t-1}+\theta_{2} \varepsilon_{t-2}+\cdots+\theta_{q} \varepsilon_{t-q}
+\end{aligned}
+$$
+with white noise $\varepsilon_{+}$:
+$$
+\begin{aligned}
+\mathbb{E}\left(\varepsilon_{t}\right) &=0 \\
+E\left(\varepsilon_{t} \varepsilon_{\tau}\right) &=\left\{\begin{array}{ll}
+\sigma^{2}, & \forall t=\tau \\
+0, & c \cdot c
+\end{array}\right.
+\end{aligned}
+$$
+
+We'll use MLE, with $\Theta = (c, \phi_1, ..., \phi_p, \theta_1, ..., \theta_q)'$ a vector of parameters. This means that we need to calculate the pdf: $f_{Y_T, Y_{T-1},...}(y_T, y_{T-1},...; \Theta)$. We usually assume a normal distribution for $\varepsilon$.
+
+\section{MLE for Gaussian AR(1)}
+$$ Y_t = c + \phi Y_{t-1} + \varepsilon_{t}, \hspace{1em} (\Theta = (c, \theta, \sigma^2)') $$
+$$ \mathbb{E}(Y_1) = \mu = \dfrac{c}{1- \phi}$$
+$$ \mathbb{E}(Y_1 - \mu)^2 = \dfrac{\sigma^2}{1 - \phi^2} $$ 
+
+The likelihood function is given by: 
+$$f_{Y_1}(y_1; \Theta) * \Pi_{t=2}^T f_{Y_t| Y_{t-1}}(y_t | y_{t-1}; \Theta)$$ 
+$$ \mathcal{L}(\Theta) = log \, f_{Y_1}(y_1; \Theta) + \sum_{t=2}^T log \, f_{Y_t| Y_{t-1}}(y_t | y_{t-1}; \Theta) $$
+
+\subsection{Conditional MLE}
+
+$$ \Pi_{t=2}^T f_{Y_t| Y_{t-1}}(y_t | y_{t-1}; \Theta) $$
+
+For the gaussian case, the minimization problem is equivalent to minimizing:
+$$ \sum_{t=2}^T (y_t - c - \phi y_{t-1})^2$$ 
+This means that the \textit{conditional MLE is equivalent to OLS!}
+
+\section{Likelihood funciton for AR(p)}
+
+$$
+Y_t = c + \phi_1 Y_{t-1} + ... + \phi_p Y_{t-p} + \varepsilon_{t}, \hspace{1em} \varepsilon_{t} \sim wn(0, \sigma^2), \hspace{1em} \Theta = (c, \phi_1, ..., \phi_p, \sigma^2) $$
+$$ \mu = \dfrac{c}{1 - \phi_{1} - ... - \phi_{p}} $$
+$$ \sigma^2 V_p \text{is the var-cov matrix}$$
+$$ f_{Y_p, Y_{p-1},...}(y_p, y_{p-1},...; \Theta) * \Pi_{t = p+1}^T f_{Y_t | Y_{t-1, ..., Y_{t-p}}} (y_t | y_{t-1}, ..., y_{t-p}; \Theta)$$ 
+
+The first term represents the distribution of the $p$ first observations. The second term is the \textit{prediction error decomposition.}
+
+\subsection{Conditional MLE}
+
+Again, we can apply traditional OLS estimation in the conditional MLE case, because it minimizes:
+$$ \sum_{t = p+1}^T (Y_t - c - \phi_1 Y_{t-1} - ... - \phi_p Y_{t-p})^2 $$
+Thus, the variance estimator is also the one that we are used to: 
+$$\hat{\sigma}^{2}=\frac{1}{T-p} \sum_{t=p+1}^{T}\left(y_{t}-\hat{c}-\hat{\phi}_{1} y_{t-1}-\cdots-\hat{\phi}_{p} y_{t-p}\right)^{2}$$
+
+\section{MLE for Gaussian MA($\cdot$)}
+
+Let's now begin with the Conditional MLE. 
+$$ Y_t = \mu + \theta \varepsilon_{t-1} + \varepsilon_{t}, \hspace{1em} \varepsilon_{t} \sim wn(0, \sigma^2), \hspace{1em} \Theta = (\mu, \theta, \sigma^2) $$
+$$ \mathcal{L}(\Theta) = log \, f_{Y_t, Y_{t-1},..., Y_1 | \varepsilon_0 = 0} (y_T, y_{T-1}, ..., y_1 | \varepsilon_{0} = 0; \Theta) $$ 
+$$ \mathcal{L}(\Theta) = -\dfrac{T}{2} log \, (2 \pi) - \dfrac{T}{2} log \, (\sigma^2) - \sum_{t=1}^T \dfrac{\varepsilon_{t}^2}{2 \sigma^2} $$
+
+If $| \theta | < 1$, the effects of imposing $\varepsilon_0 = 0$ diminish over time and the conditional MLE is a good approximation. Otherwise, it is not -- the effects build up over time. This is why an essential condition for an ARMA(p,q) model is \textit{invertibility.}
+
+The same idea can be generalized for an MA(q) model. If we fix the first $q$ values of $\varepsilon$ as 0: $ \varepsilon_0 = \varepsilon_{-1} = ... = \varepsilon_{-q+1} = 0$, we can iterate on the values of the innovation terms:
+$$ \varepsilon_t = y_t - \mu - \theta_1 \varepsilon_{t-1} - ... - \theta_q \varepsilon_{t-q}. $$
+
+\section{Conditional MLE estimation for ARMA(p,q) models}
+
+Uniting both of the results shown above, we can apply conditional MLE estimation for an ARMA(p,q) model:
+$$ Y_t = c + \phi Y_{t-1} + ... + \phi_p Y_{t-p} + \theta_1 \varepsilon_{t-1} + ... + \theta_q \varepsilon_{t-q} + \varepsilon_t, \hspace{1em} \varepsilon_t \sim wn(0, \sigma^2) $$
+
+This is possible by taking fixed initial values for $y_0 = (y_0, ..., y_{-p+1})', \varepsilon_0 = (\varepsilon_0, ..., \varepsilon_{-q+1})'$ as given. Then, we apply the log-likelihood function:
+$$ \mathcal{L} (\Theta) = -\dfrac{T}{2} log \, (2\pi) -\dfrac{T}{2} log \, (\sigma^2) - \sum_{t=1}^{T} \dfrac{\varepsilon_t^2}{2 \sigma^2}$$
 
 
 \chapter{Problem 3: Identification of ARMA models}
@@ -4151,7 +4226,15 @@ This is a major practical issue. In practice, it is very hard to distinguish a p
 
 \section{Spurious regressions}
 
-\{ Trecho do livro sobre isso. é curto. \}
+A \textbf{spurious regression} has high $R^2, t$, notwithstanding the fact that the results appear to have no economic meaning. In other words, the estimated parameters are significant while the population parameters are equal to zero. This result happens essentially because the residuals of the time series at hand \textit{are not stationary.} This implies that the errors will have permanent effects and will accumulate over time, which causes the $R^2$ to approach unity and the variance of the error to explode.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\linewidth]{"spurious regression example"}
+\label{fig:spurious-regression-example}
+\end{figure}
+
+
 
 \section{Unit roots}
 
@@ -4841,7 +4924,546 @@ the regression.
 \chapter{Structural breaks}
 
 
-Informally, a structural break is a kink, or literally a break, in the time series that is observable by plotting the time series. Most of the time we have a vague idea of what happened there by visually inspecting; other times, we know \textit{exactly} what happened.
+Informally, a structural break is a kink, or literally a break, in the time series that is observable by plotting the time series. Most of the time we have a vague idea of what happened there by visually inspecting; other times, we know \textit{exactly} what happened -- for example, the stock market on Joesley Day (2017). In other cases, however, it is very difficult to visually identify a structural break, especially when the process has a stochastic trend. This is an important issue: if we don't take into account the break, the ACF and the unit root tests may point towards non-stationarity!
+
+Structural breaks are actually connected to the \textit{instability} of a given process over time. In economics in particular, structural breaks are closely related to Lucas' critique: ``the parameters of an econometric model depend on the rules of the game''. In a given time series, it is usually possible to identify a number of strucutral breaks. What will happen if the rules of the game? Econometrics is not able to answer this question. 
+
+\section{Known break}
+
+Most of the time, in practice, we know the time at with the structural break happened. Denote it by $T_1$. 
+$$Y_{t}=\left\{\begin{array}{ll}
+M_{1}\left(\mathrm{{W}}_{t}\right)+u_{1 t} ; & t=1, \ldots, T_{1} \\
+M_{2}\left(\mathrm{W}_{t}\right)+u_{2 t} ; \quad & t=T_{1}+1, \ldots, T,
+\end{array}\right.$$
+where $M_1(\cdot), M_2(\cdot)$ are models with regressors $W_t$ -- which can include a constant, a trend, lags of the dependent variable, exogenous regressors, etc.
+
+\subsection{Linear parametric modelling}
+
+We, then, postulate a parametric model -- in the sense that it presents a finite number of unknown parameters:
+$$M_{1}\left(\mathrm{W}_{t}\right)=M\left({\mathrm{W}}_{t} ; {\beta}_{1}\right) ; \quad M_{2}\left(\mathrm{W}_{t}\right)=M\left(\mathrm{W}_{t} ; {\beta}_{2}\right)$$
+
+In this case, testing for the presence of the break is equivalent to testing the following null:
+$$ H_0: \beta_1 = \beta_2 $$
+
+For the moment, we have only considered linear models of the form:
+$$Y_{t}=\left\{\begin{array}{ll}
+{Z}_{t}^{\prime} {\beta}_{0}+{{W}}_{t}^{\prime} {\beta}_{1}+u_{1 t} ; & t=1, \ldots, T_{1} \\
+{Z}_{t}^{\prime} {\beta}_{0}+{W}_{t}^{\prime} {\beta}_{2}+u_{2 t} ; & t=T_{1}+1, \ldots, T
+\end{array}\right.$$
+
+We can merge this model in a single expression.
+
+\begin{defn}
+A \textbf{linear parametric model of known structural break} follows the following form: 
+$$
+Y_t = Z_t'\beta_0 + (W_t'\beta_1 + u_{1t})\mathbbm{1}_{\{t \leq T_1\}} + (W_t'\beta_2 + u_{2t})\mathbbm{1}_{\{t \geq T_1\}} 
+$$
+where $\mathbbm{1}_{\{A\}}$ is the indicator function of event $A$, ${\beta}_{1}$ and ${\beta}_{2}$ are $(q \times 1)$ parameters that will be tested for the break before and after $T_1$, $\beta_0 (r \times 1)$ are a priori stable parameters that won't be tested for a break, $W_t (q \times 1)$ are the regressors of the unstable parameters, $Z_t (r \times 1)$ are the regressors of the stable parameters.
+\end{defn} 
+
+\subsection{OLS estimation of a model with known structural break}
+
+We can estimate this model by usual methods, such as OLS or MLE, given that it it a simple regression of the form
+$$Y_t = X_t'\beta + v_t,$$
+in which $\mathbbm{1}_{\{A\}}$ is the indicator function of event $A$, $X_t := (Z_t', W_t'\mathbbm{1}_{\{t \leq T_1\}}, W_t'\mathbbm{1}_{\{t \geq T_1\}})$, $\beta := (\beta_0', \beta_1', \beta_2')'$ is a $(k \times 1)$ vector, $k := r + 2q$, $v_{t}:=u_{1 t} \mathbbm{1}_{\left\{t \leq T_{1}\right\}}+u_{2 t} \mathbbm{1}_{\left\{t>T_{1}\right\}}$.
+
+Let $\hat{\beta}$ be the OLS estimator of $\beta$. We know from Econometrics I that it has the following form:
+$$ \hat{\beta} = (X'X)^{-1} (X'Y), $$
+where $X_{T \times k} = (X_1, ..., X_T)'$ and $Y_{T \times 1} = (Y_1, ..., Y_T)'$. $\hat{V}$ is an estimator for the variance of the estimator, $Var(\hat{\beta})$, given by:
+$$ \hat{V} = T(X'X)^{-1} \hat{\Omega} (X'X)^{-1}, $$
+where $\hat{\Omega}$ is a consistent estimator for:
+$${\Omega}=\mathbb{V}\left(\frac{1}{\sqrt{T}} \sum_{t=1}^{T} {{X}}_{t} v_{t}\right)$$
+
+\subsection{Estimating covariance with Newey-West}
+
+As we have seen in Problem \ref{Problem-4}, autocorrelation of the residuals is a big obstacle for inference. We can correct this in one of two ways: (i) guaranteeing that the error is truly white noise, with ARMA modelling; (ii) using robust errors to heteroskedasticity and autocovariance. The latter procedure will be presented now.
+
+\begin{defn}
+The \textbf{Newey-West estimator} for covariance is given by:
+$$
+\widehat{\Omega}=\sum_{j=-m}^{m}\left(1-\frac{|j|}{m+1}\right) {\Gamma}_{j}
+$$
+where ${\Gamma}_{j}:=\frac{1}{T-j} \sum_{t=j+1}^{T} {X}_{t} {X}_{t-j}^{\prime} \widehat{v}_{t} \widehat{v}_{t-j}$ for $j \geq 0$ and ${\Gamma}_{j}={\Gamma}_{-j}^{\prime}$ for
+$j<0.$
+Furthermore,
+$$
+\widehat{v}_{t}=Y_{t}-{X}_{t}^{\prime} \widehat{\beta}
+$$
+\end{defn}
+
+The maximum lag is suggested by authors as being of the $T^{1/4}$ order (See Hamilton (1994), 10.5).
+
+Under usual asymptotical conditions, we have:
+$$ \hat{V}^{-1/2} (\hat{\beta} - \beta) \to_d \mathcal{N}(0, I_k), $$
+where $I_k$ is an identity matrix of size $k$. 
+
+Note that, to test $H_0: \beta_1 - \beta_2 = 0$, we'll use the statistic $\hat{\beta}_1 - \hat{\beta}_2$, since, under the null, we have:
+$${P}_{T}:=\left(\widehat{{V}}_{1}+\widehat{{V}}_{2}\right)^{-1 / 2}\left(\widehat{{\beta}}_{1}-\widehat{{\beta}}_{2}\right) \stackrel{d}{\longrightarrow} N\left({0}, I_{q}\right),$$
+where $\hat{V}_1, \hat{V}_2$ are $(q \times q)$ submatrices of the full matrix $\hat{V}_{(k \times k)}$ for $\beta_1, \beta_2$.
+
+\subsection{Wald test for structural break}
+
+The test statistic is $W_T = P_T'P_T$, or:
+$$W_{T}=\left(\widehat{\beta}_{1}-\widehat{\beta}_{2}\right)^{\prime}\left(\widehat{{V}}_{1}+\widehat{{V}}_{2}\right)^{-1}\left(\widehat{{\beta}}_{1}-\widehat{{\beta}}_{2}\right)$$
+
+This means that:
+$$ W_T \to_d \chi_q^2 $$
+
+Note that $W_T := W_T(T_1)$, \textit{since partitioning the time series is only possible with previous knowledge of $T_1$.} Then, we reject $H_0$ of no structural break if $W_T > c_{\alpha}$, where $\mathbb{P}(\chi^2_q > c_{\alpha}) = \alpha$.
+
+\subsection{Break in the variance of a time series}
+
+The break can also occur on the conditional variance of the model. Suppose that we have a general model
+$$ Y_t = X_t \beta + u_t,$$
+where, again, $X_t$ can contain constants, deterministic trends, autoregressive parameters. Let's construct a simple case in which $u_t$, assumed to be uncorrelated serially, has the following variance:
+$$\mathbb{V}\left(u_{t}\right)=\left\{\begin{array}{ll}
+\sigma_{1}^{2} & , t=1, \ldots, T_{1} \\
+\sigma_{2}^{2} & , t=T_{1}+1, \ldots, T
+\end{array}\right.$$
+
+We would like to test $H_0: \sigma_1^2 = \sigma_2^2$. It is possible to estimate the model with OLS using the entire sample to obtain:
+$$
+\widehat{u}_{t}=Y_{t}-{X}_{t}^{\prime} \widehat{\beta}, \quad t=1, \ldots, T
+$$
+
+This yields estimators for $\sigma_{1}^{2}$ and $\sigma_{2}^{2}$:
+
+$$
+\begin{aligned}
+s_{1}^{2} &=\frac{1}{T_{1}-k} \sum_{t=1}^{T_{1}} \widehat{u}_{t}^{2} \\
+s_{2}^{2} &=\frac{1}{T-T_{1}-k} \sum_{t=T_{1}+1}^{T} \widehat{u}_{t}^{2}
+\end{aligned}
+$$
+
+\subsubsection{Assuming a normal distribution for $u_t$}
+
+We know from Econometrics I that:
+$$
+\begin{array}{r}
+\left(T_{1}-k\right) \frac{s_{1}^{2}}{\sigma_{1}^{2}} \sim \chi_{T_{1}-k}^{2} \\
+\left(T-T_{1}-k\right) \frac{s_{2}^{2}}{\sigma_{2}^{2}} \sim \chi_{T-T_{1}-k}^{2}
+\end{array}
+$$
+Therefore, we have:
+$$
+\frac{s_{1}^{2} / \sigma_{1}^{2}}{s_{2}^{2} / \sigma_{2}^{2}} \sim \frac{\chi_{T_{1}-k}^{2} /\left(T_{1}-k\right)}{\chi_{T-T_{1}-k}^{2} /\left(T-T_{1}-k\right)}=: F_{T_{1}-k, T-T_{1}-k}
+$$
+where $F(a, b)$ is a $F$ distribution with $a, b$ degrees of freedom. We reject $H_0$ at the level of significance $\alpha$ if:
+$$
+W \equiv \frac{s_{1}^{2}}{s_{2}^{2}}>c_{\alpha}, \text { where } \mathbb{P}\left(F_{T_{1}-k, T-T_{1}-k}>c_{\alpha}\right)=\alpha
+$$
+
+\subsubsection{General distribution}
+
+We now need an asymptotic argument. Define $s^{2}:=\left(s_{1}^{2}, s_{2}^{2}\right)^{\prime}$ e $\sigma^{2}:=\left(\sigma_{1}^{2}, \sigma_{2}^{2}\right)^{\prime} \mathrm{and}$
+$K:=\mathbb{V}\left(s^{2}\right)=\mathbb{E}\left[\left(s^{2}-\sigma^{2}\right)\left(s^{2}-\sigma^{2}\right)^{\prime}\right] .$ From the CLT for \textit{iid} vectors, we have:
+$$
+K^{-1 / 2}\left(s^{2}-\sigma^{2}\right) \stackrel{d}{\longrightarrow} N\left(0, I_{2}\right)
+$$
+From the Continuous Mapping Theorem, this yields:
+$$
+\frac{\left(s_{1}^{2}-s_{2}^{2}\right)-\left(\sigma_{1}^{2}-\sigma_{2}^{2}\right)}{\sqrt{K_{1}+K_{2}}} \stackrel{d}{\longrightarrow} \mathcal{N}(0,1)
+$$
+where $K_{1}:=\frac{\kappa_{1}}{T_{1}}, K_{2}:=\frac{\kappa_{2}}{T-T_{1}}, \kappa_{1}:=\mathbb{V}\left(\sqrt{T_{1}} s_{1}^{2}\right)$
+$\kappa_{2}:=\mathbb{V}\left(\sqrt{T-T_{1}} s_{2}^{2}\right).$
+
+\subsection{Estimating the variance of the sample variance}
+
+We will use again the Newey-West to arrive at a robust estimate for the variance of the sample variance -- after all, we assumed that the \textit{errors weren't correlated, not their squares!}
+
+$$
+\widehat{\kappa}_{1}:=\sum_{j=-m}^{m}\left(1-\frac{|j|}{m+1}\right) a_{j}
+$$
+where $a_{j}=\frac{1}{T_{1}-j} \sum_{t=j+1}^{T_{1}}\left(\widehat{u}_{t}^{2}-s_{1}^{2}\right)\left(\widehat{u}_{t-j}^{2}-s_{1}^{2}\right)$
+
+Analogously for $\kappa_{2},$ we have:
+$$
+\widehat{\kappa}_{2}:=\sum_{j=-m}^{m}\left(1-\frac{|j|}{m+1}\right) b_{j}
+$$
+where $b_{j}=\frac{1}{T-T_{1}-j} \sum_{t=j+T_{1}+1}^{T}\left(\widehat{u}_{t}^{2}-s_{2}^{2}\right)\left(\widehat{u}_{t-j}^{2}-s_{2}^{2}\right)$
+
+\subsection{Test statistic for variance break}
+
+We can finally construct our test statistic. Under the null $H_0: \sigma_1^2 - \sigma_2^2 = 0:$
+$$
+W_{T} \equiv \frac{s_{1}^{2}-s_{2}^{2}}{\sqrt{\widehat{K}_{1}+\widehat{K}_{2}}} \stackrel{d}{\longrightarrow} \mathcal{N}(0,1)
+$$
+
+Here, we can consider one- or two-sided tests. In other words, at a given level of significance $\alpha$ we reject $H_{0}...$ \begin{itemize}
+\item ...in favor of $H_{1}: \sigma_{1}^{2} \neq \sigma_{2}^{2}$ if $\left|W_{T}\right|>c_{\alpha / 2}$
+
+\item ...in favor of $H_{1}: \sigma_{1}^{2}>\sigma_{2}^{2}$ if $W_{T}<-c_{\alpha}$
+
+\item ...in favor of $H_{1}: \sigma_{1}^{2}<\sigma_{2}^{2}$ if $W_{T}>c_{\alpha},$
+\end{itemize}
+where $\mathbb{P}\left(Z>c_{\alpha}\right)=\alpha$ and $Z \sim \mathcal{N}(0,1).$
+
+\section{Unknown break}
+
+The biggest limitation of the method presented in the previous section is its dependence on the knowledge of the \textit{exact moment $T_1$ of the break.} It is possible that we do not know $T_1$, but know that it is in roughly in the middle of the sample (e.g., between 20\% and 80\%):
+ $$
+T_{1} \in \mathcal{T}=\left\{t_{1}, \ldots, t_{2}\right\}, \quad 1<t_{1}<t_{2}<T
+$$
+
+In this case, we can calculate the Wald statistic for each $t \in \mathcal{T}$ and take the maximum of the statistics as our test statistic:
+$$
+W_{T}^{*} \equiv \max _{t \in \mathcal{T}} W_{T}(t)
+$$
+
+This is known as the ``supremum'' test, and has a non-standard limiting distribution (Andrews (1993)). Under $H_0:$
+$$W_T^* \to_d \mathcal{W}$$
+The critical values of $\mathcal{W}$ are available on a table available in this paper. In particular, these critical values $c = c(\alpha, k, \pi_1, \pi_2)$ depend on:
+\begin{itemize}
+\item $\alpha$: the level of significance;
+\item $k$: the number of parameters to be tested;
+\item $\pi_1 = t_1/T, \pi_2 = t_2/T$ through $\lambda = \dfrac{\pi_2(1-\pi_1)}{\pi_1(1-\pi_2)}$.
+\end{itemize}
+
+We reject $H_0$ if:
+$$W_{T}^{*}>c\left(\alpha, k, \pi_{1}, \pi_{2}\right).$$
+
+
+\chapter{Problem 7: Testing for structural breaks}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(readxl)}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\KeywordTok{library}\NormalTok{(forecast)}
+\KeywordTok{library}\NormalTok{(dynlm)}
+\KeywordTok{library}\NormalTok{(ggthemes)}
+\KeywordTok{library}\NormalTok{(strucchange)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'strucchange'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:stringr':
+## 
+##     boundary
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lmtest)}
+\KeywordTok{library}\NormalTok{(car)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+
+\NormalTok{df <-}\StringTok{ }\KeywordTok{read_excel}\NormalTok{(}\StringTok{"G:/My Drive/FGV EESP/4o SEMESTRE/Econometria II/QuantEconEESP/QuantEconEESP/pibeua_real.xlsx"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## New names:
+## * `` -> ...1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{series <-}\StringTok{ }\KeywordTok{ts}\NormalTok{(df}\OperatorTok{$}\StringTok{`}\DataTypeTok{Cresimento percentual}\StringTok{`}\NormalTok{[}\DecValTok{13}\OperatorTok{:}\DecValTok{236}\NormalTok{], }\DataTypeTok{start =} \KeywordTok{c}\NormalTok{(}\DecValTok{1950}\NormalTok{, }
+    \DecValTok{1}\NormalTok{), }\DataTypeTok{end =} \KeywordTok{c}\NormalTok{(}\DecValTok{2005}\NormalTok{, }\DecValTok{4}\NormalTok{), }\DataTypeTok{frequency =} \DecValTok{4}\NormalTok{)  }\CommentTok{# 1950-2005}
+
+\KeywordTok{autoplot}\NormalTok{(series) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"US GDP, 1950-2005"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P7_files/figure-latex/all-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# We can clearly see a reduction in variance during the 80s.}
+
+\NormalTok{df}\OperatorTok{$}\NormalTok{observ <-}\StringTok{ }\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(df}\OperatorTok{$}\StringTok{`}\DataTypeTok{PIB nominal}\StringTok{`}\NormalTok{)}
+
+\CommentTok{# Suppose that the break happens at time t = 153 (Q1, 1985).}
+
+\NormalTok{df}\OperatorTok{$}\NormalTok{d <-}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(df}\OperatorTok{$}\NormalTok{observ }\OperatorTok{>}\StringTok{ }\DecValTok{152}\NormalTok{)}
+
+\NormalTok{m1 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(series }\OperatorTok{~}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{d[}\DecValTok{13}\OperatorTok{:}\DecValTok{236}\NormalTok{])}
+
+\KeywordTok{summary}\NormalTok{(m1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = series ~ df$d[13:236])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -14.2379  -2.0571  -0.1379   2.2871  18.5621 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)    8.2379     0.3728  22.098  < 2e-16 ***
+## df$d[13:236]  -2.5057     0.6088  -4.116 5.43e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.411 on 222 degrees of freedom
+## Multiple R-squared:  0.0709, Adjusted R-squared:  0.06672 
+## F-statistic: 16.94 on 1 and 222 DF,  p-value: 5.435e-05
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m2 <-}\StringTok{ }\KeywordTok{dynlm}\NormalTok{(series }\OperatorTok{~}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{d[}\DecValTok{13}\OperatorTok{:}\DecValTok{236}\NormalTok{] }\OperatorTok{+}\StringTok{ }\KeywordTok{L}\NormalTok{(series, }\DecValTok{1}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{L}\NormalTok{(series, }
+    \DecValTok{1}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{df}\OperatorTok{$}\NormalTok{d[}\DecValTok{13}\OperatorTok{:}\DecValTok{236}\NormalTok{])}
+
+\KeywordTok{summary}\NormalTok{(m2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Time series regression with "ts" data:
+## Start = 1950(2), End = 2005(4)
+## 
+## Call:
+## dynlm(formula = series ~ df$d[13:236] + L(series, 1) + L(series, 
+##     1) * df$d[13:236])
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.2567  -2.1410  -0.0335   2.0335  17.7119 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)                4.76430    0.63168   7.542 1.22e-12 ***
+## df$d[13:236]              -0.40507    1.40339  -0.289    0.773    
+## L(series, 1)               0.41421    0.06436   6.436 7.63e-10 ***
+## df$d[13:236]:L(series, 1) -0.17495    0.21438  -0.816    0.415    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.033 on 219 degrees of freedom
+## Multiple R-squared:  0.2209, Adjusted R-squared:  0.2103 
+## F-statistic:  20.7 on 3 and 219 DF,  p-value: 7.576e-12
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# ARIMA model}
+
+\NormalTok{arima_unr <-}\StringTok{ }\KeywordTok{arima}\NormalTok{(series, }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{))}
+
+\NormalTok{arima_r1 <-}\StringTok{ }\KeywordTok{arima}\NormalTok{(series[}\DecValTok{1}\OperatorTok{:}\DecValTok{152}\NormalTok{], }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{))}
+
+\NormalTok{arima_r2 <-}\StringTok{ }\KeywordTok{arima}\NormalTok{(series[}\DecValTok{153}\OperatorTok{:}\KeywordTok{length}\NormalTok{(series)], }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }
+    \DecValTok{0}\NormalTok{))}
+
+\NormalTok{ssr_unr <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(arima_unr}\OperatorTok{$}\NormalTok{residuals}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+
+\NormalTok{ssr_r1 <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(arima_r1}\OperatorTok{$}\NormalTok{residuals}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+
+\NormalTok{ssr_r2 <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(arima_r2}\OperatorTok{$}\NormalTok{residuals}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+
+\CommentTok{# We will now define the Chow test for the null H0: \textbackslash{}beta_m1}
+\CommentTok{# - \textbackslash{}beta_m2 = 0 (no structural break)}
+
+\NormalTok{chow <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(SSR_unr, SSR_r1, SSR_r2, t, n) \{}
+    
+\NormalTok{    ((SSR_unr }\OperatorTok{-}\StringTok{ }\NormalTok{SSR_r1 }\OperatorTok{-}\StringTok{ }\NormalTok{SSR_r2)}\OperatorTok{/}\NormalTok{n)}\OperatorTok{/}\NormalTok{((SSR_r1 }\OperatorTok{+}\StringTok{ }\NormalTok{SSR_r2)}\OperatorTok{/}\NormalTok{(t }\OperatorTok{-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }
+\StringTok{        }\NormalTok{n))}
+    
+\NormalTok{\}}
+
+
+\KeywordTok{chow}\NormalTok{(}\DataTypeTok{SSR_unr =}\NormalTok{ ssr_unr, }\DataTypeTok{SSR_r1 =}\NormalTok{ ssr_r1, }\DataTypeTok{SSR_r2 =}\NormalTok{ ssr_r2, }\DataTypeTok{t =} \KeywordTok{length}\NormalTok{(series), }
+    \DataTypeTok{n =} \KeywordTok{length}\NormalTok{(arima_unr}\OperatorTok{$}\NormalTok{coef))  }\CommentTok{# T statistic (n, T - 2n).}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3.736208
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Now, suppose that we do not know when the break happened.}
+
+\NormalTok{t0 =}\StringTok{ }\DecValTok{45}
+\NormalTok{tf =}\StringTok{ }\DecValTok{180}  \CommentTok{# Boundaries for the process.}
+
+\NormalTok{models =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+
+\NormalTok{coefs =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \KeywordTok{length}\NormalTok{(t0}\OperatorTok{:}\NormalTok{tf), }\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{)}
+
+\NormalTok{forecasts =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+
+\NormalTok{ci =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \KeywordTok{length}\NormalTok{(t0}\OperatorTok{:}\NormalTok{tf), }\DataTypeTok{ncol =} \DecValTok{5}\NormalTok{))}
+
+\NormalTok{e =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \KeywordTok{length}\NormalTok{(t0}\OperatorTok{:}\NormalTok{tf), }\DataTypeTok{ncol =} \DecValTok{1}\NormalTok{)}
+
+
+\CommentTok{# 1. Plotting coefficients.}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ (}\DecValTok{1}\OperatorTok{:}\NormalTok{(tf }\OperatorTok{-}\StringTok{ }\NormalTok{t0))) \{}
+    
+\NormalTok{    models[[i]] =}\StringTok{ }\KeywordTok{arima}\NormalTok{(series[}\DecValTok{1}\OperatorTok{:}\NormalTok{(i }\OperatorTok{+}\StringTok{ }\NormalTok{t0)], }\DataTypeTok{order =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{))}
+    
+\NormalTok{    coefs[i, ] =}\StringTok{ }\NormalTok{models[[i]]}\OperatorTok{$}\NormalTok{coef}
+    
+\NormalTok{    forecasts[[i]] =}\StringTok{ }\KeywordTok{forecast}\NormalTok{(series[}\DecValTok{1}\OperatorTok{:}\NormalTok{(i }\OperatorTok{+}\StringTok{ }\NormalTok{t0)], }\DataTypeTok{model =}\NormalTok{ models[[i]], }
+        \DataTypeTok{h =} \DecValTok{1}\NormalTok{)}
+    
+\NormalTok{    e[i, ] =}\StringTok{ }\NormalTok{forecasts[[i]]}\OperatorTok{$}\NormalTok{mean }\OperatorTok{-}\StringTok{ }\NormalTok{series[(i }\OperatorTok{+}\StringTok{ }\NormalTok{t0 }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)]}
+    
+\NormalTok{\}}
+
+\NormalTok{coefs =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(coefs)}
+
+\NormalTok{coefs =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(coefs, (}\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(coefs}\OperatorTok{$}\NormalTok{X1)))}
+
+\NormalTok{df.coefs =}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(}\KeywordTok{data.frame}\NormalTok{(coefs))}
+
+\KeywordTok{names}\NormalTok{(df.coefs) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"ar1"}\NormalTok{, }\StringTok{"intercept"}\NormalTok{, }\StringTok{"index"}\NormalTok{)}
+
+\KeywordTok{ggplot}\NormalTok{(df.coefs, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ index, }\DataTypeTok{y =}\NormalTok{ ar1)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P7_files/figure-latex/all-2} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(df.coefs, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ index, }\DataTypeTok{y =}\NormalTok{ intercept)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P7_files/figure-latex/all-3} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# 2. Cusum test.}
+
+\NormalTok{cusums =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \KeywordTok{length}\NormalTok{(e), }\DataTypeTok{ncol =} \DecValTok{1}\NormalTok{)}
+
+\NormalTok{e =}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(e)}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{(}\KeywordTok{length}\NormalTok{(e))) \{}
+    
+\NormalTok{    cusums[i, ] =}\StringTok{ }\KeywordTok{sum}\NormalTok{(e[}\DecValTok{1}\OperatorTok{:}\NormalTok{i])}\OperatorTok{/}\KeywordTok{sd}\NormalTok{(e)}
+    
+\NormalTok{\}}
+
+
+\NormalTok{cusums =}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(cusums)}
+
+\NormalTok{df.cusums =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(cusums)}
+
+\KeywordTok{ggplot}\NormalTok{(df.cusums, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ (}\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(cusums)), }\DataTypeTok{y =}\NormalTok{ cusums)) }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P7_files/figure-latex/all-4} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# 3. Iterative F-tests.}
+
+\NormalTok{models_unr =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+
+\NormalTok{models_r =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\OtherTok{NA}\NormalTok{)}
+
+
+\CommentTok{# dummy <- df$d[13:236]}
+
+\NormalTok{num_series =}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(series)}
+
+\NormalTok{f_values =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{nrow =} \KeywordTok{length}\NormalTok{(num_series), }\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{)}
+
+\NormalTok{hyp =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{-1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+
+\NormalTok{rhs =}\StringTok{ }\DecValTok{0}
+
+\KeywordTok{length}\NormalTok{((t0}\OperatorTok{:}\NormalTok{tf))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 136
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dummies =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DataTypeTok{ncol =} \DecValTok{224}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{224}\NormalTok{))}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ (}\DecValTok{13}\OperatorTok{:}\DecValTok{236}\NormalTok{)) \{}
+\NormalTok{    dummies[i] =}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{(df}\OperatorTok{$}\NormalTok{observ[}\DecValTok{13}\OperatorTok{:}\DecValTok{236}\NormalTok{] }\OperatorTok{>=}\StringTok{ }\NormalTok{i)}
+\NormalTok{\}}
+
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ (}\DecValTok{1}\OperatorTok{:}\NormalTok{(tf }\OperatorTok{-}\StringTok{ }\NormalTok{t0))) \{}
+    
+\NormalTok{    adummy <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{    j <-}\StringTok{ }\DecValTok{0}
+\NormalTok{    k <-}\StringTok{ }\NormalTok{t0 }\OperatorTok{+}\StringTok{ }\NormalTok{i}
+    \ControlFlowTok{while}\NormalTok{ (j }\OperatorTok{<=}\StringTok{ }\KeywordTok{length}\NormalTok{(num_series)) \{}
+        \ControlFlowTok{if}\NormalTok{ (j }\OperatorTok{>}\StringTok{ }\NormalTok{k) \{}
+            \CommentTok{# nÃ£o sei se isso deveria ser maior ou igual ou sÃ³ maior}
+\NormalTok{            adummy[j] <-}\StringTok{ }\DecValTok{1}
+\NormalTok{        \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{            adummy[j] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{        \}}
+\NormalTok{        j <-}\StringTok{ }\NormalTok{j }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+\NormalTok{    \}}
+\NormalTok{    models_unr[[i]] <-}\StringTok{ }\KeywordTok{dynlm}\NormalTok{(num_series }\OperatorTok{~}\StringTok{ }\NormalTok{adummy }\OperatorTok{+}\StringTok{ }\KeywordTok{lag}\NormalTok{(num_series) }\OperatorTok{+}\StringTok{ }
+\StringTok{        }\KeywordTok{lag}\NormalTok{(num_series) }\OperatorTok{*}\StringTok{ }\NormalTok{adummy)}
+\NormalTok{    f_values[i, }\DecValTok{1}\NormalTok{] =}\StringTok{ }\KeywordTok{linearHypothesis}\NormalTok{(models_unr[[i]], hyp, rhs)}\OperatorTok{$}\NormalTok{F[}\DecValTok{1}\NormalTok{]}
+\NormalTok{    f_values[i, }\DecValTok{2}\NormalTok{] =}\StringTok{ }\KeywordTok{linearHypothesis}\NormalTok{(models_unr[[i]], hyp, rhs)}\OperatorTok{$}\NormalTok{F[}\DecValTok{2}\NormalTok{]  }\CommentTok{#eu acho que funcionou?????}
+    
+\NormalTok{\}}
+
+\NormalTok{df.f_values <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(f_values)}
+
+\NormalTok{df.f_values <-}\StringTok{ }\NormalTok{df.f_values}\OperatorTok{$}\NormalTok{X2}
+
+\NormalTok{df.f_values <-}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(df.f_values)}
+
+\NormalTok{df.f_values <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(df.f_values, ((t0 }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)}\OperatorTok{:}\NormalTok{tf))}
+
+\KeywordTok{names}\NormalTok{(df.f_values) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"fvalue"}\NormalTok{, }\StringTok{"t"}\NormalTok{)}
+
+\KeywordTok{ggplot}\NormalTok{(df.f_values, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ t, }\DataTypeTok{y =}\NormalTok{ fvalue)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_few}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Econo2_P7_files/figure-latex/all-5} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{linearHypothesis}\NormalTok{(models_unr[[}\DecValTok{10}\NormalTok{]], hyp, rhs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear hypothesis test
+## 
+## Hypothesis:
+## - adummy  + adummy:lag(num_series) = 0
+## 
+## Model 1: restricted model
+## Model 2: num_series ~ adummy + lag(num_series) + lag(num_series) * adummy
+## 
+##   Res.Df    RSS Df Sum of Sq      F  Pr(>F)  
+## 1    220 3673.8                              
+## 2    219 3595.2  1    78.591 4.7874 0.02973 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+
+
+
+
 
 
 
