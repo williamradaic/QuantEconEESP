@@ -1,0 +1,115 @@
+---
+title: "Econometrics II - Problem 9"
+author: "William Radaic Peron"
+date: \today
+output:
+  pdf_document: 
+    keep_tex: yes
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+
+library(rugarch)
+
+
+
+
+
+
+```
+
+
+```{r database, include = FALSE}
+
+# Loading the dataframe:
+
+library(readxl)
+df <- read_excel("Base de Dados - Problema 9.xlsx")
+
+
+
+```
+
+\textbf{Ref:} IPEA Discussion Paper 230, Lecture 8 - Notes, Enders 5.1-5.3.
+
+In this problem, we'll apply ARDL modelling to the Phillips Curve. Namely, we'll focus on two hypothesis for the curve: \begin{itemize}
+\item \textbf{Inertial inflation.} There's a backward-looking component to any Phillips curve.
+\item \textbf{Rational expectations.} The curve is forward-looking.
+\end{itemize}
+From these hypothesis, it is also possible to test a hybrid approach that incorporates both a backward and a forward component. 
+
+\section{ARDL models}
+
+Consider the following model: 
+$$ Y_t = \alpha + \sum_{j=0}^q \theta_j X_{t-j} + \varepsilon_t $$
+This is the *distributed lag* model for $q$ lags of $X$. Note that $Y_t$ has serial correlation because of its relation with $X_{t-j}$.
+
+An *Autoregressive distributed lag* model is a combination of an $AR(p)$ with a $DL(q)$:
+$$ Y_t = \alpha + \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \theta_j X_{t-j} + \varepsilon_t $$
+Or, with lag operator notation:
+$$ \Phi (L) Y_t = \alpha + \Theta (L) X_t + \varepsilon_t $$ 
+
+We can further define $\Psi := \Phi^{-1} (L) \Theta (L) = \psi_0 + \psi_1 L + ....$ This implies that we can rewrite the ARDL(p,q) model as:
+$$ Y_t = \Phi^{-1}(1)\alpha + \Psi (L) X_t + \Phi^{-1} (L) \varepsilon_t $$
+Also note that we can expand this definition by letting $X_{t,s}$ be a matrix of $s$ processes.
+
+\section{Phillips Curve and its developments}
+
+Phillips famously postulated a negative relation -- i.e., a trade-off -- between inflation rate and unemployment. We can define this curve as follows:
+$$ \pi_t = \alpha - \gamma u_t, $$
+where $\pi_t$ is inflation, $u_t$ is unemployment and $\gamma > 0$. Note that this formulation proposes a *long term trade-off* between these variables. 
+
+Friedman and Phelps disputed the claims of these long run effects by including *expectations* in the model. The monetarist Phillips curve asserted that inflation expectations would be formed as a function of *past inflation rates* -- i.e., under the assumption of adaptative expectations. This model has the following representation:
+$$ \pi_t = \mathbb{E}_{t-1}(\pi_t) - \gamma (u_t - \bar{u}), $$
+where $\bar{u}$ represents the natural rate of unemployment (NAIRU).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
