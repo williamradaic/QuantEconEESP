@@ -13,8 +13,10 @@ knitr::opts_chunk$set(echo = TRUE)
 #opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
 
 library(rugarch)
-
-
+library(ARDL)
+library(mFilter)
+library(dynlm)
+library(tseries)
 
 
 
@@ -60,29 +62,134 @@ Also note that we can expand this definition by letting $X_{t,s}$ be a matrix of
 
 Phillips famously postulated a negative relation -- i.e., a trade-off -- between inflation rate and unemployment. We can define this curve as follows:
 $$ \pi_t = \alpha - \gamma u_t, $$
-where $\pi_t$ is inflation, $u_t$ is unemployment and $\gamma > 0$. Note that this formulation proposes a *long term trade-off* between these variables. 
+where $\pi_t$ is inflation, $u_t$ is unemployment and $\gamma > 0$. Note that this is a *static model*. Furthermore, note that this formulation proposes a *long term trade-off* between these variables.
 
 Friedman and Phelps disputed the claims of these long run effects by including *expectations* in the model. The monetarist Phillips curve asserted that inflation expectations would be formed as a function of *past inflation rates* -- i.e., under the assumption of adaptative expectations. This model has the following representation:
 $$ \pi_t = \mathbb{E}_{t-1}(\pi_t) - \gamma (u_t - \bar{u}), $$
-where $\bar{u}$ represents the natural rate of unemployment (NAIRU).
+where $\bar{u}$ represents the natural rate of unemployment (NAIRU). This is called the Accelerationist Phillips Curve (APC), given its *backward-looking* -- hence, inertial -- nature. Now, the model is *dynamic*, and can be translated to the ARDL framework with $Y_t := \pi_t, X_t := \mathbb{E}_{t-1}(\pi_t)$. 
+
+The rational expectations revolution of Lucas and Sargent, which implied fundamental critiques to the Keynesian system, prompted a revaluation of its framework, including the Phillips Curve. The New Keynesian Phillips Curve (NKPC) incorporates *rational expectations* in the model:
+$$\pi_t = \beta \mathbb{E}_t (\pi_{t+1}) + \gamma x_t, $$
+where $x_t$ is a measure of output gap. Note that this model is essentially *forward-looking*.  
+\begin{quote}
+This model implies that there is no need for gradualist policies to reduce inflation. According to the NKPC, low inflation can be achieved immediately by the central bank announcing (and the public believing) that it is committing itself to eliminating positive output gaps in the future. (IPEA, p. 11)
+\end{quote}
+We can interpret this model in the ARDL framework as a DL model with $X_t := \mathbb{E}_{t}(\pi_{t+1})$.
+
+Some authors have also proposed a NKPC with a backward-looking element. This is called the Hybrid Philips Curve:
+$$ \pi_t = \gamma_b \pi_{t-1} + \gamma_f \mathbb{E}_t (\pi_{t+1}) + \kappa x_t. $$
+This can be interpreted as an ARDL(1,1) model, with $X_t := \mathbb{E}_{t-1}(\pi_t)$.
+
+\section{Estimation}
+
+These hypothesis will now be tested with Brazilian time series data for inflation, unemployment and inflation expectation.
+
+``` {r ardl estimation}
+
+# APC
+
+nairu <- hpfilter(df$unemployment, 1600, type = 'lambda')
+
+plot(nairu)
+
+nairu_trend <- nairu$trend
+
+u_dev <- df$unemployment - nairu_trend
+
+df$u_dev = u_dev
+
+exp_lag = dplyr::lag(df$exp_IPCA, k=1)
+
+df$exp_lag = exp_lag
+
+df2 = df[2:length(df$IPCA),]
+
+auto_apc <- auto_ardl(IPCA ~ exp_lag + u_dev, data = df2, max_order = 12)
+
+summary(auto_apc$best_model)
+
+Box.test(auto_apc$best_model$residuals)
+AIC(auto_apc$best_model)
+BIC(auto_apc$best_model)
+
+# APC as DL of order 1
+
+apc1 <- dynlm(IPCA ~ exp_lag + u_dev, data = df2)
+
+summary(apc1)
+
+Box.test(apc1$residuals) # Modelo claramente inconsistente
+
+
+# NKPC
+
+auto_nkpc <- auto_ardl(IPCA ~ exp_IPCA + u_dev, data = df, max_order = 18)
+
+summary(auto_nkpc$best_model) # Unit root?
+
+adf.test(df2$IPCA) # UNIT ROOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+######## Correcting for unit root ############
+
+df3 = data.frame(diff(df$IPCA), diff(df$exp_IPCA), df2$u_dev)
+
+colnames(df3) = c("IPCA", "exp_IPCA", "u_dev")
+
+diff_lag = dplyr::lag(df3$exp_IPCA, 1)
+
+df3$diff_lag = diff_lag
+
+df4 = df3[2:length(df3$IPCA),]
+
+# APC
+
+auto_apc_diff <-  auto_ardl(IPCA ~ diff_lag + u_dev, data = df4, max_order = 24)
+
+summary(auto_apc_diff$best_model)
+
+
+
+n = 12
+x = matrix(NA, nrow = n, ncol = 1)
+
+for (i in (1:n)) {
+  
+  auto_apc_diff <- auto_ardl(IPCA ~ diff_lag + u_dev, data = df4, max_order = i)
+  
+  x[i,] = Box.test(auto_apc_diff$best_model$residuals)$p.value
+  
+}
+
+
+# NKPC
+
+
+auto_nkpc_diff <- auto_ardl(IPCA ~ u_dev | exp_IPCA, data = df3, max_order = 18)
+
+summary(auto_nkpc_diff$best_model)
+
+Box.test(auto_nkpc_diff$best_model$residuals)
+
+nkpc_dyn <- dynlm(IPCA ~ exp_IPCA + u_dev, data = df3)
+
+summary(nkpc_dyn)
+
+Box.test(nkpc_dyn$residuals)
+
+# HPC 
+
+hpc_dyn <- dynlm(IPCA ~ exp_IPCA + L(IPCA, 1) + u_dev, data = df3)
+
+summary(hpc_dyn)
+
+Box.test(hpc_dyn$residuals)
+
+# The results suggest that inflation is both forward and backward looking.
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
 
 
