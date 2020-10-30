@@ -47,6 +47,8 @@ stIND <- SVAR(tIND, Amat = amat, Bmat = bmat)
 
 irf(stIND, impulse = "juros")
 
+plot(irf(stIND, impulse = "juros"))
+
 plot(fevd(stIND))
 
 causality(tIND)
