@@ -73,11 +73,9 @@ summary(eigen)
 model <- VECM(serie, lag = 12, r = 1, include = "const", estim = "ML")
 summary(model) # Sinais esquisitos
 
-?VECM
-
 # Testing PPP for known a = (1, -1, -1)' -- Hamilton, p. 582.
 
-z <- (ipca - usd - cpi)
+z <- (ipca/1000 - usd - cpi/1000)
 adf.test(z) # Can't reject unit root for z. PPP is weak. Cf. Hamilton p. 585.
 autoplot(z) + theme_few()
 ggAcf(z) +theme_few()
