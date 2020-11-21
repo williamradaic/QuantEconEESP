@@ -142,6 +142,7 @@
 
 \theoremstyle{plain}
 \newtheorem{defn}{Definition}[section]
+\newtheorem{fact}{Fact}[section]
 \newtheorem{conj}{Conjecture}[section]
 \newtheorem{exmp}{Example}[section]
 
@@ -153,7 +154,7 @@
 
 
 
-\title{\Huge \textbf{Econometrics II} \\ \LARGE Notes - Midterm}
+\title{\Huge \textbf{Econometrics II} \\ \LARGE Notes}
 \author{\Large William Radaic Peron}
 \affil{\Large EESP-FGV}
 
@@ -5500,7 +5501,7 @@ where $T$ denotes the date of the last observation and $\sigma_e$ is the \textit
 
 \NormalTok{df.f_values <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(f_values)}
 
-\NormalTok{df.f_values <-}\StringTok{ }\NormalTok{df.f_values}\OperatorTok{$}\NormalTok{X2}
+\NormalTok{df.f_values <-}\StringTok{ }\NormalTok{df.f_values}\OperatorTok{$}\NormalTok{X2$}
 
 \NormalTok{df.f_values <-}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(df.f_values)}
 
@@ -5535,6 +5536,310 @@ where $T$ denotes the date of the last observation and $\sigma_e$ is the \textit
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
+
+
+
+\chapter{Conditional Heteroskedasticity Models}
+
+In this chapter, we'll explore heteroskedasticity models. First, we'll motivate the subject with a discussion on some financial stylized facts.
+
+\section{Motivation}
+
+Plotting a financial time series suggests some sort of exponential upwards trend.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{lecture 7-1.png}
+	\caption{Prices of assets over time}
+	\label{price-ts}
+\end{figure}
+
+After detrending, its ACF decays linearly and its PACF has a significant lag at L = 1.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{lecture 7-2.png}
+	\caption{ACF and PACF of prices}
+	\label{correlation-prices}
+\end{figure}
+
+When we take first differences, the autocorrelation functions suggest no correlation structure -- i.e., an ARIMA(0,1,0).
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{lecture 7-3.png}
+	\caption{First differences}
+	\label{diff-prices}
+\end{figure}
+
+When working with financial data, we usually model returns or log-returns instead of price:
+\begin{equation}
+	R_t := \dfrac{p_t - p_{t-1}}{p_{t-1}}, \hspace{2em} r_t := log\left(\dfrac{p_t}{p_{t-1}}\right)
+\end{equation}
+
+In practice, using $R_t$ or $r_t$ is negligible for small values, because $r_t = log(1 + R_t) \approx R_t$. This result comes from a Taylor expansion around 1. We'll use, then, log-returns as $r_t = \Delta log p_t = log p_T - log_{t-1} $. This has the advantage of always being summable, while regular returns are not -- e.g., falling 10\% in $t$ and rising 10\% in $t+1$ does not yield the same starting value.
+
+
+
+\subsection{Stylized facts on financial time series}
+
+Let $\mathcal{F}_{t-1} := r_{t-1}, r_{t-2}, ...$ and $\mu := \mathbb{E}(r_t)$.
+
+\begin{fact}
+	\label{nopast}
+	Financial returns usually present ${E}(r_t | \mathcal{F}_{t-1}) = \mu$ -- i.e., its past has no statistically significant explanatory power.
+\end{fact}
+
+\begin{fact}
+	In practice, financial returns usually present $\mathbb{E}(r_t) = \mu > 0$. 
+\end{fact}
+If $\mu = 0$, there would be no incentive for investing (no risk premium).
+
+\begin{fact}
+	Financial returns are usually highly \textit{leptokurtic} -- i.e., their distributions have longer tails when compared to a Normal distribution.
+\end{fact}
+Kurtosis is defined as $\kappa := \mathbb{E}(\frac{r_t - \mu}{\sigma})^4$ and can be interpreted as the propensity for outliers. The Normal distribution has $\kappa = 3$. Distributions that have $\kappa > 3$ are called leptokurtic.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{lecture 7-4.png}
+	\caption{Empirical distribution of returns}
+	\label{leptokurtic}
+\end{figure}
+
+\begin{defn}
+	\textbf{Weak market efficiency hypothesis.} Current prices reflect all available information contained in past prices.
+\end{defn}
+
+\begin{defn}
+	\textbf{Semi-strong market efficiency hypothesis.} Prices reflect all public information.
+\end{defn}
+
+\begin{defn}
+	\textbf{Strong market efficiency hypothesis.} Prices reflect all information, public or private. 
+\end{defn}
+Note that, if the strong hypothesis is true, we should not punish insider trading! It is, therefore, most certainly false.
+
+How can we relate the weak market efficiency hypothesis with fact \ref{nopast}? Nowadays, there's much evidence \textit{against} all three of these hypothesis using non-linear models. Notwithstanding this evidence, no one can consistently beat the market. This empirical contradiction is explored by Fama and Shiller, winners of the 2013 Nobel Prize in Economics.
+
+Applying ARMA modelling to \textit{volatility}, however, yields different results, suggesting some sort of correlation structure.
+\begin{figure}[h!]
+	\centering
+	\includegraphics{lecture 7-5.png}
+	\caption{Correlation structure of the variance}
+	\label{corr-var}
+\end{figure}
+
+\begin{fact}
+	\textbf{Volatility clustering.} High volatility at time $t$ raises the probability of high volatility at $t+1$.
+\end{fact}
+This is also valid for alternate measures of volatility, such as $\mathbb{E}(r_t - \mu)$ or $Var(r_t)$. It can be interpreted as motivation for autoregressive models of conditional heteroskedasticity, ARCH.
+
+\section{ARCH}
+
+The ARCH (Autoregressive Conditional Heteroskedastic) class of models were proposed by Engle (1982) to model conditional variance. They're usually combined with a model for conditional expectation. For example, an ARIMA(p,d,q) with ARCH(1) innovations is given by: 
+$$
+\begin{aligned}
+\Phi_{p}(L)(1-L)^{d} Y_{t} &=c+\Theta_{q}(L) \varepsilon_{t} \\
+\varepsilon_{t} &=\sigma_{t} u_{t} \quad u_{t} \sim i i d(0,1) \\
+\sigma_{t}^{2} &=\omega+\alpha \varepsilon_{t-1}^{2}
+\end{aligned}
+$$
+In financial models we usually have $Y_t = log(p_t) \sim ARIMA(0,1,0)$.
+
+We can generalize this model to an ARCH(s).
+
+\begin{defn}
+	ARCH(s) is an autoregressive model of conditional heteroskedasticity up to lag $s$:
+$$
+\sigma_{t}^{2}=\omega+\sum_{j=1}^{s} \alpha_{j} \varepsilon_{t-j}^{2}
+$$
+\end{defn}
+Note that this model \textit{is not linear in its parameters,} because the variance and mean parameters become mixed. This means that OLS cannot be used for estimation. 
+
+Furthermore, because variance shall always be \textit{positive,} it is necessary to impose restrictions on our parameters. It is natural to assume, then, $\omega > 0, \alpha_j > 0, \forall j$. This implies that we'll need some sort of optimization subject to restrictions. Estimation is usually conducted through quasi-maximum likelihood, which means that we'll have to assume some distribution for innovation terms, such as $t$, Normal etc.
+
+In practice, ARCH(s) models tend to yield high $s$. An alternative way to model variance is through some sort of ARMA procedure.
+
+\begin{defn}
+	\textbf{GARCH(r,s)} is a generalized autoregressive model of conditional heteroskedasticity up to lags $r$, $s$:
+	$$
+\begin{aligned}
+\varepsilon_{t} &=\sigma_{t} u_{t}, \quad u_{t} \sim i i d(0,1) \\
+\sigma_{t}^{2} &=\omega+\alpha_{1} \varepsilon_{t-1}^{2}+\ldots \alpha_{s} \varepsilon_{t-s}^{2}+\beta_{1} \sigma_{t-1}^{2}+\cdots+\beta_{r} \sigma_{t-r}^{2} \\
+&=\omega+\sum_{j=1}^{s} \alpha_{j} \varepsilon_{t-j}^{2}+\sum_{j=1}^{r} \beta_{j} \sigma_{t-j}^{2}
+\end{aligned}
+$$
+\end{defn}
+GARCH(r,s) works as an ARMA(p,r) for conditional variance, where $p = max\{r,s\}$.\footnote{Details available on Hamilton, Chapter 21.}
+
+\section{More stylized facts on financial time series}
+
+\begin{fact}
+	Conditional variance is higher after weekends than during the week.
+\end{fact}
+
+\begin{fact}
+	Volatility is higher during market opening and closing than during the day.
+\end{fact}
+
+A way to test these facts is to include dummies in the variance model. This model is called Threshold-GARCH or TARCH.
+
+\begin{defn}
+	\textbf{TARCH(r,s)} is a threshold generalized autoregressive model of conditional heteroskedasticity up to lags $r$, $s$ with $d_t(A)$:
+	$$
+\sigma_{t}^{2}=\omega+\delta d_{t}(A)+\sum_{j=1}^{s} \alpha_{j} \varepsilon_{t-j}^{2}+\sum_{j=1}^{r} \beta_{j} \sigma_{t-j}^{2},
+$$
+where $d_t(A)$ is a dummy of a given event $A$.
+\end{defn}
+
+\begin{fact}
+	\textbf{Leverage effect.} Conditional variance increases more when the innovation is negative than when it is positive.
+\end{fact}
+This indicates a trend of returns being negatively correlated with changes in volatility.
+
+We can test this effect with another dummy, or by constructing an Exponential GARCH.
+
+
+\begin{defn}
+	\textbf{EGARCH(r,s)} is an exponential generalized autoregressive model of conditional heteroskedasticity up to lags $r$, $s$, $v$:
+	$$
+	\log \sigma_{t}^{2}=\omega+\sum_{j=1}^{r} \beta_{j} \log \sigma_{t-j}^{2}+\sum_{j=1}^{s} \alpha_{j}\left[\left|u_{t-j}\right|-\mathbb{E}\left|u_{t-j}\right|\right]+\sum_{j=1}^{v} \gamma_{j} u_{t-j}
+	$$
+\end{defn}
+
+For an EGARCH(1,1,1), we have: 
+$$
+\log \sigma_{t}^{2}=\omega+\beta \log \sigma_{t-1}^{2}+\alpha\left[\left|u_{t-1}\right|-\mathbb{E}\left|u_{t-1}\right|\right]+\gamma u_{t-1}
+$$
+
+Note that $\mathbb{E}(u_{t-1})$ depends on the distribution of $u_t$. For a Normally distributed random variable, its value is $\sqrt{2/\pi}$. 
+
+If $\gamma < 0$ is significant, then there's evidence of a leverage effect.
+
+ARCH models have contributed to show a number of stylized facts of financial time series. In particular, they yield leptokurtic models of conditional heteroskedasticity, which is consistent with evidence. However, these models are now more used in Macroeconomomic research. In Finance, they have been abandoned because of their inherent \textit{backward looking} nature. Nowadays, the derivative market is used for risk, because it its forward looking. Implicit and realized volatility, Monte Carlo simulations and bootstrapping are also used to model risk. Furthermore, these models are not very suitable for time-sensitive applications, and are also sentitive to different hypothesis of error distributions. 
+
+
+
+\chapter{Problem 8: ARCH estimation}
+
+
+
+\chapter{ARDL Models}
+
+\section{Motivation}
+
+Up to this point, we have been modelling only one time series at a time. However, it is interesting to study not only the temporal structure of a series, but also \textit{relations between series over time.}
+
+Let $\{Y_t\}, \{X_t\}$ be two time series. We could postulate a linear regression model of the form:
+$$ Y_t = \beta X_t + u_t $$
+Does this make sense? How can we interpret and estimate $\beta$? These questions will be answered in this chapter.
+
+\subsection{Static model}
+
+Suppose that you are interested in the relationship between gas, $\{G_t\}$, and oil, $\{P_t\}$, prices. We can postulate the following linear model: 
+$$ G_t = \alpha + \beta P_t + u_t $$
+What is $\beta$? If it is the parameter of the best linear projection of $G_t$ on $P_t$, then
+$$ \beta = \dfrac{Cov(G_t, P_t)}{Var(P_t)} $$
+and it can be consistently estimated by OLS as long as both time series are ergodic. What if we define $\beta$ as the \textit{causal} effect of $G_t$ on $P_t$?
+
+\subsection{Distributed Lag model}
+
+It might be that gas prices are influenced not only by current oil prices, but also by past prices. In this case, we can model it as:
+$$ G_t = \alpha + \beta_0 P_t + \beta_1 P_{t-1} + v_t $$
+In this case, we have \textit{dynamic effects}, because, if we assume that $\mathbb{E}(u-t | P_t, P_{t-1}) = 0$, then 
+$$ \mathbb{E}\left(G_{t} \mid P_{t}, P_{t-1}\right)=\alpha+\beta_{0} P_{t}+\beta_{1} P_{t-1} $$
+$$
+\frac{\partial \mathbb{E}\left(G_{t}\right)}{\partial P_{t}}=\beta_{0} ; \quad \frac{\partial \mathbb{E}\left(G_{t+1}\right)}{\partial P_{t}}=\beta_{1}
+$$
+
+There can also be an autoregressive component on gas prices, i.e., past prices affecting current gas prices. This yields the following model: 
+$$
+G_{t}=\alpha+\phi G_{t-1}+\gamma_{0} P_{t}+\gamma_{1} P_{t-1}+w_{t}
+$$
+In this case, there will be dynamic effects via $P_t$ and $G_t$. Generally, this means that the entire oil price time series will have an effect on gas prices, because
+$$
+\begin{array}{l}
+G_{t}=\frac{\alpha}{1-\phi}+\left(1+\phi L+\phi^{2} L^{2}+\ldots\right)\left(\gamma_{0} P_{t}+\gamma_{1} P_{t-1}+w_{t}\right)
+\end{array}
+$$
+if $| \phi | < 1$.
+
+\section{Defining ARDL models}
+
+\begin{defn}
+	A generic distributed lag model with $q$ lags, DL(q), is written in the following form:
+	$$
+	Y_{t}=\alpha+\sum_{j=0}^{q} \theta_{j} X_{t-j}+\epsilon_{t}
+	$$
+	or, using the lag operator $L, \Theta(L):=\theta_{0}+\theta_{1} L+\cdots+\theta_{q} L^{q},$
+	$$
+	Y_{t}=\alpha+\Theta(L) X_{t}+\epsilon_{t}
+	$$
+\end{defn}
+
+This implies that $Y_t$ has serial correlation? Yes, because we can rewrite $Y_{t-j}$ using $\alpha, X, \varepsilon$. Does this imply that $X_t$ has serial correlation? Not necessarily.
+
+\begin{defn}
+	An autoregressive distributed lag model of order $p,q$ is a combination of an AR(p) with a DL(q). It can be written as:
+	$$
+Y_{t}=\alpha+\sum_{i=1}^{p} \phi_{i} Y_{t-i}+\sum_{j=0}^{q} \theta_{j} X_{t-j}+\epsilon_{t}
+$$
+or, using the lag operator $L, \Phi(L):=1-\phi_{1} L-\cdots-\phi_{p} L^{p},$
+$$
+\Phi(L) Y_{t}=\alpha+\Theta(L) X_{t}+\epsilon_{t}
+$$
+\end{defn}
+
+Some words of caution are in order. \begin{itemize}
+	\item The ARDL(p,q) model has a similar structure to an ARMA(p,q), but the MA(.) portion is applied on $X_t$ instead of $\varepsilon_t$.
+	\item $\varepsilon_t$ is not always assumed to be white noise processes, as was the case with ARMA models. Generally, we assume stationarity.
+\end{itemize}
+
+\subsection{Inverting an ARDL model}
+
+If all roots of the AR portion of the model, i.e., zeros of $\Phi(L) + 0$, are outside of the unit circle, we can invert the AR portion. This yields
+$$
+Y_{t}=\Phi^{-1}(L) \alpha+\Phi^{-1}(L)\left(\Theta(L) X_{t}+\epsilon_{t}\right)
+$$
+If we further define $\Psi(L):=\Phi^{-1}(L) \Theta(L)=\psi_{0}+\psi_{1} L+\psi_{2} L^{2}+\ldots$ and
+remembering that $\Phi^{-1}(L) \alpha=\Phi^{-1}(1) \alpha$, we have
+$$
+Y_{t}=\Phi^{-1}(1) \alpha+\Psi(L) X_{t}+\Phi^{-1}(L) \epsilon_{t}
+$$
+
+
+\subsection{ARDL multipliers}
+
+If $\mathbb{E}(\varepsilon_t | X_s) = 0, \forall s,t$, i.e., strict exogeneity holds, then
+$$
+\mathbb{E}\left(Y_{t} \mid X_{t}, X_{t-1}, \ldots\right)=\Phi^{-1}(1) \alpha+\Psi(L) X_{t}
+$$
+This makes it easy to define the impact multiplier on instant $t+s$:
+$$
+\frac{\partial \mathbb{E}\left(Y_{t+s} \mid X_{t+s}, X_{t+s-1}, \ldots\right)}{\partial X_{t}}=\psi_{s} ; \quad s=0,1,2, \ldots
+$$
+Or yet, the long run impact
+$$
+\sum_{s=0}^{\infty} \frac{\partial \mathbb{E}\left(Y_{t+s} \mid X_{t+s}, X_{t+s-1}, \ldots\right)}{\partial X_{t}}=\sum_{s=0}^{\infty} \psi_{s}=\Psi(1)
+$$
+Note that the last equality holds because
+$$
+\Psi(L):=\psi_{0}+\psi_{1} L+\psi_{2} L^{2}+\ldots,$$
+$$ \Psi(1)=\sum_{s=0}^{\infty} \psi_{s}
+$$
+
+\subsection{ARDL with multiple explanatory variables}
+
+
+
+
+
+
+
+
+
+
 
 
 

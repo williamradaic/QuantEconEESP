@@ -187,8 +187,28 @@ Box.test(hpc_dyn$residuals)
 # The results suggest that inflation is both forward and backward looking.
 
 
+ardl22 <- ardl(IPCA ~ u_dev | exp_IPCA, data = df2, order = c(2,2))
 
+co <- ardl22$coefficients
 
+x <- matrix(NA, nrow = 24, ncol = 1)
+
+x[1,] = co[4]
+
+x[2,] = co[2]*x[1,] + co[5]
+
+x[3,] = co[2]*x[2,] + co[3]*x[1,] + co[6]
+
+for (i in 4:24) {
+  x[i,] = co[2]*x[(i-1),] + co[3]*x[(i-2),]
+}
+ 
+plot(1:24, x, "l")
+sum(x)
+
+ARDL::multipliers(ardl22)
+
+multipliers(ardl22)
 ```
 
 

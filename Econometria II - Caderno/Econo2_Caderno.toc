@@ -1,127 +1,141 @@
 \babel@toc {english}{}
 \babel@toc {english}{}
-\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Motivation}{4}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Statistics with dependence}{5}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Definition of a time series}{5}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Unconditional expectation}{5}{subsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.2.3}Statistical dependence}{5}{subsection.1.2.3}%
-\contentsline {section}{\numberline {1.3}Asymptotic theory with dependence}{6}{section.1.3}%
-\contentsline {subsection}{\numberline {1.3.1}Stationarity}{6}{subsection.1.3.1}%
-\contentsline {subsection}{\numberline {1.3.2}Ergodicity}{7}{subsection.1.3.2}%
-\contentsline {subsection}{\numberline {1.3.3}A Central Limit Theorem for time series}{8}{subsection.1.3.3}%
-\contentsline {chapter}{\numberline {2}ARMA Models}{9}{chapter.2}%
-\contentsline {section}{\numberline {2.1}White noise}{9}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Moving Average processes}{9}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Moments of an MA(1) model}{9}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Some examples of MA(1) processes}{10}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Deriving the Autocorrelation function of the MA(1) process}{10}{subsection.2.2.3}%
-\contentsline {section}{\numberline {2.3}Generalizing the MA model}{11}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Moments of an MA(q) process}{11}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Deriving the Autocorrelation function of the MA(q) process}{12}{subsection.2.3.2}%
-\contentsline {section}{\numberline {2.4}The MA($\infty $) model}{12}{section.2.4}%
-\contentsline {section}{\numberline {2.5}The Wold Decomposition}{12}{section.2.5}%
-\contentsline {section}{\numberline {2.6}Autoregressive models}{13}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Moments of an AR(1) process}{13}{subsection.2.6.1}%
-\contentsline {subsection}{\numberline {2.6.2}Some examples of AR(1) series}{13}{subsection.2.6.2}%
-\contentsline {subsection}{\numberline {2.6.3}Autocorrelation function of an AR(1) process}{13}{subsection.2.6.3}%
-\contentsline {subsection}{\numberline {2.6.4}Partial Autocorrelation Function}{13}{subsection.2.6.4}%
-\contentsline {subsection}{\numberline {2.6.5}Conditions for stationarity}{14}{subsection.2.6.5}%
-\contentsline {section}{\numberline {2.7}Generalizing the AR model}{15}{section.2.7}%
-\contentsline {subsection}{\numberline {2.7.1}Moments of an AR(p) process}{15}{subsection.2.7.1}%
-\contentsline {subsection}{\numberline {2.7.2}ACF of an AR(p) process}{16}{subsection.2.7.2}%
-\contentsline {section}{\numberline {2.8}The Lag Operator}{16}{section.2.8}%
-\contentsline {subsection}{\numberline {2.8.1}The lag operator as a polynomial}{16}{subsection.2.8.1}%
-\contentsline {subsection}{\numberline {2.8.2}Stationarity and the lag operator}{17}{subsection.2.8.2}%
-\contentsline {section}{\numberline {2.9}Finally, the ARMA(p,q) process}{17}{section.2.9}%
-\contentsline {subsection}{\numberline {2.9.1}Stationarity and invertibility of an ARMA(p,q) process}{18}{subsection.2.9.1}%
-\contentsline {subsection}{\numberline {2.9.2}Moments of an ARMA(p,q) process}{19}{subsection.2.9.2}%
-\contentsline {subsection}{\numberline {2.9.3}ACF of an ARMA(p,q) process}{19}{subsection.2.9.3}%
-\contentsline {section}{\numberline {2.10}Testing for time dependence}{19}{section.2.10}%
-\contentsline {subsection}{\numberline {2.10.1}Hypothesis testing}{20}{subsection.2.10.1}%
-\contentsline {subsection}{\numberline {2.10.2}Testing autocorrelations or regressions?}{21}{subsection.2.10.2}%
-\contentsline {chapter}{\numberline {3}Problem 1: Modelling exchange rates}{22}{chapter.3}%
-\contentsline {chapter}{\numberline {4}Problem 2: Estimating ARMA models}{39}{chapter.4}%
-\contentsline {section}{\numberline {4.1}MLE for Gaussian AR(1)}{39}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}Conditional MLE}{40}{subsection.4.1.1}%
-\contentsline {section}{\numberline {4.2}Likelihood funciton for AR(p)}{40}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Conditional MLE}{40}{subsection.4.2.1}%
-\contentsline {section}{\numberline {4.3}MLE for Gaussian MA($\cdot $)}{40}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Conditional MLE estimation for ARMA(p,q) models}{41}{section.4.4}%
-\contentsline {chapter}{\numberline {5}Problem 3: Identification of ARMA models}{42}{chapter.5}%
-\contentsline {chapter}{\numberline {6}Forecasting}{54}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Forecasting with an AR(1) model}{54}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Forecast}{54}{subsection.6.1.1}%
-\contentsline {subsection}{\numberline {6.1.2}Forecast error}{55}{subsection.6.1.2}%
-\contentsline {subsection}{\numberline {6.1.3}Mean reversion}{55}{subsection.6.1.3}%
-\contentsline {section}{\numberline {6.2}Forecasting with an AR(p) model}{56}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}Forecast}{56}{subsection.6.2.1}%
-\contentsline {subsection}{\numberline {6.2.2}Forecast error}{56}{subsection.6.2.2}%
-\contentsline {section}{\numberline {6.3}Forecasting with a MA(1) model}{56}{section.6.3}%
-\contentsline {subsection}{\numberline {6.3.1}Forecast}{57}{subsection.6.3.1}%
-\contentsline {subsection}{\numberline {6.3.2}Forecast error}{57}{subsection.6.3.2}%
-\contentsline {section}{\numberline {6.4}Forecasting with a MA(q) model}{57}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Forecast with an ARMA(p,q) model}{57}{section.6.5}%
-\contentsline {subsection}{\numberline {6.5.1}Forecast}{58}{subsection.6.5.1}%
-\contentsline {section}{\numberline {6.6}Confidence intervals for forecasts}{58}{section.6.6}%
-\contentsline {subsection}{\numberline {6.6.1}Normally distributed errors}{58}{subsection.6.6.1}%
-\contentsline {subsection}{\numberline {6.6.2}Bootstrapping}{59}{subsection.6.6.2}%
-\contentsline {subsubsection}{Procedure}{59}{section*.2}%
-\contentsline {chapter}{\numberline {7}Problem 4: Cross-validation and bootstrap}{61}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Identification and estimation}{61}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Cross-validation}{66}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Bootstrapping}{69}{section.7.3}%
-\contentsline {chapter}{\numberline {8}Time series decomposition}{77}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Decomposing a time series}{77}{section.8.1}%
-\contentsline {subsection}{\numberline {8.1.1}Seasonality and trend}{77}{subsection.8.1.1}%
-\contentsline {subsection}{\numberline {8.1.2}Parametric deterministic trend}{78}{subsection.8.1.2}%
-\contentsline {subsection}{\numberline {8.1.3}De-Trending}{78}{subsection.8.1.3}%
-\contentsline {subsection}{\numberline {8.1.4}Seasonality}{79}{subsection.8.1.4}%
-\contentsline {subsection}{\numberline {8.1.5}Non-parametric decomposition}{79}{subsection.8.1.5}%
-\contentsline {subsection}{\numberline {8.1.6}Hodrick Prescott (HP) filter}{80}{subsection.8.1.6}%
-\contentsline {subsection}{\numberline {8.1.7}The \textit {other} moving average}{80}{subsection.8.1.7}%
-\contentsline {subsection}{\numberline {8.1.8}Parametric \textit {vs.} Non-parametric functions}{81}{subsection.8.1.8}%
-\contentsline {subsubsection}{A protocol}{81}{section*.3}%
-\contentsline {section}{\numberline {8.2}Estimation of non-ergodic processes}{82}{section.8.2}%
-\contentsline {section}{\numberline {8.3}Inference with linear dependence}{82}{section.8.3}%
-\contentsline {chapter}{\numberline {9}Problem 5: Forecasting GDP}{84}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Decomposing the time series}{84}{section.9.1}%
-\contentsline {subsection}{\numberline {9.1.1}Trend}{85}{subsection.9.1.1}%
-\contentsline {subsection}{\numberline {9.1.2}Seasonality}{86}{subsection.9.1.2}%
-\contentsline {subsection}{\numberline {9.1.3}$Y_t$}{88}{subsection.9.1.3}%
-\contentsline {section}{\numberline {9.2}Identifying and estimating ARMA(p,q) for $Y_t$}{88}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Long term GDP growth}{93}{section.9.3}%
-\contentsline {chapter}{\numberline {10}Integrated Processes}{96}{chapter.10}%
-\contentsline {section}{\numberline {10.1}Motivation}{96}{section.10.1}%
-\contentsline {section}{\numberline {10.2}Non-stationary processes}{96}{section.10.2}%
-\contentsline {subsection}{\numberline {10.2.1}Recursive representation of a random walk}{97}{subsection.10.2.1}%
-\contentsline {subsection}{\numberline {10.2.2}Moments of a random walk}{97}{subsection.10.2.2}%
-\contentsline {section}{\numberline {10.3}Unit root processes}{98}{section.10.3}%
-\contentsline {subsection}{\numberline {10.3.1}Integrated processes of order 1}{98}{subsection.10.3.1}%
-\contentsline {subsection}{\numberline {10.3.2}Integrated process of order d}{98}{subsection.10.3.2}%
-\contentsline {subsection}{\numberline {10.3.3}ARIMA(p,d,q) processes}{99}{subsection.10.3.3}%
-\contentsline {section}{\numberline {10.4}Stochastic or deterministic trend?}{99}{section.10.4}%
-\contentsline {subsection}{\numberline {10.4.1}Detrending by taking first differences}{99}{subsection.10.4.1}%
-\contentsline {subsection}{\numberline {10.4.2}Detrending by parametric decomposition}{99}{subsection.10.4.2}%
-\contentsline {subsection}{\numberline {10.4.3}How to distinguish between trends?}{100}{subsection.10.4.3}%
-\contentsline {chapter}{\numberline {11}Problem 6: Spurious regressions and estimating unit root processes}{101}{chapter.11}%
-\contentsline {section}{\numberline {11.1}Spurious regressions}{101}{section.11.1}%
-\contentsline {section}{\numberline {11.2}Unit roots}{102}{section.11.2}%
-\contentsline {subsection}{\numberline {11.2.1}Hypothesis testing}{103}{subsection.11.2.1}%
-\contentsline {section}{\numberline {11.3}Applying the Dickey-Fuller test for GDP}{108}{section.11.3}%
-\contentsline {chapter}{\numberline {12}Structural breaks}{113}{chapter.12}%
-\contentsline {section}{\numberline {12.1}Known break}{113}{section.12.1}%
-\contentsline {subsection}{\numberline {12.1.1}Linear parametric modelling}{113}{subsection.12.1.1}%
-\contentsline {subsection}{\numberline {12.1.2}OLS estimation of a model with known structural break}{114}{subsection.12.1.2}%
-\contentsline {subsection}{\numberline {12.1.3}Estimating covariance with Newey-West}{114}{subsection.12.1.3}%
-\contentsline {subsection}{\numberline {12.1.4}Wald test for structural break}{115}{subsection.12.1.4}%
-\contentsline {subsection}{\numberline {12.1.5}Break in the variance of a time series}{115}{subsection.12.1.5}%
-\contentsline {subsubsection}{Assuming a normal distribution for $u_t$}{116}{section*.4}%
-\contentsline {subsubsection}{General distribution}{116}{section*.5}%
-\contentsline {subsection}{\numberline {12.1.6}Estimating the variance of the sample variance}{116}{subsection.12.1.6}%
-\contentsline {subsection}{\numberline {12.1.7}Test statistic for variance break}{117}{subsection.12.1.7}%
-\contentsline {section}{\numberline {12.2}Unknown break}{117}{section.12.2}%
-\contentsline {chapter}{\numberline {13}Problem 7: Testing for structural breaks}{118}{chapter.13}%
-\contentsline {section}{\numberline {13.1}Testing for structural breaks}{118}{section.13.1}%
-\contentsline {subsection}{\numberline {13.1.1}Parameter instability}{118}{subsection.13.1.1}%
-\contentsline {section}{\numberline {13.2}Implementing the tests}{119}{section.13.2}%
+\contentsline {chapter}{\numberline {1}Introduction}{5}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Motivation}{5}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Statistics with dependence}{6}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Definition of a time series}{6}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Unconditional expectation}{6}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Statistical dependence}{6}{subsection.1.2.3}%
+\contentsline {section}{\numberline {1.3}Asymptotic theory with dependence}{7}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Stationarity}{7}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Ergodicity}{8}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}A Central Limit Theorem for time series}{9}{subsection.1.3.3}%
+\contentsline {chapter}{\numberline {2}ARMA Models}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}White noise}{10}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Moving Average processes}{10}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Moments of an MA(1) model}{10}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Some examples of MA(1) processes}{11}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Deriving the Autocorrelation function of the MA(1) process}{11}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Generalizing the MA model}{12}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Moments of an MA(q) process}{12}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Deriving the Autocorrelation function of the MA(q) process}{13}{subsection.2.3.2}%
+\contentsline {section}{\numberline {2.4}The MA($\infty $) model}{13}{section.2.4}%
+\contentsline {section}{\numberline {2.5}The Wold Decomposition}{13}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Autoregressive models}{14}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Moments of an AR(1) process}{14}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Some examples of AR(1) series}{14}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.3}Autocorrelation function of an AR(1) process}{14}{subsection.2.6.3}%
+\contentsline {subsection}{\numberline {2.6.4}Partial Autocorrelation Function}{14}{subsection.2.6.4}%
+\contentsline {subsection}{\numberline {2.6.5}Conditions for stationarity}{15}{subsection.2.6.5}%
+\contentsline {section}{\numberline {2.7}Generalizing the AR model}{16}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Moments of an AR(p) process}{16}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}ACF of an AR(p) process}{17}{subsection.2.7.2}%
+\contentsline {section}{\numberline {2.8}The Lag Operator}{17}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}The lag operator as a polynomial}{17}{subsection.2.8.1}%
+\contentsline {subsection}{\numberline {2.8.2}Stationarity and the lag operator}{18}{subsection.2.8.2}%
+\contentsline {section}{\numberline {2.9}Finally, the ARMA(p,q) process}{18}{section.2.9}%
+\contentsline {subsection}{\numberline {2.9.1}Stationarity and invertibility of an ARMA(p,q) process}{19}{subsection.2.9.1}%
+\contentsline {subsection}{\numberline {2.9.2}Moments of an ARMA(p,q) process}{20}{subsection.2.9.2}%
+\contentsline {subsection}{\numberline {2.9.3}ACF of an ARMA(p,q) process}{20}{subsection.2.9.3}%
+\contentsline {section}{\numberline {2.10}Testing for time dependence}{20}{section.2.10}%
+\contentsline {subsection}{\numberline {2.10.1}Hypothesis testing}{21}{subsection.2.10.1}%
+\contentsline {subsection}{\numberline {2.10.2}Testing autocorrelations or regressions?}{22}{subsection.2.10.2}%
+\contentsline {chapter}{\numberline {3}Problem 1: Modelling exchange rates}{23}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Problem 2: Estimating ARMA models}{40}{chapter.4}%
+\contentsline {section}{\numberline {4.1}MLE for Gaussian AR(1)}{40}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Conditional MLE}{41}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}Likelihood funciton for AR(p)}{41}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Conditional MLE}{41}{subsection.4.2.1}%
+\contentsline {section}{\numberline {4.3}MLE for Gaussian MA($\cdot $)}{41}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Conditional MLE estimation for ARMA(p,q) models}{42}{section.4.4}%
+\contentsline {chapter}{\numberline {5}Problem 3: Identification of ARMA models}{43}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Forecasting}{55}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Forecasting with an AR(1) model}{55}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Forecast}{55}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Forecast error}{56}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Mean reversion}{56}{subsection.6.1.3}%
+\contentsline {section}{\numberline {6.2}Forecasting with an AR(p) model}{57}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Forecast}{57}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Forecast error}{57}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Forecasting with a MA(1) model}{57}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Forecast}{58}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Forecast error}{58}{subsection.6.3.2}%
+\contentsline {section}{\numberline {6.4}Forecasting with a MA(q) model}{58}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Forecast with an ARMA(p,q) model}{58}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Forecast}{59}{subsection.6.5.1}%
+\contentsline {section}{\numberline {6.6}Confidence intervals for forecasts}{59}{section.6.6}%
+\contentsline {subsection}{\numberline {6.6.1}Normally distributed errors}{59}{subsection.6.6.1}%
+\contentsline {subsection}{\numberline {6.6.2}Bootstrapping}{60}{subsection.6.6.2}%
+\contentsline {subsubsection}{Procedure}{60}{section*.2}%
+\contentsline {chapter}{\numberline {7}Problem 4: Cross-validation and bootstrap}{62}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Identification and estimation}{62}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Cross-validation}{67}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Bootstrapping}{70}{section.7.3}%
+\contentsline {chapter}{\numberline {8}Time series decomposition}{78}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Decomposing a time series}{78}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}Seasonality and trend}{78}{subsection.8.1.1}%
+\contentsline {subsection}{\numberline {8.1.2}Parametric deterministic trend}{79}{subsection.8.1.2}%
+\contentsline {subsection}{\numberline {8.1.3}De-Trending}{79}{subsection.8.1.3}%
+\contentsline {subsection}{\numberline {8.1.4}Seasonality}{80}{subsection.8.1.4}%
+\contentsline {subsection}{\numberline {8.1.5}Non-parametric decomposition}{80}{subsection.8.1.5}%
+\contentsline {subsection}{\numberline {8.1.6}Hodrick Prescott (HP) filter}{81}{subsection.8.1.6}%
+\contentsline {subsection}{\numberline {8.1.7}The \textit {other} moving average}{81}{subsection.8.1.7}%
+\contentsline {subsection}{\numberline {8.1.8}Parametric \textit {vs.} Non-parametric functions}{82}{subsection.8.1.8}%
+\contentsline {subsubsection}{A protocol}{82}{section*.3}%
+\contentsline {section}{\numberline {8.2}Estimation of non-ergodic processes}{83}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Inference with linear dependence}{83}{section.8.3}%
+\contentsline {chapter}{\numberline {9}Problem 5: Forecasting GDP}{85}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Decomposing the time series}{85}{section.9.1}%
+\contentsline {subsection}{\numberline {9.1.1}Trend}{86}{subsection.9.1.1}%
+\contentsline {subsection}{\numberline {9.1.2}Seasonality}{87}{subsection.9.1.2}%
+\contentsline {subsection}{\numberline {9.1.3}$Y_t$}{89}{subsection.9.1.3}%
+\contentsline {section}{\numberline {9.2}Identifying and estimating ARMA(p,q) for $Y_t$}{89}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Long term GDP growth}{94}{section.9.3}%
+\contentsline {chapter}{\numberline {10}Integrated Processes}{97}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Motivation}{97}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Non-stationary processes}{97}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}Recursive representation of a random walk}{98}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}Moments of a random walk}{98}{subsection.10.2.2}%
+\contentsline {section}{\numberline {10.3}Unit root processes}{99}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Integrated processes of order 1}{99}{subsection.10.3.1}%
+\contentsline {subsection}{\numberline {10.3.2}Integrated process of order d}{99}{subsection.10.3.2}%
+\contentsline {subsection}{\numberline {10.3.3}ARIMA(p,d,q) processes}{100}{subsection.10.3.3}%
+\contentsline {section}{\numberline {10.4}Stochastic or deterministic trend?}{100}{section.10.4}%
+\contentsline {subsection}{\numberline {10.4.1}Detrending by taking first differences}{100}{subsection.10.4.1}%
+\contentsline {subsection}{\numberline {10.4.2}Detrending by parametric decomposition}{100}{subsection.10.4.2}%
+\contentsline {subsection}{\numberline {10.4.3}How to distinguish between trends?}{101}{subsection.10.4.3}%
+\contentsline {chapter}{\numberline {11}Problem 6: Spurious regressions and estimating unit root processes}{102}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Spurious regressions}{102}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Unit roots}{103}{section.11.2}%
+\contentsline {subsection}{\numberline {11.2.1}Hypothesis testing}{104}{subsection.11.2.1}%
+\contentsline {section}{\numberline {11.3}Applying the Dickey-Fuller test for GDP}{109}{section.11.3}%
+\contentsline {chapter}{\numberline {12}Structural breaks}{114}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Known break}{114}{section.12.1}%
+\contentsline {subsection}{\numberline {12.1.1}Linear parametric modelling}{114}{subsection.12.1.1}%
+\contentsline {subsection}{\numberline {12.1.2}OLS estimation of a model with known structural break}{115}{subsection.12.1.2}%
+\contentsline {subsection}{\numberline {12.1.3}Estimating covariance with Newey-West}{115}{subsection.12.1.3}%
+\contentsline {subsection}{\numberline {12.1.4}Wald test for structural break}{116}{subsection.12.1.4}%
+\contentsline {subsection}{\numberline {12.1.5}Break in the variance of a time series}{116}{subsection.12.1.5}%
+\contentsline {subsubsection}{Assuming a normal distribution for $u_t$}{117}{section*.4}%
+\contentsline {subsubsection}{General distribution}{117}{section*.5}%
+\contentsline {subsection}{\numberline {12.1.6}Estimating the variance of the sample variance}{117}{subsection.12.1.6}%
+\contentsline {subsection}{\numberline {12.1.7}Test statistic for variance break}{118}{subsection.12.1.7}%
+\contentsline {section}{\numberline {12.2}Unknown break}{118}{section.12.2}%
+\contentsline {chapter}{\numberline {13}Problem 7: Testing for structural breaks}{119}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Testing for structural breaks}{119}{section.13.1}%
+\contentsline {subsection}{\numberline {13.1.1}Parameter instability}{119}{subsection.13.1.1}%
+\contentsline {section}{\numberline {13.2}Implementing the tests}{120}{section.13.2}%
+\contentsline {chapter}{\numberline {14}Conditional Heteroskedasticity Models}{126}{chapter.14}%
+\contentsline {section}{\numberline {14.1}Motivation}{126}{section.14.1}%
+\contentsline {subsection}{\numberline {14.1.1}Stylized facts on financial time series}{127}{subsection.14.1.1}%
+\contentsline {section}{\numberline {14.2}ARCH}{129}{section.14.2}%
+\contentsline {section}{\numberline {14.3}More stylized facts on financial time series}{130}{section.14.3}%
+\contentsline {chapter}{\numberline {15}Problem 8: ARCH estimation}{132}{chapter.15}%
+\contentsline {chapter}{\numberline {16}ARDL Models}{133}{chapter.16}%
+\contentsline {section}{\numberline {16.1}Motivation}{133}{section.16.1}%
+\contentsline {subsection}{\numberline {16.1.1}Static model}{133}{subsection.16.1.1}%
+\contentsline {subsection}{\numberline {16.1.2}Distributed Lag model}{133}{subsection.16.1.2}%
+\contentsline {section}{\numberline {16.2}Defining ARDL models}{134}{section.16.2}%
+\contentsline {subsection}{\numberline {16.2.1}Inverting an ARDL model}{134}{subsection.16.2.1}%
+\contentsline {subsection}{\numberline {16.2.2}ARDL multipliers}{135}{subsection.16.2.2}%
+\contentsline {subsection}{\numberline {16.2.3}ARDL with multiple explanatory variables}{135}{subsection.16.2.3}%

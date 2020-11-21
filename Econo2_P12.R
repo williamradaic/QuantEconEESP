@@ -15,7 +15,7 @@ df <- read_excel("Base de Dados - Problema 12.xlsx")
 
 colnames(df) = c("Date", "USD", "IPCA", "CPI")
 
-serie <- ts(df[2:4], start = c(1995, 1), end = c(2020, 8), frequency = 12)
+serie <- ts(log(df[2:4]), start = c(1995, 1), end = c(2020, 8), frequency = 12)
 
 usd <- serie[,1]
 ipca <- serie[,2]
@@ -51,6 +51,7 @@ summary(ur.df(diff(cpi)))
 # Step 1: OLS 
 
 eg <- dynlm(usd ~ ipca + cpi) # OLS shall capture the linear combination of cointegration basis vectors for optimal linear projection 
+summary(eg)
 
 autoplot(eg$residuals) + theme_few()
 
@@ -75,7 +76,7 @@ summary(model) # Sinais esquisitos
 
 # Testing PPP for known a = (1, -1, -1)' -- Hamilton, p. 582.
 
-z <- (ipca/1000 - usd - cpi/1000)
+z <- (log(ipca/1000) - log(usd) - log(cpi/1000))
 adf.test(z) # Can't reject unit root for z. PPP is weak. Cf. Hamilton p. 585.
 autoplot(z) + theme_few()
 ggAcf(z) +theme_few()
